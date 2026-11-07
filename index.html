@@ -82,7 +82,7 @@ const commissionBox=el.querySelector("#commissionReport");
 if(commissionBox){const {data,error}=await db.from("seller_commissions").select("order_id,seller_id,product_id,gross_bdt,commission_bdt,seller_earning_bdt,created_at").order("created_at",{ascending:false}).limit(100);commissionBox.innerHTML=error?'<p class="bad">'+esc(error.message)+'</p>':(data||[]).map(x=>'<div class="adminitem">Order #'+x.order_id+' • Seller #'+x.seller_id+'<br><small>বিক্রয় '+money(x.gross_bdt)+' • কমিশন '+money(x.commission_bdt)+' • বিক্রেতার আয় '+money(x.seller_earning_bdt)+'</small></div>').join("")||"এখনো কমিশন রেকর্ড নেই"}
 const sf=el.querySelector("#siteSettingsForm");
 if(sf){["banner_title","banner_subtitle","banner_image_url","banner_button_text","banner_button_url","delivery_fee_bdt"].forEach(k=>sf.elements[k].value=settings[k]||"");sf.onsubmit=async ev=>{ev.preventDefault();const fd=new FormData(sf);const entries=[...fd.entries()].map(([key,value])=>({key,value:String(value).trim()}));const {error}=await db.from("app_settings").upsert(entries,{onConflict:"key"});if(error){toast("সেটিংস সংরক্ষণ হয়নি: "+error.message,true);return}await loadSettings();applySiteSettings();drawCart();toast("ওয়েবসাইট সেটিংস সংরক্ষণ হয়েছে")}}
-})}}
+}}
 document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 db.auth.onAuthStateChange(()=>setTimeout(refreshSession,0));
 (async()=>{setAuthMode("login");await loadSettings();await loadProducts();persistCart();await refreshSession()})();
