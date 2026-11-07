@@ -25,7 +25,7 @@
 <script>
 /* Keep the retired GitHub Pages address pointed at the current live storefront. */
 if (location.hostname === "ranaahmmed7262.github.io" && location.pathname.startsWith("/Amar-shopping-")) {
-  const suffix = location.pathname.slice("/Amar-shopping-".length).replace(/^\\/+/, "");
+  const suffix = location.pathname.slice("/Amar-shopping-".length).replace(/^\/+/, "");
   location.replace("https://amar-shopping-bd-live.onrender.com/" + suffix + location.search + location.hash);
 }
 </script>
