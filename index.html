@@ -56,10 +56,20 @@ if (location.hostname === "ranaahmmed7262.github.io" && location.pathname.starts
 <script>
 window.__ensureSupabase=()=>new Promise((resolve,reject)=>{
  if(window.supabase?.createClient){resolve();return}
- const sources=["https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4","https://unpkg.com/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"];
- let index=0;
- const load=()=>{if(index>=sources.length){reject(new Error("Supabase library load failed. Check internet/CDN access and reload."));return}
-  const s=document.createElement("script");s.src=sources[index++];s.onload=()=>window.supabase?.createClient?resolve():load();s.onerror=load;document.head.appendChild(s);
+ const sources=[
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js",
+  "https://unpkg.com/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"
+ ];
+ let index=0, settled=false,timer=null;
+ const finish=(error)=>{if(settled)return;settled=true;if(timer)clearTimeout(timer);error?reject(error):resolve()};
+ const load=()=>{
+  if(index>=sources.length){finish(new Error("Supabase client could not load from either CDN. Check internet access and reload."));return}
+  const s=document.createElement("script");
+  s.src=sources[index++];s.async=true;
+  timer=setTimeout(()=>{s.remove();load()},10000);
+  s.onload=()=>{if(window.supabase?.createClient)finish();else load()};
+  s.onerror=()=>{s.remove();load()};
+  document.head.appendChild(s);
  };
  load();
 });
