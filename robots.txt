@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ranaahmmed7262.github.io/Amar-shopping-/sitemap.xml
