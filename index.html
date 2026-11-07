@@ -54,25 +54,20 @@ if (location.hostname === "ranaahmmed7262.github.io" && location.pathname.starts
 <script>(function(){var b=document.getElementById("homeRefreshBtn");if(!b)return;b.addEventListener("click",function(){if(window.location.pathname!=="/"){window.location.assign("/");}else{window.location.reload();}});})();</script>
 <div class="notice hidden" id="toast" style="position:fixed;bottom:15px;left:50%;transform:translateX(-50%);z-index:20;max-width:90vw"></div>
 <script>
-window.__ensureSupabase=()=>new Promise((resolve,reject)=>{
- if(window.supabase?.createClient){resolve();return}
+window.__ensureSupabase=async()=>{
+ if(window.supabase?.createClient)return;
  const sources=[
   "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js",
   "https://unpkg.com/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"
  ];
- let index=0, settled=false,timer=null;
- const finish=(error)=>{if(settled)return;settled=true;if(timer)clearTimeout(timer);error?reject(error):resolve()};
- const load=()=>{
-  if(index>=sources.length){finish(new Error("Supabase client could not load from either CDN. Check internet access and reload."));return}
-  const s=document.createElement("script");
-  s.src=sources[index++];s.async=true;
-  timer=setTimeout(()=>{s.remove();load()},10000);
-  s.onload=()=>{if(window.supabase?.createClient)finish();else load()};
-  s.onerror=()=>{s.remove();load()};
-  document.head.appendChild(s);
- };
- load();
-});
+ for(const url of sources){
+  try{await new Promise((resolve,reject)=>{const s=document.createElement("script");const timer=setTimeout(()=>{s.remove();reject(new Error("CDN timeout"))},8000);s.src=url;s.async=true;s.onload=()=>{clearTimeout(timer);window.supabase?.createClient?resolve():reject(new Error("Supabase global missing"))};s.onerror=()=>{clearTimeout(timer);s.remove();reject(new Error("CDN load failed"))};document.head.appendChild(s)});if(window.supabase?.createClient)return}catch(error){console.warn("Supabase UMD CDN failed:",url,error)}
+ }
+ for(const url of ["https://esm.sh/@supabase/supabase-js@2.49.4","https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/+esm"]){
+  try{const mod=await import(url);if(typeof mod.createClient==="function"){window.supabase={createClient:mod.createClient};return}}catch(error){console.warn("Supabase ESM CDN failed:",url,error)}
+ }
+ throw new Error("Supabase library could not load. Please check internet/CDN access or try another network.");
+};
 </script>
 <script>
 (async()=>{try{await window.__ensureSupabase();
