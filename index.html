@@ -200,4 +200,7 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
 }catch(error){console.error("Amar Shopping startup failed",error);const p=document.getElementById("products");if(p)p.innerHTML="<div class=\"empty\">ওয়েবসাইট চালু করতে সমস্যা হয়েছে। পেজ Reload করুন।</div>";document.querySelectorAll("#accountBtn,#signupBtn").forEach(b=>b.onclick=()=>alert(error?.message||"সার্ভার সংযোগ সমস্যা"));}
 })();
 </script>
+<script>
+window.addEventListener("load",()=>{if(location.hash==="#admin-login"){setTimeout(()=>document.getElementById("footerAdminLogin")?.click(),600)}});
+</script>
 </body></html>
