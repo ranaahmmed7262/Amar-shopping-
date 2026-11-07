@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://ranaahmmed7262.github.io/Amar-shopping-/sitemap.xml
+
+Sitemap: https://amar-shopping-bd-live.onrender.com/sitemap.xml
