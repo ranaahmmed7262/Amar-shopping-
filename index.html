@@ -187,10 +187,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .product-entry{background:linear-gradient(145deg,#fff,#f7faf7)!important}
 @media(max-width:650px){.trust-strip{margin:9px 10px 0;border-radius:11px}.hero{min-height:unset;border-radius:20px;margin:13px 10px 22px}.hero:after{inset:8px;border-radius:14px}.hero h1{font-size:35px;letter-spacing:-1.2px}.hero-art{min-height:165px}.hero-bag{width:112px;height:112px;border-radius:29px;font-size:63px}.orbit-one{width:220px;height:140px}.orbit-two{width:260px;height:175px}#products .photo{height:142px}#products .product{border-radius:14px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-/* Reliable CSS-drawn hamburger icon; independent of text glyph/font loading. */
-.menu-trigger .menu-lines{width:20px;height:16px;display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;pointer-events:none}
-.menu-trigger .menu-lines i{display:block;width:100%;height:2.5px;border-radius:4px;background:currentColor;flex:0 0 2.5px}
-.menu-trigger{font-size:0;line-height:0}
+/* Force a visible, scalable hamburger control on mobile and desktop. */
+.menu-trigger{display:flex!important;visibility:visible!important;align-items:center!important;justify-content:center!important;min-width:44px!important;min-height:44px!important;flex:0 0 44px!important;padding:0!important;color:#103b2d!important;background:#f1f7f3!important;opacity:1!important;position:relative;z-index:30}
+.menu-trigger svg{display:block!important;width:24px!important;height:24px!important;visibility:visible!important;opacity:1!important;pointer-events:none}
 </style>
 <script>
 /* Keep the retired GitHub Pages address pointed at the current live storefront. */
@@ -201,7 +200,7 @@ if (location.hostname === "ranaahmmed7262.github.io" && location.pathname.starts
 </script>
 </head>
 <body>
-<header class="bar"><div class="top"><button type="button" class="menu-trigger" id="menuTrigger" aria-label="মেনু খুলুন" aria-expanded="false"><span class="menu-lines" aria-hidden="true"><i></i><i></i><i></i></span></button><div class="brand">🛍️ Amar Shopping</div><div class="search"><input id="search" placeholder="পণ্য খুঁজুন..."><button id="searchBtn">খুঁজুন</button></div><div class="language-menu" aria-label="Select website language">
+<header class="bar"><div class="top"><button type="button" class="menu-trigger" id="menuTrigger" aria-label="মেনু খুলুন" aria-expanded="false" style="display:flex!important;visibility:visible!important;align-items:center!important;justify-content:center!important;min-width:44px!important;min-height:44px!important;padding:0!important;position:relative;z-index:30"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="24" height="24" style="display:block!important;width:24px!important;height:24px!important;min-width:24px;overflow:visible"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="#103b2d" stroke-width="2.8" stroke-linecap="round"/></svg></button><div class="brand">🛍️ Amar Shopping</div><div class="search"><input id="search" placeholder="পণ্য খুঁজুন..."><button id="searchBtn">খুঁজুন</button></div><div class="language-menu" aria-label="Select website language">
  <span class="language-globe" aria-hidden="true">🌐</span>
  <label class="sr-only" for="siteLanguage">Website language</label>
  <select id="siteLanguage" aria-label="Select language">
