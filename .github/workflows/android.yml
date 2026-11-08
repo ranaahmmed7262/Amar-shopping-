@@ -1,4 +1,4 @@
-name: Build Amar Shopping Android App
+name: Build signed Amar Shopping Android release
 
 on:
   workflow_dispatch:
@@ -8,7 +8,6 @@ on:
       - "index.html"
       - "package.json"
       - "capacitor.config.json"
-      - ".github/workflows/android.yml"
 
 permissions:
   contents: read
@@ -39,24 +38,71 @@ jobs:
           mkdir -p www
           cp index.html www/index.html
 
-      - name: Generate Android project
-        run: npx cap add android
+      - name: Generate and sync Android project
+        run: |
+          npx cap add android
+          npx cap sync android
 
-      - name: Sync Capacitor
-        run: npx cap sync android
+      - name: Configure release signing
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$ANDROID_KEYSTORE_BASE64"
+          test -n "$ANDROID_KEYSTORE_PASSWORD"
+          test -n "$ANDROID_KEY_ALIAS"
+          test -n "$ANDROID_KEY_PASSWORD"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/amar-shopping-release.keystore"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/amar-shopping-release.keystore" >> "$GITHUB_ENV"
+          cat >> android/app/build.gradle <<'GRADLE'
 
-      - name: Build Android APK and App Bundle
+          android {
+              signingConfigs {
+                  release {
+                      storeFile file(System.getenv("ANDROID_KEYSTORE_PATH"))
+                      storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                      keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                      keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+                  }
+              }
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.release
+                      debuggable false
+                      minifyEnabled false
+                  }
+              }
+          }
+          GRADLE
+
+      - name: Build signed release APK and App Bundle
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         working-directory: android
         run: |
           chmod +x ./gradlew
-          ./gradlew assembleDebug bundleRelease
+          ./gradlew --no-daemon assembleRelease bundleRelease
 
-      - name: Upload Android build files
+      - name: Verify APK signature
+        run: |
+          set -euo pipefail
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -n "$APKSIGNER"
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
+
+      - name: Upload signed release files
         uses: actions/upload-artifact@v4
         with:
-          name: amar-shopping-android-build
+          name: amar-shopping-signed-release
           path: |
-            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/release/app-release.apk
             android/app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
