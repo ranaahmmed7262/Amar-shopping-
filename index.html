@@ -187,6 +187,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .product-entry{background:linear-gradient(145deg,#fff,#f7faf7)!important}
 @media(max-width:650px){.trust-strip{margin:9px 10px 0;border-radius:11px}.hero{min-height:unset;border-radius:20px;margin:13px 10px 22px}.hero:after{inset:8px;border-radius:14px}.hero h1{font-size:35px;letter-spacing:-1.2px}.hero-art{min-height:165px}.hero-bag{width:112px;height:112px;border-radius:29px;font-size:63px}.orbit-one{width:220px;height:140px}.orbit-two{width:260px;height:175px}#products .photo{height:142px}#products .product{border-radius:14px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* Reliable CSS-drawn hamburger icon; independent of text glyph/font loading. */
+.menu-trigger .menu-lines{width:20px;height:16px;display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;pointer-events:none}
+.menu-trigger .menu-lines i{display:block;width:100%;height:2.5px;border-radius:4px;background:currentColor;flex:0 0 2.5px}
+.menu-trigger{font-size:0;line-height:0}
 </style>
 <script>
 /* Keep the retired GitHub Pages address pointed at the current live storefront. */
@@ -197,7 +201,7 @@ if (location.hostname === "ranaahmmed7262.github.io" && location.pathname.starts
 </script>
 </head>
 <body>
-<header class="bar"><div class="top"><button type="button" class="menu-trigger" id="menuTrigger" aria-label="মেনু খুলুন" aria-expanded="false">☰</button><div class="brand">🛍️ Amar Shopping</div><div class="search"><input id="search" placeholder="পণ্য খুঁজুন..."><button id="searchBtn">খুঁজুন</button></div><div class="language-menu" aria-label="Select website language">
+<header class="bar"><div class="top"><button type="button" class="menu-trigger" id="menuTrigger" aria-label="মেনু খুলুন" aria-expanded="false"><span class="menu-lines" aria-hidden="true"><i></i><i></i><i></i></span></button><div class="brand">🛍️ Amar Shopping</div><div class="search"><input id="search" placeholder="পণ্য খুঁজুন..."><button id="searchBtn">খুঁজুন</button></div><div class="language-menu" aria-label="Select website language">
  <span class="language-globe" aria-hidden="true">🌐</span>
  <label class="sr-only" for="siteLanguage">Website language</label>
  <select id="siteLanguage" aria-label="Select language">
