@@ -394,75 +394,83 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
 </script>
 
 <script>
-/* Single international language selector with Google Translate widget integration. */
+/* International language selector: translate the full page and localize language names. */
 (function(){
  const supported=["bn","en","ar","hi","ur","zh-CN","fr","es","de","ja"];
+ const labels={
+  bn:["বাংলা","ইংরেজি","আরবি","হিন্দি","উর্দু","চীনা","ফরাসি","স্প্যানিশ","জার্মান","জাপানি"],
+  en:["Bengali","English","Arabic","Hindi","Urdu","Chinese","French","Spanish","German","Japanese"],
+  ar:["البنغالية","الإنجليزية","العربية","الهندية","الأردية","الصينية","الفرنسية","الإسبانية","الألمانية","اليابانية"],
+  hi:["बंगाली","अंग्रेज़ी","अरबी","हिंदी","उर्दू","चीनी","फ़्रेंच","स्पेनिश","जर्मन","जापानी"],
+  ur:["بنگالی","انگریزی","عربی","ہندی","اردو","چینی","فرانسیسی","ہسپانوی","جرمن","جاپانی"],
+  "zh-CN":["孟加拉语","英语","阿拉伯语","印地语","乌尔都语","中文","法语","西班牙语","德语","日语"],
+  fr:["Bengali","Anglais","Arabe","Hindi","Ourdou","Chinois","Français","Espagnol","Allemand","Japonais"],
+  es:["Bengalí","Inglés","Árabe","Hindi","Urdu","Chino","Francés","Español","Alemán","Japonés"],
+  de:["Bengalisch","Englisch","Arabisch","Hindi","Urdu","Chinesisch","Französisch","Spanisch","Deutsch","Japanisch"],
+  ja:["ベンガル語","英語","アラビア語","ヒンディー語","ウルドゥー語","中国語","フランス語","スペイン語","ドイツ語","日本語"]
+ };
  const selector=document.getElementById("siteLanguage");
  if(!selector)return;
  const saved=localStorage.getItem("amar_language")||"bn";
  selector.value=supported.includes(saved)?saved:"bn";
- let initialized=false,attempts=0;
  function setPageDirection(code){
   document.documentElement.lang=code;
   document.documentElement.dir=(code==="ar"||code==="ur")?"rtl":"ltr";
+  selector.dir=(code==="ar"||code==="ur")?"rtl":"ltr";
+ }
+ function localizeLanguageOptions(code){
+  const names=labels[code]||labels.bn;
+  [...selector.options].forEach((option,i)=>{if(names[i])option.textContent=names[i]});
+  selector.setAttribute("aria-label",({bn:"ভাষা নির্বাচন",en:"Select language",ar:"اختر اللغة",hi:"भाषा चुनें",ur:"زبان منتخب کریں","zh-CN":"选择语言",fr:"Choisir la langue",es:"Seleccionar idioma",de:"Sprache auswählen",ja:"言語を選択"}[code]||"Select language"));
+ }
+ function setTranslateCookie(code){
+  const value="/bn/"+code;
+  document.cookie="googtrans="+value+"; path=/";
+  document.cookie="googtrans="+value+"; path=/; domain="+location.hostname;
  }
  function applyLanguage(code){
-  const combo=document.querySelector("#google_translate_element select.goog-te-combo");
-  if(!combo)return false;
-  if(code==="bn"){
-   document.cookie="googtrans=/bn/bn; path=/";
-   document.cookie="googtrans=/bn/bn; path=/; domain="+location.hostname;
-   localStorage.setItem("amar_language","bn");
-   setPageDirection("bn");
-   location.reload();
-   return true;
-  }
-  const option=[...combo.options].find(o=>o.value===code);
-  if(!option)return false;
-  combo.value=code;
-  combo.dispatchEvent(new Event("change",{bubbles:true}));
-  localStorage.setItem("amar_language",code);
+  localizeLanguageOptions(code);
   setPageDirection(code);
+  localStorage.setItem("amar_language",code);
+  setTranslateCookie(code);
+  if(code==="bn"){location.reload();return true}
+  const combo=document.querySelector("#google_translate_element select.goog-te-combo");
+  if(combo){
+   const option=[...combo.options].find(o=>o.value===code);
+   if(option){combo.value=code;combo.dispatchEvent(new Event("change",{bubbles:true}));return true}
+  }
+  /* Cookie-based fallback applies the selected language when the page reloads. */
+  location.reload();
   return true;
  }
  window.googleTranslateElementInit=function(){
   try{
-   new google.translate.TranslateElement({
-    pageLanguage:"bn",
-    includedLanguages:supported.join(","),
-    autoDisplay:false
-   },"google_translate_element");
+   new google.translate.TranslateElement({pageLanguage:"bn",includedLanguages:supported.join(","),autoDisplay:false},"google_translate_element");
   }catch(e){console.error("Translation widget initialization failed",e)}
  };
- selector.addEventListener("change",function(){
-  const code=selector.value;
-  if(!supported.includes(code))return;
-  localStorage.setItem("amar_language",code);
-  setPageDirection(code);
-  if(!applyLanguage(code)){
-   selector.value=localStorage.getItem("amar_language")||"bn";
-   alert("অনুবাদ সার্ভিস এখনো প্রস্তুত নয়। কিছুক্ষণ পর আবার চেষ্টা করুন।");
-  }
- });
+ localizeLanguageOptions(selector.value);
+ setPageDirection(selector.value);
+ selector.addEventListener("change",()=>applyLanguage(selector.value));
  const loader=document.createElement("script");
  loader.src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
  loader.async=true;
- loader.onerror=function(){console.warn("Google Translate script failed to load")};
+ loader.onerror=()=>console.warn("Google Translate script failed to load");
  document.head.appendChild(loader);
- const timer=setInterval(function(){
+ let attempts=0;
+ const timer=setInterval(()=>{
   attempts++;
   const combo=document.querySelector("#google_translate_element select.goog-te-combo");
   if(combo){
-   initialized=true;
    clearInterval(timer);
-   const code=selector.value;
+   const code=localStorage.getItem("amar_language")||"bn";
    if(code!=="bn"){
     const option=[...combo.options].find(o=>o.value===code);
-    if(option){combo.value=code;combo.dispatchEvent(new Event("change",{bubbles:true}));setPageDirection(code)}
-   }else setPageDirection("bn");
+    if(option){combo.value=code;combo.dispatchEvent(new Event("change",{bubbles:true}))}
+   }
+   localizeLanguageOptions(code);
+   setPageDirection(code);
   }
   if(attempts>=40)clearInterval(timer);
  },500);
-})();
-</script>
+})();</script>
 </body></html>
