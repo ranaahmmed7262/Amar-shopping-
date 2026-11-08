@@ -135,6 +135,17 @@ body{background:#f5f8f6;color:#172c22;font-family:system-ui,-apple-system,"Noto 
 @media(max-width:950px){.top{flex-wrap:wrap}.search{order:5;flex-basis:100%;max-width:none}.hero{margin:18px 14px 24px;grid-template-columns:1fr .7fr}.hero-art{transform:scale(.85)}#products{grid-template-columns:repeat(3,minmax(0,1fr))}.wrap{padding:0 16px}}
 @media(max-width:650px){.top{min-height:unset;padding:10px 12px;gap:8px}.brand{font-size:19px}.top>.light{font-size:11px;padding:8px}.search{order:6}.language-switch{order:4;margin-left:auto}.trust-strip{margin:9px 10px 0;gap:8px 15px;padding:10px;font-size:10px}.hero{min-height:unset;margin:13px 10px 22px;padding:25px 20px 20px;grid-template-columns:1fr;border-radius:20px;gap:4px}.hero h1{font-size:34px;letter-spacing:-1px;margin:15px 0 9px}.hero p{font-size:13px}.hero-benefits{gap:6px;margin-top:14px}.hero-benefits span{font-size:10px;padding:7px 8px}.hero-shop-link{margin-top:17px;padding:11px 15px}.hero-art{min-height:155px;transform:none}.hero-bag{width:105px;height:105px;border-radius:28px;font-size:61px}.orbit-one{width:210px;height:135px}.orbit-two{width:250px;height:165px}.hero-box{width:55px;height:55px;border-radius:16px;font-size:28px;right:17%;bottom:2%}.hero-float-card{left:8%;bottom:0;padding:8px 11px}.hero-float-card>span{font-size:21px}.hero-float-card b{font-size:10px}.hero-float-card small{font-size:9px}.hero-spark{left:18%;top:0;font-size:28px}.wrap{padding:0 11px;margin:22px auto}.wrap>.row h2{font-size:21px}.category-heading h3{font-size:18px}.category-hint{font-size:10px}.filters{gap:7px}#products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.photo{height:140px}.info{padding:10px}.info h3{font-size:12px;min-height:38px}.price{font-size:17px}.product{border-radius:14px}.add,.buy{font-size:11px;padding:9px 5px}.panel{border-radius:15px}#contactSection{margin:22px 10px!important;padding:16px!important}}
 
+
+/* Clean international language selector in the header corner */
+.language-menu{position:relative;display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;padding:0 10px;height:42px;border:1px solid #dce8e0;border-radius:12px;background:#f6faf7;color:#075b43}
+.language-globe{font-size:16px;line-height:1}
+.language-menu select{max-width:118px;border:0;outline:0;background:transparent;color:#174a36;font:700 12px system-ui,sans-serif;cursor:pointer;padding:8px 0}
+.language-menu select option{color:#173b2d;background:#fff}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#google_translate_element{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;left:-9999px!important;top:-9999px!important}
+.goog-te-banner-frame,.skiptranslate iframe{display:none!important}
+body{top:0!important}
+@media(max-width:650px){.language-menu{height:36px;padding:0 7px;gap:4px}.language-menu select{max-width:92px;font-size:11px}.language-globe{font-size:14px}}
 </style>
 <script>
 /* Keep the retired GitHub Pages address pointed at the current live storefront. */
@@ -145,7 +156,15 @@ if (location.hostname === "ranaahmmed7262.github.io" && location.pathname.starts
 </script>
 </head>
 <body>
-<header class="bar"><div class="top"><button type="button" class="menu-trigger" id="menuTrigger" aria-label="মেনু খুলুন" aria-expanded="false">☰</button><div class="brand">🛍️ Amar Shopping</div><div class="search"><input id="search" placeholder="পণ্য খুঁজুন..."><button id="searchBtn">খুঁজুন</button></div><div class="language-switch" role="group" aria-label="Choose language"><button type="button" data-set-language="bn" aria-pressed="true">বাংলা</button><button type="button" data-set-language="en" aria-pressed="false">English</button></div><button class="light" id="accountBtn">লগইন</button><button class="light" id="signupBtn">নতুন অ্যাকাউন্ট</button><button class="light" id="cartBtn">🛒 কার্ট <b id="cartCount">0</b></button></div></header>
+<header class="bar"><div class="top"><button type="button" class="menu-trigger" id="menuTrigger" aria-label="মেনু খুলুন" aria-expanded="false">☰</button><div class="brand">🛍️ Amar Shopping</div><div class="search"><input id="search" placeholder="পণ্য খুঁজুন..."><button id="searchBtn">খুঁজুন</button></div><div class="language-menu" aria-label="Select website language">
+ <span class="language-globe" aria-hidden="true">🌐</span>
+ <label class="sr-only" for="siteLanguage">Website language</label>
+ <select id="siteLanguage" aria-label="Select language">
+  <option value="bn">বাংলা</option><option value="en">English</option><option value="ar">العربية</option>
+  <option value="hi">हिन्दी</option><option value="ur">اردو</option><option value="zh-CN">中文</option>
+  <option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option>
+ </select>
+</div><div id="google_translate_element" aria-hidden="true"></div><button class="light" id="accountBtn">লগইন</button><button class="light" id="signupBtn">নতুন অ্যাকাউন্ট</button><button class="light" id="cartBtn">🛒 কার্ট <b id="cartCount">0</b></button></div></header>
 <div class="trust-strip" aria-label="Marketplace highlights"><span>🚚 বাংলাদেশজুড়ে কেনাকাটা</span><span>💵 ক্যাশ অন ডেলিভারি</span><span>🌐 বাংলা ও English</span></div>
 <div class="side-shade" id="sideShade"></div><aside class="side-drawer" id="sideDrawer" aria-label="Amar Shopping মেনু"><div class="drawer-head"><button type="button" class="drawer-close" id="drawerClose">✕</button><strong>🛍️ Amar Shopping</strong><small>আপনার বিশ্বস্ত অনলাইন শপিং মার্কেটপ্লেস</small></div><nav class="drawer-links"><button type="button" data-menu-action="home"><span>⌂</span>হোম পেজ</button><button type="button" data-menu-action="orders"><span>📦</span>আমার অর্ডার</button><button type="button" data-menu-action="support"><span>🎧</span>কাস্টমার সাপোর্ট</button><button type="button" id="adminMenuSettings" class="hidden" data-menu-action="admin-settings"><span>⚙️</span>Admin Settings & Dashboard</button><button type="button" data-menu-action="contact"><span>☎️</span>যোগাযোগের তথ্য</button><button type="button" data-menu-action="seller"><span>🏪</span>বিক্রেতা হোন</button><button type="button" data-menu-action="login"><span>👤</span>লগইন / অ্যাকাউন্ট</button></nav><div class="drawer-contact"><h4>যোগাযোগ করুন</h4><div id="drawerContact"><p class="muted">যোগাযোগের তথ্য লোড হচ্ছে...</p></div></div><div class="drawer-foot">© 2026 Amar Shopping · নিরাপদ কেনাকাটা</div></aside>
 
@@ -375,154 +394,57 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
 </script>
 
 <script>
-/* Amar Shopping bilingual storefront: UI labels switch instantly and preference persists. */
-(()=>{
- const translations={
- "বাংলাদেশজুড়ে কেনাকাটা":"Shopping across Bangladesh","ক্যাশ অন ডেলিভারি":"Cash on Delivery","বাংলা ও English":"Bangla & English",
- 
- "মেনু খুলুন":"Open menu","পণ্য খুঁজুন...":"Search products...","খুঁজুন":"Search",
- "লগইন":"Login","নতুন অ্যাকাউন্ট":"Create account","🛒 কার্ট":"🛒 Cart",
- "আপনার বিশ্বস্ত অনলাইন শপিং মার্কেটপ্লেস":"Your trusted online shopping marketplace",
- "হোম পেজ":"Home","আমার অর্ডার":"My Orders","কাস্টমার সাপোর্ট":"Customer Support",
- "যোগাযোগের তথ্য":"Contact Information","বিক্রেতা হোন":"Become a Seller","লগইন / অ্যাকাউন্ট":"Login / Account",
- "যোগাযোগ করুন":"Contact Us","যোগাযোগের তথ্য লোড হচ্ছে...":"Loading contact information...",
- "আপনার পছন্দ, আপনার কেনাকাটা":"Your Choice, Your Shopping",
- "সারা বাংলাদেশে অনলাইন শপিং • মূল্য বাংলাদেশি টাকা (৳)":"Online shopping across Bangladesh • Prices in Bangladeshi Taka (৳)",
- "এখনই দেখুন":"Shop Now","জনপ্রিয় পণ্য":"Popular Products","ক্যাশ অন ডেলিভারি • বাংলাদেশ":"Cash on Delivery • Bangladesh",
- "দামের মধ্যে পণ্য খুঁজুন":"Find products by price","দাম অনুযায়ী ফিল্টার":"Filter by Price",
- "আপনার বাজেট (৳) বেছে নিন":"Choose your budget (৳)","সর্বনিম্ন দাম":"Minimum price",
- "সর্বোচ্চ দাম":"Maximum price","যেমন 100":"e.g. 100","যেমন 2000":"e.g. 2000",
- "দাম দিয়ে খুঁজুন":"Apply price filter","রিসেট":"Reset",
- "সর্বনিম্ন ও সর্বোচ্চ দাম দিয়ে পণ্য খুঁজুন। চাইলে একটি ঘরও ব্যবহার করতে পারবেন।":"Find products using a minimum and maximum price. You can also use just one field.",
- "পণ্য লোড হচ্ছে...":"Loading products...","আপনি কি বিক্রেতা?":"Are you a seller?",
- "Amar Shopping-এ দোকান খুলে পণ্য বিক্রি করুন।":"Open a store on Amar Shopping and sell your products.",
- "বিক্রেতা আবেদন":"Seller Application","আমার অ্যাকাউন্ট":"My Account","লগআউট":"Logout",
- "বিক্রেতা প্যানেল":"Seller Panel","অ্যাডমিন প্যানেল":"Admin Panel",
- "আমার সাথে যোগাযোগ করুন":"Contact Us","যোগাযোগের তথ্য শিগগিরই যোগ করা হবে।":"Contact information will be added soon.",
- "আপনার নাম":"Your Name","ইমেইল":"Email","মোবাইল (+880)":"Mobile (+880)",
- "পাসওয়ার্ড":"Password","লগইন করুন":"Log In","ইমেইলে পাঠানো ৬ সংখ্যার OTP":"6-digit OTP sent to your email",
- "OTP যাচাই করে প্রবেশ করুন":"Verify OTP & Continue","ইমেইল OTP দিয়ে লগইন":"Login with Email OTP",
- "পাসওয়ার্ড ভুলে গেছেন?":"Forgot password?","নতুন পাসওয়ার্ড সেট করুন":"Set a New Password",
- "নতুন পাসওয়ার্ড (কমপক্ষে ৮ অক্ষর)":"New password (at least 8 characters)",
- "পাসওয়ার্ড পরিবর্তন করুন":"Change Password","পাসওয়ার্ড পরিবর্তনের পর নতুন পাসওয়ার্ড দিয়ে লগইন করুন।":"After changing your password, log in with the new password.",
- "আপনার কার্ট":"Your Cart","পণ্যের মোট":"Subtotal","ডেলিভারি চার্জ":"Delivery Charge","সর্বমোট":"Grand Total",
- "প্রাপকের নাম":"Recipient Name","মোবাইল নম্বর (ঐচ্ছিক)":"Mobile Number (Optional)",
- "ইমেইল ঠিকানা (ঐচ্ছিক)":"Email Address (Optional)",
- "মোবাইল নম্বর অথবা ইমেইল—যেকোনো একটি দিলেই অর্ডার করা যাবে।":"Enter either a mobile number or an email address to place an order.",
- "জেলা":"District","সম্পূর্ণ ঠিকানা":"Full Address","অর্ডার সম্পর্কে মন্তব্য (ঐচ্ছিক)":"Order Notes (Optional)",
- "ডেলিভারির নির্দেশনা বা পণ্য সম্পর্কে কিছু লিখুন":"Add delivery instructions or a note about the product",
- "প্রয়োজনে পণ্যের ছবি সংযুক্ত করুন (ঐচ্ছিক, JPG/PNG/WebP, সর্বোচ্চ 3MB)":"Attach product photo if needed (Optional, JPG/PNG/WebP, max 3MB)",
- "পেমেন্ট":"Payment","ক্যাশ অন ডেলিভারি":"Cash on Delivery",
- "bKash (ম্যানুয়াল Send Money)":"bKash (Manual Send Money)","Nagad (ম্যানুয়াল Send Money)":"Nagad (Manual Send Money)",
- "Rocket (ম্যানুয়াল Send Money)":"Rocket (Manual Send Money)","যেমন: ABC123XYZ":"e.g. ABC123XYZ",
- "অর্ডার নিশ্চিত করুন":"Place Order","বিক্রেতা হওয়ার আবেদন":"Apply to Become a Seller",
- "দোকানের নাম":"Store Name","দোকানের ঠিকানা":"Store Address","আবেদন জমা দিন":"Submit Application",
- "নতুন পণ্য যোগ করুন":"Add New Product","পণ্যের নাম":"Product Name","ক্যাটাগরি":"Category",
- "ফ্যাশন / ইলেকট্রনিক্স":"Fashion / Electronics","বিবরণ":"Description","মূল্য (৳)":"Price (৳)",
- "স্টক":"Stock","হোমপেজে Featured পণ্য":"Feature this product on the homepage",
- "পণ্যের ছবি":"Product Image","হোমে ফিরে যান অথবা পেজ রিফ্রেশ করুন":"Return home or refresh the page",
- "হোম / রিফ্রেশ":"Home / Refresh","যেকোনো":"Any","টি পণ্য পাওয়া গেছে।":"products found.",
- "বিস্তারিত দেখুন →":"View Details →","অর্ডার বন্ধ":"Orders Closed","কার্টে যোগ করুন":"Add to Cart",
- "এখনই কিনুন":"Buy Now","কোনো পণ্য পাওয়া যায়নি":"No products found",
- "পণ্য লোড হয়নি:":"Products could not be loaded:","সার্ভার সংযোগ সমস্যা":"Server connection problem",
- "আবার চেষ্টা করুন":"Try Again","স্টক":"Stock","কার্টে যোগ হয়েছে":"Added to cart",
- "অ্যাডমিন":"Admin","আপনি":"You","এখনো কোনো মেসেজ নেই। নিচে লিখে পাঠান।":"No messages yet. Write and send one below.",
- "সংযুক্ত ছবি দেখুন":"View attached image","মেসেজ লিখুন":"Write a message",
- "ছবি JPG/PNG/WebP এবং 3MB-এর মধ্যে হতে হবে":"Image must be JPG/PNG/WebP and under 3MB",
- "ছবি আপলোড হয়নি:":"Image upload failed:","মেসেজ পাঠানো যায়নি:":"Message could not be sent:",
- "মেসেজ পাঠানো হয়েছে":"Message sent","এখনো কোনো customer message নেই।":"No customer messages yet.",
- "লোড হচ্ছে...":"Loading...","গ্রাহককে উত্তর দিন":"Reply to customer","Reply পাঠান":"Send Reply",
- "কার্ট খালি":"Your cart is empty","দোকান সাময়িক বন্ধ":"Store temporarily closed",
- "Login session load হয়নি:":"Login session could not be loaded:","অ্যাকাউন্ট যাচাই হচ্ছে":"Checking account...",
- "Customer profile লোড হয়নি:":"Customer profile could not be loaded:",
- "Account profile load হয়নি। Reload করে আবার চেষ্টা করুন。":"Account profile could not be loaded. Reload and try again.",
- "নতুন অ্যাকাউন্ট":"Create Account","অ্যাকাউন্ট তৈরি করুন":"Create Account",
- "আগে আপনার Admin email লিখুন।":"Enter your Admin email first.",
- "আগে ইমেইল লিখুন।":"Enter your email first.","অপেক্ষা করুন...":"Please wait...",
- "আবার confirmation link পাঠান":"Resend confirmation link","পাসওয়ার্ড সঠিক। আপনার Admin email-এ ৬ সংখ্যার OTP পাঠানো হয়েছে। Inbox/Spam দেখুন.":"Password accepted. A 6-digit OTP was sent to your Admin email. Check Inbox/Spam.",
- "লগইন সফল":"Login successful","অ্যাকাউন্ট তৈরি হয়েছে":"Account created",
- "লগইন করা যায়নি। আবার চেষ্টা করুন।":"Login failed. Please try again.",
- "আবার চেষ্টা করুন":"Try again","লগআউট হয়েছে":"Logged out",
- "সঠিক দাম লিখুন":"Enter a valid price","সর্বনিম্ন দাম সর্বোচ্চ দামের চেয়ে বেশি হতে পারবে না":"Minimum price cannot exceed maximum price",
- "কার্ট খালি":"Your cart is empty","পেমেন্টের Transaction ID দিন":"Enter the payment Transaction ID",
- "মোবাইল নম্বর অথবা ইমেইল—যেকোনো একটি দিন":"Enter either a mobile number or email address",
- "সঠিক বাংলাদেশি মোবাইল নম্বর দিন":"Enter a valid Bangladesh mobile number",
- "Guest order-এ আপাতত ছবি সংযুক্ত করা যাবে না। ছবি ছাড়া অর্ডার করুন।":"Photos cannot be attached to guest orders yet. Please place the order without a photo.",
- "অর্ডার সফল! অর্ডার নম্বর #":"Order placed successfully! Order number #",
- "বিক্রেতা আবেদন জমা হয়েছে। অনুমোদনের অপেক্ষায় থাকুন।":"Seller application submitted. Please wait for approval.",
- "শুধু অনুমোদিত বিক্রেতা বা অ্যাডমিন পণ্য যোগ করতে পারবেন":"Only approved sellers or admins can add products",
- "পণ্য সরাসরি ওয়েবসাইটে প্রকাশ হয়েছে":"Product published on the website",
- "পণ্য অ্যাডমিন অনুমোদনের জন্য জমা হয়েছে":"Product submitted for admin approval",
- "অর্ডারের তথ্য লোড হচ্ছে...":"Loading order information...",
- "অর্ডারের আপডেট দেখতে Login করে অর্ডার করুন। Account ছাড়া করা Guest Order এই তালিকায় দেখাবে না.":"Log in to view order updates. Guest orders placed without an account will not appear here.",
- "আমার মেসেজ / অ্যাডমিনের সাথে যোগাযোগ":"My Messages / Contact Admin",
- "আপনার মেসেজ / মন্তব্য":"Your Message / Comment","আপনার প্রশ্ন বা প্রয়োজন লিখুন":"Write your question or request",
- "ছবি সংযুক্ত করুন (ঐচ্ছিক, সর্বোচ্চ 3MB)":"Attach an image (Optional, max 3MB)","মেসেজ পাঠান":"Send Message",
- "অর্ডার গ্রহণ করা হয়েছে":"Order received","সব পণ্য দেখুন":"View All Products",
- "স্টক:":"Stock:","দোকান সাময়িক বন্ধ। এখন অর্ডার নেওয়া হচ্ছে না।":"The store is temporarily closed. Orders are not being accepted.",
- "এই পণ্যটি বর্তমানে স্টকে নেই":"This product is currently out of stock",
- "স্টকের বেশি যোগ করা যাবে না":"Cannot add more than available stock",
- "অর্ডার বন্ধ":"Orders Closed","Admin Settings & Dashboard":"Admin Settings & Dashboard",
- "নাম খালি রাখা যাবে না":"Name cannot be empty","সেভ":"Save","সংরক্ষণ":"Save",
- "পণ্য আপডেট হয়েছে":"Product updated","পণ্য মুছে ফেলা হয়েছে":"Product deleted",
- "ক্যাটাগরির নাম লিখুন":"Enter a category name","নাম পরিবর্তন":"Rename",
- "ড্যাশবোর্ডের তথ্য লোড হয়নি।":"Dashboard information could not be loaded.",
- "মোট অর্ডার":"Total Orders","মোট বিক্রি":"Total Sales","পণ্য":"Products",
- "কাস্টমার":"Customers","Pending পণ্য":"Pending Products","Delivered":"Delivered",
- "সেটিংস সেভ হয়নি:":"Settings could not be saved:","সেটিংস সেভ হয়েছে":"Settings saved",
- "ডেলিভারি চার্জ 0–5000 টাকা দিন":"Enter a delivery charge between 0 and 5000",
- "Admin login এবং email OTP verification প্রয়োজন":"Admin login and email OTP verification required",
- "বাংলাদেশের ক্রেতা ও বিক্রেতাদের অনলাইন মার্কেটপ্লেস":"Online marketplace for buyers and sellers in Bangladesh"
+/* Amar Shopping multilingual selector — Google Translate provides full-page UI translation. */
+(function(){
+ const languages=["bn","en","ar","hi","ur","zh-CN","fr","es","de","ja"];
+ const selector=document.getElementById("siteLanguage");
+ if(!selector)return;
+ const saved=localStorage.getItem("amar_language")||"bn";
+ selector.value=languages.includes(saved)?saved:"bn";
+ let translateReady=false;
+ window.googleTranslateElementInit=function(){
+  try{
+   new google.translate.TranslateElement({
+    pageLanguage:"bn",
+    includedLanguages:languages.join(","),
+    autoDisplay:false,
+    layout:google.translate.TranslateElement.InlineLayout.SIMPLE
+   },"google_translate_element");
+   translateReady=true;
+   applySavedLanguage();
+  }catch(error){console.warn("Language service could not initialize",error)}
  };
- const enToBn=Object.fromEntries(Object.entries(translations).map(([bn,en])=>[en,bn]));
- const dict={bn:translations,en:enToBn};
- const originals=new WeakMap(),rendered=new WeakMap(),attrOriginals=new WeakMap(),attrRendered=new WeakMap();
- let language=localStorage.getItem("amar_language")==="en"?"en":"bn";
- const translateValue=(value)=>{
-   const trimmed=String(value??"").trim();
-   const translated=dict[language][trimmed];
-   if(!translated)return value;
-   const leading=String(value).match(/^\s*/)?.[0]||"",trailing=String(value).match(/\s*$/)?.[0]||"";
-   return leading+translated+trailing;
- };
- function translateNode(node){
-   if(node.nodeType===Node.TEXT_NODE){
-     const current=node.nodeValue;
-     if(rendered.has(node)&&rendered.get(node)!==current)originals.set(node,current);
-     if(!originals.has(node))originals.set(node,current);
-     const next=translateValue(originals.get(node));
-     if(next!==current){node.nodeValue=next;rendered.set(node,next)}else rendered.set(node,current);
-   } else if(node.nodeType===Node.ELEMENT_NODE){
-     for(const attr of ["placeholder","aria-label","title"]){
-       if(!node.hasAttribute(attr))continue;
-       const current=node.getAttribute(attr);
-       let byName=attrOriginals.get(node);if(!byName){byName={};attrOriginals.set(node,byName)}
-       let last=attrRendered.get(node);if(!last){last={};attrRendered.set(node,last)}
-       if(Object.prototype.hasOwnProperty.call(last,attr)&&last[attr]!==current)byName[attr]=current;
-       if(!Object.prototype.hasOwnProperty.call(byName,attr))byName[attr]=current;
-       const next=translateValue(byName[attr]);if(next!==current)node.setAttribute(attr,next);last[attr]=next;
-     }
-     for(const child of node.childNodes)translateNode(child);
-   }
+ function applySavedLanguage(){
+  if(!translateReady)return;
+  const combo=document.querySelector(".goog-te-combo");
+  if(!combo)return;
+  const lang=selector.value;
+  combo.value=lang==="bn"?"":lang;
+  combo.dispatchEvent(new Event("change",{bubbles:true}));
+  localStorage.setItem("amar_language",lang);
  }
- function applyLanguage(next){
-   language=next==="en"?"en":"bn";
-   localStorage.setItem("amar_language",language);
-   document.documentElement.lang=language;
-   document.documentElement.dir="ltr";
-   document.querySelectorAll("[data-set-language]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.setLanguage===language)));
-   translateNode(document.body);
- }
- document.querySelectorAll("[data-set-language]").forEach(b=>b.addEventListener("click",()=>applyLanguage(b.dataset.setLanguage)));
- const observer=new MutationObserver(records=>{
-   for(const record of records){
-     if(record.type==="childList")record.addedNodes.forEach(translateNode);
-     else if(record.type==="characterData")translateNode(record.target);
-     else if(record.type==="attributes")translateNode(record.target);
-   }
+ selector.addEventListener("change",function(){
+  localStorage.setItem("amar_language",selector.value);
+  if(!translateReady){selector.value="bn";alert("Language service is loading. Please try again in a moment.");return}
+  applySavedLanguage();
  });
- observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["placeholder","aria-label","title"]});
- applyLanguage(language);
+ const loadGoogleTranslate=()=>{
+  if(document.querySelector('script[data-google-translate]'))return;
+  const script=document.createElement("script");
+  script.dataset.googleTranslate="true";
+  script.src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+  script.async=true;
+  script.onerror=()=>console.warn("Google Translate could not be loaded. Check internet connection or browser restrictions.");
+  document.head.appendChild(script);
+ };
+ loadGoogleTranslate();
+ let attempts=0;
+ const readyCheck=setInterval(()=>{
+  attempts++;
+  const combo=document.querySelector(".goog-te-combo");
+  if(combo){translateReady=true;clearInterval(readyCheck);applySavedLanguage()}
+  if(attempts>=30)clearInterval(readyCheck);
+ },500);
 })();
 </script>
 </body></html>
