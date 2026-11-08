@@ -78,6 +78,63 @@ body{background:#f4f7f5;color:#15271f;letter-spacing:-.12px}
 @media(max-width:850px){.top{padding:10px 14px}.trust-strip{margin:10px 12px 0}.photo{height:160px}}
 @media(max-width:600px){.top{gap:7px}.brand{font-size:20px}.trust-strip{gap:8px 16px;padding:10px;font-size:11px;border-radius:12px}.hero{margin:12px 12px 18px;min-height:190px;border-radius:18px;padding:24px 19px}.hero h1{font-size:29px}.wrap{padding:0 12px}.photo{height:132px}.info{padding:11px}.info h3{font-size:13px;min-height:39px}.price{font-size:18px}.product{border-radius:14px}#products{gap:10px}.search input{min-width:0}.language-switch{order:4}}
 
+
+/* Full storefront redesign — visible layout refresh, existing IDs and app logic preserved */
+:root{--g:#087f5b;--d:#073f32;--bg:#f5f8f6;--mut:#64776e;--line:#e3ebe6;--accent:#f5aa35}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{background:#f5f8f6;color:#172c22;font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif}
+.bar{position:sticky;top:0;z-index:15;background:#fff;border-bottom:1px solid #e7eee9;box-shadow:0 8px 28px #0a382010}
+.top{max-width:1320px;min-height:78px;padding:12px 24px;gap:15px}
+.brand{font-size:25px;font-weight:900;letter-spacing:-1px;color:#075b43;white-space:nowrap}
+.search{flex:1;max-width:590px;display:flex;background:#f4f8f5;border:1px solid #dfe9e2;border-radius:14px;overflow:hidden}
+.search input{width:100%;min-width:0;border:0!important;background:transparent!important;padding:13px 16px!important;outline:none!important}
+.search button{border-radius:0!important;padding:0 22px;font-weight:800}
+.top>.light{border-radius:11px;padding:10px 13px;font-weight:750;white-space:nowrap}
+#cartBtn{background:#e9f6ee;border-color:#d4e9dc;color:#075b43}
+.trust-strip{max-width:1320px;margin:14px auto 0;padding:11px 20px;border:1px solid #e1eee5;border-radius:13px;background:#fff;display:flex;justify-content:center;gap:clamp(14px,4vw,54px);font-size:13px;color:#315e49}
+.hero{position:relative;isolation:isolate;overflow:hidden;max-width:1320px;min-height:350px;margin:22px auto 30px;padding:clamp(28px,5vw,62px);display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:25px;border-radius:28px;background:linear-gradient(115deg,#063e31 0%,#087f5b 58%,#12a777 100%);box-shadow:0 22px 55px #075b4328;color:white}
+.hero:before{content:"";position:absolute;z-index:-1;width:520px;height:520px;right:-130px;top:-250px;border:1px solid #ffffff22;border-radius:50%;box-shadow:0 0 0 45px #ffffff09,0 0 0 95px #ffffff08}
+.hero-copy{max-width:650px}
+.hero-kicker{display:inline-flex;padding:8px 13px;border:1px solid #ffffff35;border-radius:999px;background:#ffffff13;color:#e1fff0;font-size:11px;font-weight:850;letter-spacing:1.4px}
+.hero h1{max-width:660px;margin:19px 0 12px;font-size:clamp(34px,5vw,58px);font-weight:900;line-height:1.16;letter-spacing:-1.8px;color:#fff}
+.hero p{max-width:520px;margin:0;color:#e0f5e9;font-size:15px;line-height:1.9}
+.hero-benefits{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.hero-benefits span{padding:8px 11px;border-radius:9px;background:#ffffff15;border:1px solid #ffffff25;color:#f2fff7;font-size:12px;font-weight:700}
+.hero-shop-link{display:inline-flex;align-items:center;gap:20px;margin-top:24px;padding:13px 19px;border-radius:12px;background:#fff;color:#075b43;text-decoration:none;font-size:14px;font-weight:900;box-shadow:0 8px 22px #00291d30}
+.hero-shop-link span{font-size:20px;line-height:12px}
+.hero-art{position:relative;min-height:245px;display:grid;place-items:center}
+.hero-orbit{position:absolute;border:1px solid #ffffff35;border-radius:50%;transform:rotate(-20deg)}
+.orbit-one{width:280px;height:190px}.orbit-two{width:340px;height:235px;transform:rotate(28deg)}
+.hero-bag{position:relative;z-index:2;display:grid;place-items:center;width:150px;height:150px;border-radius:38px;background:linear-gradient(145deg,#fff,#e6f8ed);font-size:86px;box-shadow:0 24px 45px #00291d45;transform:rotate(-8deg)}
+.hero-box{position:absolute;z-index:3;right:12%;bottom:7%;display:grid;place-items:center;width:76px;height:76px;border-radius:22px;background:#ffc45b;font-size:39px;box-shadow:0 12px 25px #00291d35;transform:rotate(9deg)}
+.hero-spark{position:absolute;left:13%;top:9%;font-size:42px;color:#ffe39a}
+.hero-float-card{position:absolute;z-index:4;left:0;bottom:4%;display:flex;align-items:center;gap:10px;padding:12px 15px;border:1px solid #ffffff55;border-radius:14px;background:#ffffffed;color:#164a36;box-shadow:0 12px 28px #00291d25}
+.hero-float-card>span{font-size:27px}.hero-float-card b,.hero-float-card small{display:block}.hero-float-card b{font-size:12px}.hero-float-card small{margin-top:3px;font-size:10px;color:#648071}
+.wrap{max-width:1320px;margin:30px auto;padding:0 24px}
+.wrap>.row{align-items:end;margin-bottom:14px}.wrap>.row h2,.section h2{font-size:26px;font-weight:900;letter-spacing:-.7px;color:#173b2d}
+.category-heading{display:flex;align-items:end;justify-content:space-between;margin:24px 0 10px}
+.section-eyebrow{font-size:10px;letter-spacing:1.5px;font-weight:900;color:#07845d}
+.category-heading h3{margin:4px 0 0;font-size:21px;font-weight:900;color:#173b2d}
+.category-hint{font-size:12px;color:#718078}
+.filters{display:flex;gap:10px;overflow-x:auto;padding:7px 2px 14px;scrollbar-width:thin}
+.filters button{flex:0 0 auto;min-height:42px;padding:10px 18px;border:1px solid #e0eae3;border-radius:999px;background:#fff;color:#365547;font-size:13px;font-weight:750;box-shadow:0 3px 10px #163d2c08}
+.filters button.active{background:#075b43;border-color:#075b43;color:#fff;box-shadow:0 7px 18px #075b4330}
+#products{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:19px}
+.product{overflow:hidden;border:1px solid #e6ede8;border-radius:18px;background:#fff;box-shadow:0 5px 18px #173b2d08;transition:transform .2s,box-shadow .2s}
+.product:hover{transform:translateY(-5px);box-shadow:0 16px 34px #173b2d16}
+.photo{height:205px;background:linear-gradient(145deg,#f3f8f4,#e7f2eb);display:grid;place-items:center}
+.info{padding:15px}.info h3{font-size:14px;line-height:1.55;min-height:43px;color:#20392d}
+.price{font-size:21px;font-weight:900;color:#087f5b}
+.add,.buy{min-height:40px;border-radius:10px;font-weight:800}
+.add{background:#eaf6ee;color:#086447}.buy{background:#087f5b;color:#fff}
+.panel{border:1px solid #e4ece6;border-radius:18px;background:#fff;box-shadow:0 6px 24px #173b2d08}
+#contactSection{max-width:1270px;margin:32px auto!important;padding:25px!important}
+.foot{padding:35px 22px;background:linear-gradient(120deg,#062f26,#075b43);text-align:center}
+.modal .box{border-radius:20px;box-shadow:0 25px 80px #0003}
+.primary{border-radius:11px;background:linear-gradient(135deg,#087f5b,#0a9b6c)}
+@media(max-width:950px){.top{flex-wrap:wrap}.search{order:5;flex-basis:100%;max-width:none}.hero{margin:18px 14px 24px;grid-template-columns:1fr .7fr}.hero-art{transform:scale(.85)}#products{grid-template-columns:repeat(3,minmax(0,1fr))}.wrap{padding:0 16px}}
+@media(max-width:650px){.top{min-height:unset;padding:10px 12px;gap:8px}.brand{font-size:19px}.top>.light{font-size:11px;padding:8px}.search{order:6}.language-switch{order:4;margin-left:auto}.trust-strip{margin:9px 10px 0;gap:8px 15px;padding:10px;font-size:10px}.hero{min-height:unset;margin:13px 10px 22px;padding:25px 20px 20px;grid-template-columns:1fr;border-radius:20px;gap:4px}.hero h1{font-size:34px;letter-spacing:-1px;margin:15px 0 9px}.hero p{font-size:13px}.hero-benefits{gap:6px;margin-top:14px}.hero-benefits span{font-size:10px;padding:7px 8px}.hero-shop-link{margin-top:17px;padding:11px 15px}.hero-art{min-height:155px;transform:none}.hero-bag{width:105px;height:105px;border-radius:28px;font-size:61px}.orbit-one{width:210px;height:135px}.orbit-two{width:250px;height:165px}.hero-box{width:55px;height:55px;border-radius:16px;font-size:28px;right:17%;bottom:2%}.hero-float-card{left:8%;bottom:0;padding:8px 11px}.hero-float-card>span{font-size:21px}.hero-float-card b{font-size:10px}.hero-float-card small{font-size:9px}.hero-spark{left:18%;top:0;font-size:28px}.wrap{padding:0 11px;margin:22px auto}.wrap>.row h2{font-size:21px}.category-heading h3{font-size:18px}.category-hint{font-size:10px}.filters{gap:7px}#products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.photo{height:140px}.info{padding:10px}.info h3{font-size:12px;min-height:38px}.price{font-size:17px}.product{border-radius:14px}.add,.buy{font-size:11px;padding:9px 5px}.panel{border-radius:15px}#contactSection{margin:22px 10px!important;padding:16px!important}}
+
 </style>
 <script>
 /* Keep the retired GitHub Pages address pointed at the current live storefront. */
@@ -92,10 +149,25 @@ if (location.hostname === "ranaahmmed7262.github.io" && location.pathname.starts
 <div class="trust-strip" aria-label="Marketplace highlights"><span>🚚 বাংলাদেশজুড়ে কেনাকাটা</span><span>💵 ক্যাশ অন ডেলিভারি</span><span>🌐 বাংলা ও English</span></div>
 <div class="side-shade" id="sideShade"></div><aside class="side-drawer" id="sideDrawer" aria-label="Amar Shopping মেনু"><div class="drawer-head"><button type="button" class="drawer-close" id="drawerClose">✕</button><strong>🛍️ Amar Shopping</strong><small>আপনার বিশ্বস্ত অনলাইন শপিং মার্কেটপ্লেস</small></div><nav class="drawer-links"><button type="button" data-menu-action="home"><span>⌂</span>হোম পেজ</button><button type="button" data-menu-action="orders"><span>📦</span>আমার অর্ডার</button><button type="button" data-menu-action="support"><span>🎧</span>কাস্টমার সাপোর্ট</button><button type="button" id="adminMenuSettings" class="hidden" data-menu-action="admin-settings"><span>⚙️</span>Admin Settings & Dashboard</button><button type="button" data-menu-action="contact"><span>☎️</span>যোগাযোগের তথ্য</button><button type="button" data-menu-action="seller"><span>🏪</span>বিক্রেতা হোন</button><button type="button" data-menu-action="login"><span>👤</span>লগইন / অ্যাকাউন্ট</button></nav><div class="drawer-contact"><h4>যোগাযোগ করুন</h4><div id="drawerContact"><p class="muted">যোগাযোগের তথ্য লোড হচ্ছে...</p></div></div><div class="drawer-foot">© 2026 Amar Shopping · নিরাপদ কেনাকাটা</div></aside>
 
-<section class="hero" id="homeHero"><div><h1 id="heroTitle">আপনার পছন্দ, আপনার কেনাকাটা</h1><p id="heroSubtitle">সারা বাংলাদেশে অনলাইন শপিং • মূল্য বাংলাদেশি টাকা (৳)</p><a id="heroLink" class="light hidden" style="display:inline-block;margin-top:14px;text-decoration:none" target="_blank" rel="noopener">এখনই দেখুন</a></div><div class="emoji" id="heroEmoji" style="font-size:52px">📦 🛍️</div></section>
+<section class="hero" id="homeHero">
+ <div class="hero-copy">
+  <span class="hero-kicker">🛍️ AMAR SHOPPING · BANGLADESH</span>
+  <h1 id="heroTitle">আপনার পছন্দ, আপনার কেনাকাটা</h1>
+  <p id="heroSubtitle">সারা বাংলাদেশে অনলাইন শপিং • মূল্য বাংলাদেশি টাকা (৳)</p>
+  <div class="hero-benefits"><span>✓ সহজ অর্ডার</span><span>✓ ক্যাশ অন ডেলিভারি</span><span>✓ দেশজুড়ে ডেলিভারি</span></div>
+  <a id="heroLink" class="light hidden" style="display:inline-block;margin-top:14px;text-decoration:none" target="_blank" rel="noopener">এখনই দেখুন</a>
+  <a class="hero-shop-link" href="#products">এখনই কেনাকাটা করুন <span>→</span></a>
+ </div>
+ <div class="hero-art" aria-hidden="true">
+  <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+  <div class="hero-bag">🛍️</div><div class="hero-box">📦</div><div class="hero-spark">✦</div>
+  <div class="hero-float-card"><span>🇧🇩</span><div><b>বাংলাদেশজুড়ে</b><small>আপনার দোরগোড়ায়</small></div></div>
+  <div class="emoji" id="heroEmoji" style="display:none">📦 🛍️</div>
+ </div>
+</section>
 <main class="wrap">
 <div class="row"><h2>জনপ্রিয় পণ্য</h2><span class="muted">ক্যাশ অন ডেলিভারি • বাংলাদেশ</span></div>
-<div class="filters" id="filters"></div><section class="panel" aria-label="দামের মধ্যে পণ্য খুঁজুন" style="padding:14px;margin:12px 0"><div class="row" style="justify-content:flex-start"><b>দাম অনুযায়ী ফিল্টার</b><span class="muted">আপনার বাজেট (৳) বেছে নিন</span></div><div class="row" style="justify-content:flex-start;margin-top:10px"><label style="display:grid;gap:4px;font-size:13px">সর্বনিম্ন দাম<input id="minPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="যেমন 100" style="width:145px;max-width:42vw;padding:10px;border:1px solid var(--line);border-radius:8px"></label><label style="display:grid;gap:4px;font-size:13px">সর্বোচ্চ দাম<input id="maxPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="যেমন 2000" style="width:145px;max-width:42vw;padding:10px;border:1px solid var(--line);border-radius:8px"></label><button class="btn" type="button" id="applyPriceFilter" style="align-self:end">দাম দিয়ে খুঁজুন</button><button class="light" type="button" id="clearPriceFilter" style="align-self:end">রিসেট</button></div><small id="priceFilterHint" class="muted" style="display:block;margin-top:8px">সর্বনিম্ন ও সর্বোচ্চ দাম দিয়ে পণ্য খুঁজুন। চাইলে একটি ঘরও ব্যবহার করতে পারবেন।</small></section><div id="products" class="grid"><div class="empty">পণ্য লোড হচ্ছে...</div></div><section id="productDetail" class="section panel hidden" style="padding:20px"></section>
+<div class="category-heading"><div><span class="section-eyebrow">পছন্দের ক্যাটাগরি</span><h3>কী খুঁজছেন আজ?</h3></div><span class="category-hint">ক্যাটাগরি বেছে নিন</span></div><div class="filters" id="filters"></div><section class="panel" aria-label="দামের মধ্যে পণ্য খুঁজুন" style="padding:14px;margin:12px 0"><div class="row" style="justify-content:flex-start"><b>দাম অনুযায়ী ফিল্টার</b><span class="muted">আপনার বাজেট (৳) বেছে নিন</span></div><div class="row" style="justify-content:flex-start;margin-top:10px"><label style="display:grid;gap:4px;font-size:13px">সর্বনিম্ন দাম<input id="minPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="যেমন 100" style="width:145px;max-width:42vw;padding:10px;border:1px solid var(--line);border-radius:8px"></label><label style="display:grid;gap:4px;font-size:13px">সর্বোচ্চ দাম<input id="maxPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="যেমন 2000" style="width:145px;max-width:42vw;padding:10px;border:1px solid var(--line);border-radius:8px"></label><button class="btn" type="button" id="applyPriceFilter" style="align-self:end">দাম দিয়ে খুঁজুন</button><button class="light" type="button" id="clearPriceFilter" style="align-self:end">রিসেট</button></div><small id="priceFilterHint" class="muted" style="display:block;margin-top:8px">সর্বনিম্ন ও সর্বোচ্চ দাম দিয়ে পণ্য খুঁজুন। চাইলে একটি ঘরও ব্যবহার করতে পারবেন।</small></section><div id="products" class="grid"><div class="empty">পণ্য লোড হচ্ছে...</div></div><section id="productDetail" class="section panel hidden" style="padding:20px"></section>
 <section class="section panel" style="padding:18px"><div class="row"><div><h2>আপনি কি বিক্রেতা?</h2><p class="muted">Amar Shopping-এ দোকান খুলে পণ্য বিক্রি করুন।</p></div><button class="btn" id="sellerBtn">বিক্রেতা আবেদন</button></div></section>
 <section id="dashboard" class="section hidden">
 <div class="row"><h2>আমার অ্যাকাউন্ট</h2><button class="light" id="logoutBtn">লগআউট</button></div>
