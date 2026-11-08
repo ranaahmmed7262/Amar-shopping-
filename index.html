@@ -36,7 +36,49 @@
 #dashContent .admin-shell .admin-nav-note{font-size:12px;margin:8px 0 0;color:#d0e9df}
 #dashContent .admin-control-nav button[data-admin-jump="siteSettingsForm"]{background:#fff!important;color:#075b43!important;border-color:#fff!important}
 @media(max-width:600px){.admin-control-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-control-nav button{padding:9px 7px!important;font-size:12px}}
- .language-switch{display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;background:#f2f7f4;flex:0 0 auto}.language-switch button{border:0;background:transparent;color:var(--d);border-radius:7px;padding:7px 9px;font-size:13px;font-weight:800}.language-switch button[aria-pressed="true"]{background:var(--g);color:white;box-shadow:0 1px 4px #0002}@media(max-width:600px){.language-switch button{padding:7px 6px;font-size:12px}}</style>
+ .language-switch{display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;background:#f2f7f4;flex:0 0 auto}.language-switch button{border:0;background:transparent;color:var(--d);border-radius:7px;padding:7px 9px;font-size:13px;font-weight:800}.language-switch button[aria-pressed="true"]{background:var(--g);color:white;box-shadow:0 1px 4px #0002}@media(max-width:600px){.language-switch button{padding:7px 6px;font-size:12px}}
+/* 2026 premium marketplace refresh — original Amar Shopping visual identity */
+:root{--g:#087f5b;--d:#073f32;--bg:#f4f7f5;--mut:#687a72;--line:#e5ece7;--accent:#f4a62a}
+body{background:#f4f7f5;color:#15271f;letter-spacing:-.12px}
+.bar{background:rgba(255,255,255,.96);backdrop-filter:blur(14px);box-shadow:0 5px 22px #092c1d0d;border-bottom:1px solid #eaf0ec}
+.top{max-width:1280px;min-height:76px;gap:14px;padding:12px 20px}
+.brand{font-size:25px;letter-spacing:-.8px;color:#075c43}
+.search input{min-height:46px;background:#f7faf8;border:1px solid #dfe9e3;padding:12px 15px}
+.search input:focus{outline:3px solid #087f5b20;border-color:#087f5b}
+.search button,.btn{min-height:44px;border-radius:0 12px 12px 0;background:linear-gradient(135deg,#087f5b,#0a9b6c);box-shadow:0 5px 14px #087f5b20}
+.light{border-radius:12px;background:#f3f8f5;border-color:#e0eae4;transition:.18s}
+.light:hover{background:#e6f3eb;transform:translateY(-1px)}
+.trust-strip{max-width:1280px;margin:12px auto 0;padding:10px 18px;display:flex;align-items:center;justify-content:center;gap:clamp(12px,4vw,42px);flex-wrap:wrap;border:1px solid #e2eee7;border-radius:14px;background:linear-gradient(90deg,#fff,#f0f8f3);color:#315b49;font-size:13px;font-weight:750}
+.trust-strip span{display:inline-flex;align-items:center;gap:7px}
+.hero{max-width:1280px;margin:18px auto 24px;padding:clamp(25px,4vw,48px);min-height:250px;border-radius:24px;background:radial-gradient(circle at 82% 22%,#b7f2d044 0 10%,transparent 10.5%),radial-gradient(circle at 95% 90%,#d8ffe522 0 20%,transparent 20.5%),linear-gradient(112deg,#053c30 0%,#087f5b 55%,#18a876 100%);box-shadow:0 20px 48px #075b4324}
+.hero h1{font-size:clamp(30px,4.5vw,48px);line-height:1.16;letter-spacing:-1.3px}
+.hero p{font-size:15px;line-height:1.8}
+.wrap{max-width:1280px;margin:24px auto;padding:0 20px}
+.wrap>.row h2,.section h2{font-size:clamp(20px,2.5vw,26px);letter-spacing:-.55px;color:#173b2d}
+.filters{gap:9px;margin:17px 0}
+.filters button{padding:9px 16px;border-radius:999px;background:#fff;border-color:#e1eae4;font-weight:650;transition:.18s}
+.filters button:hover{border-color:#087f5b;color:#087f5b;transform:translateY(-1px)}
+.filters .active{background:#075b43;border-color:#075b43;box-shadow:0 5px 12px #075b4325}
+#products{gap:16px}
+.product{border:1px solid #e6ede8;border-radius:18px;box-shadow:0 5px 18px #173b2d08;transition:transform .2s,box-shadow .2s,border-color .2s}
+.product:hover{transform:translateY(-5px);border-color:#c9e4d4;box-shadow:0 14px 28px #173b2d14}
+.photo{height:190px;background:linear-gradient(145deg,#f1f7f3,#e7f2eb);font-size:56px}
+.info{padding:15px}
+.info h3{font-size:15px;line-height:1.5;min-height:44px;color:#1b3328}
+.price{font-size:21px;color:#087f5b}
+.add{border-radius:11px;padding:11px;background:#e9f6ee;color:#086447;transition:.18s}
+.add:hover{background:#087f5b;color:white}
+.buy{background:linear-gradient(135deg,#087f5b,#0a9b6c);color:#fff}
+.panel{border:1px solid #e5ede7;border-radius:18px;box-shadow:0 5px 20px #173b2d07}
+#contactSection{max-width:1240px;margin:25px auto!important;padding:24px!important}
+.foot{background:linear-gradient(120deg,#062f26,#075b43);margin-top:55px}
+.modal .box{border-radius:22px;box-shadow:0 25px 80px #0003}
+.primary{border-radius:12px;background:linear-gradient(135deg,#087f5b,#0a9b6c)}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}}
+@media(max-width:850px){.top{padding:10px 14px}.trust-strip{margin:10px 12px 0}.photo{height:160px}}
+@media(max-width:600px){.top{gap:7px}.brand{font-size:20px}.trust-strip{gap:8px 16px;padding:10px;font-size:11px;border-radius:12px}.hero{margin:12px 12px 18px;min-height:190px;border-radius:18px;padding:24px 19px}.hero h1{font-size:29px}.wrap{padding:0 12px}.photo{height:132px}.info{padding:11px}.info h3{font-size:13px;min-height:39px}.price{font-size:18px}.product{border-radius:14px}#products{gap:10px}.search input{min-width:0}.language-switch{order:4}}
+
+</style>
 <script>
 /* Keep the retired GitHub Pages address pointed at the current live storefront. */
 if (location.hostname === "ranaahmmed7262.github.io" && location.pathname.startsWith("/Amar-shopping-")) {
@@ -47,6 +89,7 @@ if (location.hostname === "ranaahmmed7262.github.io" && location.pathname.starts
 </head>
 <body>
 <header class="bar"><div class="top"><button type="button" class="menu-trigger" id="menuTrigger" aria-label="মেনু খুলুন" aria-expanded="false">☰</button><div class="brand">🛍️ Amar Shopping</div><div class="search"><input id="search" placeholder="পণ্য খুঁজুন..."><button id="searchBtn">খুঁজুন</button></div><div class="language-switch" role="group" aria-label="Choose language"><button type="button" data-set-language="bn" aria-pressed="true">বাংলা</button><button type="button" data-set-language="en" aria-pressed="false">English</button></div><button class="light" id="accountBtn">লগইন</button><button class="light" id="signupBtn">নতুন অ্যাকাউন্ট</button><button class="light" id="cartBtn">🛒 কার্ট <b id="cartCount">0</b></button></div></header>
+<div class="trust-strip" aria-label="Marketplace highlights"><span>🚚 বাংলাদেশজুড়ে কেনাকাটা</span><span>💵 ক্যাশ অন ডেলিভারি</span><span>🌐 বাংলা ও English</span></div>
 <div class="side-shade" id="sideShade"></div><aside class="side-drawer" id="sideDrawer" aria-label="Amar Shopping মেনু"><div class="drawer-head"><button type="button" class="drawer-close" id="drawerClose">✕</button><strong>🛍️ Amar Shopping</strong><small>আপনার বিশ্বস্ত অনলাইন শপিং মার্কেটপ্লেস</small></div><nav class="drawer-links"><button type="button" data-menu-action="home"><span>⌂</span>হোম পেজ</button><button type="button" data-menu-action="orders"><span>📦</span>আমার অর্ডার</button><button type="button" data-menu-action="support"><span>🎧</span>কাস্টমার সাপোর্ট</button><button type="button" id="adminMenuSettings" class="hidden" data-menu-action="admin-settings"><span>⚙️</span>Admin Settings & Dashboard</button><button type="button" data-menu-action="contact"><span>☎️</span>যোগাযোগের তথ্য</button><button type="button" data-menu-action="seller"><span>🏪</span>বিক্রেতা হোন</button><button type="button" data-menu-action="login"><span>👤</span>লগইন / অ্যাকাউন্ট</button></nav><div class="drawer-contact"><h4>যোগাযোগ করুন</h4><div id="drawerContact"><p class="muted">যোগাযোগের তথ্য লোড হচ্ছে...</p></div></div><div class="drawer-foot">© 2026 Amar Shopping · নিরাপদ কেনাকাটা</div></aside>
 
 <section class="hero" id="homeHero"><div><h1 id="heroTitle">আপনার পছন্দ, আপনার কেনাকাটা</h1><p id="heroSubtitle">সারা বাংলাদেশে অনলাইন শপিং • মূল্য বাংলাদেশি টাকা (৳)</p><a id="heroLink" class="light hidden" style="display:inline-block;margin-top:14px;text-decoration:none" target="_blank" rel="noopener">এখনই দেখুন</a></div><div class="emoji" id="heroEmoji" style="font-size:52px">📦 🛍️</div></section>
@@ -263,6 +306,8 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
 /* Amar Shopping bilingual storefront: UI labels switch instantly and preference persists. */
 (()=>{
  const translations={
+ "বাংলাদেশজুড়ে কেনাকাটা":"Shopping across Bangladesh","ক্যাশ অন ডেলিভারি":"Cash on Delivery","বাংলা ও English":"Bangla & English",
+ 
  "মেনু খুলুন":"Open menu","পণ্য খুঁজুন...":"Search products...","খুঁজুন":"Search",
  "লগইন":"Login","নতুন অ্যাকাউন্ট":"Create account","🛒 কার্ট":"🛒 Cart",
  "আপনার বিশ্বস্ত অনলাইন শপিং মার্কেটপ্লেস":"Your trusted online shopping marketplace",
