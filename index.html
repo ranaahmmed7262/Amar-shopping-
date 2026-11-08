@@ -136,16 +136,16 @@ body{background:#f5f8f6;color:#172c22;font-family:system-ui,-apple-system,"Noto 
 @media(max-width:650px){.top{min-height:unset;padding:10px 12px;gap:8px}.brand{font-size:19px}.top>.light{font-size:11px;padding:8px}.search{order:6}.language-switch{order:4;margin-left:auto}.trust-strip{margin:9px 10px 0;gap:8px 15px;padding:10px;font-size:10px}.hero{min-height:unset;margin:13px 10px 22px;padding:25px 20px 20px;grid-template-columns:1fr;border-radius:20px;gap:4px}.hero h1{font-size:34px;letter-spacing:-1px;margin:15px 0 9px}.hero p{font-size:13px}.hero-benefits{gap:6px;margin-top:14px}.hero-benefits span{font-size:10px;padding:7px 8px}.hero-shop-link{margin-top:17px;padding:11px 15px}.hero-art{min-height:155px;transform:none}.hero-bag{width:105px;height:105px;border-radius:28px;font-size:61px}.orbit-one{width:210px;height:135px}.orbit-two{width:250px;height:165px}.hero-box{width:55px;height:55px;border-radius:16px;font-size:28px;right:17%;bottom:2%}.hero-float-card{left:8%;bottom:0;padding:8px 11px}.hero-float-card>span{font-size:21px}.hero-float-card b{font-size:10px}.hero-float-card small{font-size:9px}.hero-spark{left:18%;top:0;font-size:28px}.wrap{padding:0 11px;margin:22px auto}.wrap>.row h2{font-size:21px}.category-heading h3{font-size:18px}.category-hint{font-size:10px}.filters{gap:7px}#products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.photo{height:140px}.info{padding:10px}.info h3{font-size:12px;min-height:38px}.price{font-size:17px}.product{border-radius:14px}.add,.buy{font-size:11px;padding:9px 5px}.panel{border-radius:15px}#contactSection{margin:22px 10px!important;padding:16px!important}}
 
 
-/* Clean international language selector in the header corner */
-.language-menu{position:relative;display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;padding:0 10px;height:42px;border:1px solid #dce8e0;border-radius:12px;background:#f6faf7;color:#075b43}
-.language-globe{font-size:16px;line-height:1}
-.language-menu select{max-width:118px;border:0;outline:0;background:transparent;color:#174a36;font:700 12px system-ui,sans-serif;cursor:pointer;padding:8px 0}
-.language-menu select option{color:#173b2d;background:#fff}
+/* One compact language selector; keep translation engine hidden but initialized */
+.language-menu{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;height:42px;padding:0 11px;border:1px solid #dce8e0;border-radius:12px;background:#f6faf7;color:#075b43}
+.language-globe{font-size:17px}
+.language-menu select{max-width:122px;border:0;outline:0;background:transparent;color:#174a36;font:750 12px system-ui,sans-serif;cursor:pointer;padding:8px 0}
+.language-menu select option{background:#fff;color:#173b2d}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-#google_translate_element{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;left:-9999px!important;top:-9999px!important}
+#google_translate_element{position:fixed!important;left:0!important;top:0!important;width:1px!important;height:1px!important;overflow:hidden!important;opacity:.01!important;pointer-events:none!important;z-index:-1!important}
 .goog-te-banner-frame,.skiptranslate iframe{display:none!important}
 body{top:0!important}
-@media(max-width:650px){.language-menu{height:36px;padding:0 7px;gap:4px}.language-menu select{max-width:92px;font-size:11px}.language-globe{font-size:14px}}
+@media(max-width:650px){.language-menu{height:36px;padding:0 7px;gap:4px}.language-menu select{max-width:96px;font-size:11px}.language-globe{font-size:14px}}
 </style>
 <script>
 /* Keep the retired GitHub Pages address pointed at the current live storefront. */
@@ -165,7 +165,7 @@ if (location.hostname === "ranaahmmed7262.github.io" && location.pathname.starts
   <option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option>
  </select>
 </div><div id="google_translate_element" aria-hidden="true"></div><button class="light" id="accountBtn">লগইন</button><button class="light" id="signupBtn">নতুন অ্যাকাউন্ট</button><button class="light" id="cartBtn">🛒 কার্ট <b id="cartCount">0</b></button></div></header>
-<div class="trust-strip" aria-label="Marketplace highlights"><span>🚚 বাংলাদেশজুড়ে কেনাকাটা</span><span>💵 ক্যাশ অন ডেলিভারি</span><span>🌐 বাংলা ও English</span></div>
+<div class="trust-strip" aria-label="Marketplace highlights"><span>🚚 বাংলাদেশজুড়ে কেনাকাটা</span><span>💵 ক্যাশ অন ডেলিভারি</span><span>🔒 নিরাপদ অনলাইন শপিং</span></div>
 <div class="side-shade" id="sideShade"></div><aside class="side-drawer" id="sideDrawer" aria-label="Amar Shopping মেনু"><div class="drawer-head"><button type="button" class="drawer-close" id="drawerClose">✕</button><strong>🛍️ Amar Shopping</strong><small>আপনার বিশ্বস্ত অনলাইন শপিং মার্কেটপ্লেস</small></div><nav class="drawer-links"><button type="button" data-menu-action="home"><span>⌂</span>হোম পেজ</button><button type="button" data-menu-action="orders"><span>📦</span>আমার অর্ডার</button><button type="button" data-menu-action="support"><span>🎧</span>কাস্টমার সাপোর্ট</button><button type="button" id="adminMenuSettings" class="hidden" data-menu-action="admin-settings"><span>⚙️</span>Admin Settings & Dashboard</button><button type="button" data-menu-action="contact"><span>☎️</span>যোগাযোগের তথ্য</button><button type="button" data-menu-action="seller"><span>🏪</span>বিক্রেতা হোন</button><button type="button" data-menu-action="login"><span>👤</span>লগইন / অ্যাকাউন্ট</button></nav><div class="drawer-contact"><h4>যোগাযোগ করুন</h4><div id="drawerContact"><p class="muted">যোগাযোগের তথ্য লোড হচ্ছে...</p></div></div><div class="drawer-foot">© 2026 Amar Shopping · নিরাপদ কেনাকাটা</div></aside>
 
 <section class="hero" id="homeHero">
@@ -394,56 +394,74 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
 </script>
 
 <script>
-/* Amar Shopping multilingual selector — Google Translate provides full-page UI translation. */
+/* Single international language selector with Google Translate widget integration. */
 (function(){
- const languages=["bn","en","ar","hi","ur","zh-CN","fr","es","de","ja"];
+ const supported=["bn","en","ar","hi","ur","zh-CN","fr","es","de","ja"];
  const selector=document.getElementById("siteLanguage");
  if(!selector)return;
  const saved=localStorage.getItem("amar_language")||"bn";
- selector.value=languages.includes(saved)?saved:"bn";
- let translateReady=false;
+ selector.value=supported.includes(saved)?saved:"bn";
+ let initialized=false,attempts=0;
+ function setPageDirection(code){
+  document.documentElement.lang=code;
+  document.documentElement.dir=(code==="ar"||code==="ur")?"rtl":"ltr";
+ }
+ function applyLanguage(code){
+  const combo=document.querySelector("#google_translate_element select.goog-te-combo");
+  if(!combo)return false;
+  if(code==="bn"){
+   document.cookie="googtrans=/bn/bn; path=/";
+   document.cookie="googtrans=/bn/bn; path=/; domain="+location.hostname;
+   localStorage.setItem("amar_language","bn");
+   setPageDirection("bn");
+   location.reload();
+   return true;
+  }
+  const option=[...combo.options].find(o=>o.value===code);
+  if(!option)return false;
+  combo.value=code;
+  combo.dispatchEvent(new Event("change",{bubbles:true}));
+  localStorage.setItem("amar_language",code);
+  setPageDirection(code);
+  return true;
+ }
  window.googleTranslateElementInit=function(){
   try{
    new google.translate.TranslateElement({
     pageLanguage:"bn",
-    includedLanguages:languages.join(","),
-    autoDisplay:false,
-    layout:google.translate.TranslateElement.InlineLayout.SIMPLE
+    includedLanguages:supported.join(","),
+    autoDisplay:false
    },"google_translate_element");
-   translateReady=true;
-   applySavedLanguage();
-  }catch(error){console.warn("Language service could not initialize",error)}
+  }catch(e){console.error("Translation widget initialization failed",e)}
  };
- function applySavedLanguage(){
-  if(!translateReady)return;
-  const combo=document.querySelector(".goog-te-combo");
-  if(!combo)return;
-  const lang=selector.value;
-  combo.value=lang==="bn"?"":lang;
-  combo.dispatchEvent(new Event("change",{bubbles:true}));
-  localStorage.setItem("amar_language",lang);
- }
  selector.addEventListener("change",function(){
-  localStorage.setItem("amar_language",selector.value);
-  if(!translateReady){selector.value="bn";alert("Language service is loading. Please try again in a moment.");return}
-  applySavedLanguage();
+  const code=selector.value;
+  if(!supported.includes(code))return;
+  localStorage.setItem("amar_language",code);
+  setPageDirection(code);
+  if(!applyLanguage(code)){
+   selector.value=localStorage.getItem("amar_language")||"bn";
+   alert("অনুবাদ সার্ভিস এখনো প্রস্তুত নয়। কিছুক্ষণ পর আবার চেষ্টা করুন।");
+  }
  });
- const loadGoogleTranslate=()=>{
-  if(document.querySelector('script[data-google-translate]'))return;
-  const script=document.createElement("script");
-  script.dataset.googleTranslate="true";
-  script.src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-  script.async=true;
-  script.onerror=()=>console.warn("Google Translate could not be loaded. Check internet connection or browser restrictions.");
-  document.head.appendChild(script);
- };
- loadGoogleTranslate();
- let attempts=0;
- const readyCheck=setInterval(()=>{
+ const loader=document.createElement("script");
+ loader.src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+ loader.async=true;
+ loader.onerror=function(){console.warn("Google Translate script failed to load")};
+ document.head.appendChild(loader);
+ const timer=setInterval(function(){
   attempts++;
-  const combo=document.querySelector(".goog-te-combo");
-  if(combo){translateReady=true;clearInterval(readyCheck);applySavedLanguage()}
-  if(attempts>=30)clearInterval(readyCheck);
+  const combo=document.querySelector("#google_translate_element select.goog-te-combo");
+  if(combo){
+   initialized=true;
+   clearInterval(timer);
+   const code=selector.value;
+   if(code!=="bn"){
+    const option=[...combo.options].find(o=>o.value===code);
+    if(option){combo.value=code;combo.dispatchEvent(new Event("change",{bubbles:true}));setPageDirection(code)}
+   }else setPageDirection("bn");
+  }
+  if(attempts>=40)clearInterval(timer);
  },500);
 })();
 </script>
