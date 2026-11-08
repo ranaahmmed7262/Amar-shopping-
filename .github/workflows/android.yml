@@ -8,6 +8,7 @@ on:
       - "index.html"
       - "package.json"
       - "capacitor.config.json"
+      - ".github/workflows/android.yml"
 
 permissions:
   contents: read
