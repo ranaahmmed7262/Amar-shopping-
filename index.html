@@ -495,21 +495,6 @@ dashboardGroups.forEach((group,index)=>{
  group.forEach(node=>panel.appendChild(node));el.appendChild(panel);
 });
 const adminPanels=[...el.querySelectorAll(".admin-panel")];
-/* Keep all admin categories visible by default; do not hide navigation behind the hamburger. */
-const adminNav=adminShell.querySelector(".admin-control-nav");
-if(adminNav){
- adminNav.style.setProperty("display","flex","important");
- adminNav.style.setProperty("position","static","important");
- adminNav.style.setProperty("width","100%","important");
- adminNav.style.setProperty("max-height","none","important");
- adminNav.style.setProperty("overflow","visible","important");
- adminNav.style.setProperty("box-shadow","none","important");
- adminNav.style.setProperty("margin-top","14px","important");
- adminNav.style.setProperty("border","0","important");
- adminNav.style.setProperty("padding","0","important");
-}
-adminShell.classList.add("menu-open");
-
 const adminHome=document.createElement("section");
 adminHome.className="admin-panel admin-home-panel";
 adminHome.id="adminPanel-adminHome";
@@ -519,8 +504,8 @@ function showAdminPanel(targetId){
  const target=el.querySelector("#"+CSS.escape(targetId));
  const panel=target?.closest(".admin-panel");
  if(!panel){toast("এই বিভাগটি পাওয়া যায়নি",true);return}
- adminPanels.forEach(item=>{item.hidden=false});
- adminHome.hidden=true;
+ adminPanels.forEach(item=>{item.hidden=item!==panel});
+ adminHome.hidden=targetId!=="adminOverview";
  el.querySelectorAll("[data-admin-jump]").forEach(button=>button.classList.toggle("active",button.dataset.adminJump===targetId));
  panel.scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -536,9 +521,8 @@ el.querySelectorAll("[data-admin-jump]").forEach(button=>button.onclick=()=>{
  menuToggle.setAttribute("aria-expanded","false");
  menuToggle.setAttribute("aria-label","অ্যাডমিন মেনু খুলুন");
 });
-/* Keep every management section visible in the dashboard. */
-adminPanels.forEach(item=>item.hidden=false);
-adminHome.hidden=true;
+adminPanels.forEach(item=>item.hidden=true);
+adminHome.hidden=false;
 el.querySelectorAll("[data-admin-jump]").forEach(button=>button.classList.remove("active"));el.querySelector("#adminNewProduct").onclick=()=>{document.querySelector("#productForm button.primary").textContent="পণ্য প্রকাশ করুন";modal("productModal")};db.from("products").select("id,name,price_bdt,users(name)").eq("status","pending").then(({data})=>{el.querySelector("#pendingProducts").innerHTML=(data||[]).map(p=>'<div class="adminitem">'+esc(p.name)+' '+money(p.price_bdt)+' <button class="light" data-prod="'+p.id+'|1">অনুমোদন</button> <button class="light" data-prod="'+p.id+'|0">বাতিল</button></div>').join("")||"কোনো pending পণ্য নেই";el.querySelectorAll("[data-prod]").forEach(b=>b.onclick=async()=>{let [id,yes]=b.dataset.prod.split("|");let {error}=await db.rpc("admin_review_product",{p_product_id:Number(id),p_approve:yes==="1"});if(error)toast(error.message,true);else{toast("পণ্যের স্ট্যাটাস আপডেট হয়েছে");showTab("admin");loadProducts()}})});db.from("seller_applications").select("id,shop_name,address,users(name,email)").eq("status","pending").then(({data})=>{el.querySelector("#pendingSellers").innerHTML=(data||[]).map(s=>'<div class="adminitem"><b>'+esc(s.shop_name)+'</b> — '+esc(s.address)+' <button class="light" data-seller="'+s.id+'|1">অনুমোদন</button> <button class="light" data-seller="'+s.id+'|0">বাতিল</button></div>').join("")||"কোনো pending আবেদন নেই";el.querySelectorAll("[data-seller]").forEach(b=>b.onclick=async()=>{let [id,yes]=b.dataset.seller.split("|");let {error}=await db.rpc("admin_review_seller_application",{p_application_id:Number(id),p_approve:yes==="1"});if(error)toast(error.message,true);else{toast("বিক্রেতার আবেদন আপডেট হয়েছে");showTab("admin")}})});db.from("orders").select("id,total_bdt,status,payment_method,payment_status,created_at,recipient_name,recipient_phone,recipient_email,district,delivery_address,customer_note,attachment_path,order_items(quantity,unit_price_bdt,products(name))").order("created_at",{ascending:false}).limit(200).then(async({data,error})=>{const box=el.querySelector("#allOrders");if(error){box.textContent=error.message;return}box.innerHTML=(data||[]).map(o=>'<div class="adminitem"><b>অর্ডার #'+o.id+' — '+money(o.total_bdt)+'</b><br><b>ক্রেতা:</b> '+esc(o.recipient_name||"")+' • '+esc(o.recipient_phone||"মোবাইল নেই")+' • '+esc(o.recipient_email||"ইমেইল নেই")+'<br><b>ঠিকানা:</b> '+esc(o.district||"")+' • '+esc(o.delivery_address||"")+'<br><b>পণ্য:</b> '+(o.order_items||[]).map(i=>esc(i.products?.name||"পণ্য")+" × "+i.quantity).join(", ")+'<br><b>মন্তব্য:</b> '+esc(o.customer_note||"নেই")+'<br><span data-order-image="'+esc(o.attachment_path||"")+'"></span><br><b>পেমেন্ট:</b> '+esc(o.payment_method)+' • '+esc(o.payment_status||"unpaid")+'<select data-payment="'+o.id+'"><option value="pending">Payment Pending</option><option value="paid">Paid / Verified</option><option value="failed">Failed</option></select><button class="light" data-savepayment="'+o.id+'">Save Payment</button><br><b>স্ট্যাটাস:</b> '+esc(o.status)+' <select data-order="'+o.id+'"><option value="placed">Placed</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select><button class="light" data-saveorder="'+o.id+'">আপডেট</button></div>').join("")||"অর্ডার নেই";(data||[]).forEach(o=>{const ps=box.querySelector('[data-payment="'+o.id+'"]'),os=box.querySelector('[data-order="'+o.id+'"]');if(ps)ps.value=o.payment_status||"pending";if(os)os.value=o.status||"placed"});for(const span of box.querySelectorAll("[data-order-image]")){const path=span.dataset.orderImage;if(path){const url=await signedAttachment(path);span.innerHTML=url?'<a href="'+esc(url)+'" target="_blank" rel="noopener">ক্রেতার সংযুক্ত পণ্য ছবি দেখুন</a>':'ছবি পাওয়া যায়নি'}}box.querySelectorAll("[data-saveorder]").forEach(btn=>btn.onclick=async()=>{let id=btn.dataset.saveorder,status=box.querySelector('[data-order="'+id+'"]').value;let {error}=await db.from("orders").update({status}).eq("id",id);if(error)toast(error.message,true);else toast("অর্ডার আপডেট হয়েছে")});box.querySelectorAll("[data-savepayment]").forEach(btn=>btn.onclick=async()=>{const id=Number(btn.dataset.savepayment),payment_status=box.querySelector('[data-payment="'+id+'"]').value;const {error}=await db.from("orders").update({payment_status}).eq("id",id);if(error)toast("Payment update হয়নি: "+error.message,true);else toast("Payment status আপডেট হয়েছে")})});
 async function loadCustomers(){
  const box=el.querySelector("#customerList"); if(!box)return;
