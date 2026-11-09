@@ -35,3 +35,7 @@ This PR targets the protection branch, whose current workflow does not yet inclu
 - The dashboard mount checks the Admin profile and the OTP verification result for the current authenticated session. A small session-scoped flag mirrors the existing server OTP status so an already-verified Admin session can mount after page reload; it does not bypass OTP or change RLS.
 - No existing Admin control handlers were removed or rewritten.
 - Regression tests still required: Admin login/OTP (fresh and reloaded session), all existing Admin tabs and save buttons, product/seller/customer/settings workflows, current order filters/detail/status/payment/history, customer order history, cart/checkout/payment, plus the new dashboard flows.
+
+
+## CI rerun
+The protection branch workflow now listens for pushes to `feature/**` so follow-up dashboard commits automatically run the same regression guard. This changes CI triggers only; it does not affect storefront runtime behavior.
