@@ -22,3 +22,7 @@ The SQL file is a review-only migration draft and has NOT been applied. Applying
 
 ## Verification
 The source guard checks the new module syntax and protected anchors. Browser journeys, live Realtime, actual status save, customer chat delivery and Android behavior remain NOT VERIFIED pending safe staging.
+
+
+## CI trigger note
+This PR targets the protection branch, whose current workflow does not yet include this PR target in its pull_request branch filter. The feature branch workflow includes a feature/** push trigger. A documentation-only commit is used to request that branch-push CI run; this does not alter storefront runtime behavior.
