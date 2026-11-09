@@ -495,6 +495,21 @@ dashboardGroups.forEach((group,index)=>{
  group.forEach(node=>panel.appendChild(node));el.appendChild(panel);
 });
 const adminPanels=[...el.querySelectorAll(".admin-panel")];
+/* Keep all admin categories visible by default; do not hide navigation behind the hamburger. */
+const adminNav=adminShell.querySelector(".admin-control-nav");
+if(adminNav){
+ adminNav.style.setProperty("display","flex","important");
+ adminNav.style.setProperty("position","static","important");
+ adminNav.style.setProperty("width","100%","important");
+ adminNav.style.setProperty("max-height","none","important");
+ adminNav.style.setProperty("overflow","visible","important");
+ adminNav.style.setProperty("box-shadow","none","important");
+ adminNav.style.setProperty("margin-top","14px","important");
+ adminNav.style.setProperty("border","0","important");
+ adminNav.style.setProperty("padding","0","important");
+}
+adminShell.classList.add("menu-open");
+
 const adminHome=document.createElement("section");
 adminHome.className="admin-panel admin-home-panel";
 adminHome.id="adminPanel-adminHome";
