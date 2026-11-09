@@ -11,6 +11,7 @@ if (!fs.existsSync(htmlPath)) {
 const html = fs.readFileSync(htmlPath, "utf8");
 const requiredAnchors = [
   "adminOtpVerifiedUserId",
+  "__amarAdminOtpSessionVerifiedUserId",
   "privateLogo",
   "admin-reveal",
   "email-otp/status",
