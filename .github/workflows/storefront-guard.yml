@@ -1,0 +1,28 @@
+name: Amar Shopping storefront protection
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - main
+      - "protection/**"
+
+permissions:
+  contents: read
+
+jobs:
+  storefront-guard:
+    name: storefront-guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check protected storefront features and JavaScript syntax
+        run: node scripts/guard-storefront.mjs
