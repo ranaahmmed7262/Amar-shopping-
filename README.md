@@ -2,8 +2,11 @@
 
 Bangladesh-focused Bengali-first multi-vendor marketplace using BDT (৳), Supabase Auth, database and Storage.
 
-## Live preview
-https://ranaahmmed7262.github.io/Amar-shopping-/
+## Live website
+https://amar-shopping-bd-live.onrender.com/
+
+## Source repository
+https://github.com/ranaahmmed7262/Amar-shopping-
 
 ## Implemented
 - Bengali storefront with product search and category filters
@@ -20,7 +23,7 @@ https://ranaahmmed7262.github.io/Amar-shopping-/
 - bKash/Nagad are manual payment choices only. No live merchant gateway or payment callback is connected.
 - Courier integration, SMS/OTP, seller payouts and a custom domain are not configured.
 - Google indexing is not guaranteed; verify the site in Google Search Console and submit the sitemap.
-- GitHub Pages hosts a static frontend. Keep Supabase service-role/secret keys out of all browser code; only the publishable key belongs in the frontend.
+- Keep Supabase service-role/secret keys out of all browser code; only the publishable key belongs in the frontend.
 
 ## Deployment
-A push to `main` triggers `.github/workflows/pages.yml` and deploys to GitHub Pages. Supabase schema, RLS, Storage and RPC are configured separately in the connected Supabase project.
+The live storefront is deployed on Render from this repository. Supabase schema, RLS, Storage and RPC are configured separately in the connected Supabase project.
