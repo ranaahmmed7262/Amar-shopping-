@@ -20,7 +20,7 @@
 /* Amar Shopping private admin control center */
 .admin-shell{background:linear-gradient(135deg,#063f34,#087f5b);color:#fff;border-radius:18px;padding:18px;margin-bottom:18px;box-shadow:0 10px 28px #063f3422}.admin-shell .muted{color:#d0e9df}.admin-shell button{border:1px solid #ffffff44!important;background:#ffffff16!important;color:#fff!important}.admin-shell button:hover{background:#ffffff2b!important}#dashContent h4{margin:22px 0 10px;padding-bottom:8px;border-bottom:1px solid #dce9e2;color:#075b43}#dashContent .adminitem{background:#fff;border:1px solid #e0ebe5;border-radius:13px;padding:13px;margin:9px 0;box-shadow:0 3px 12px #153d2c0a}#dashContent [data-admin-jump]{font-size:12px;border-radius:999px;padding:8px 12px}
 
-#footerAdminLogin{display:inline-flex!important}#footerAdminLogin:hover{opacity:1!important;background:#ffffff12!important}footer.foot{padding-bottom:26px}
+#footerAdminLogin{display:none!important}body.admin-reveal #footerAdminLogin{display:inline-flex!important}#footerAdminLogin:hover{opacity:1!important;background:#ffffff12!important}footer.foot{padding-bottom:26px}
 
 /* Professional storefront navigation and campaign banner */
 .menu-trigger{width:42px;height:42px;flex:0 0 42px;border:1px solid var(--line);border-radius:12px;background:#f1f7f3;color:var(--d);font-size:23px;font-weight:900;display:grid;place-items:center}.side-shade{position:fixed;inset:0;background:#071b15a8;z-index:19;opacity:0;pointer-events:none;transition:opacity .22s}.side-drawer{position:fixed;z-index:20;inset:0 auto 0 0;width:min(340px,88vw);background:#fff;box-shadow:12px 0 40px #0002;transform:translateX(-105%);transition:transform .25s;display:flex;flex-direction:column;overflow:auto}.menu-open .side-shade{opacity:1;pointer-events:auto}.menu-open .side-drawer{transform:translateX(0)}.drawer-head{padding:22px;background:linear-gradient(135deg,#064e3b,#0b9870);color:white}.drawer-head strong{font-size:21px}.drawer-head small{display:block;color:#d7f5e8;margin-top:5px}.drawer-close{float:right;background:#ffffff20;border:1px solid #ffffff55;color:white;border-radius:9px;padding:6px 11px}.drawer-links{padding:12px}.drawer-links button{width:100%;text-align:left;background:white;border:0;border-radius:10px;padding:13px 12px;color:#183b2e;font-weight:700;display:flex;gap:12px;align-items:center}.drawer-links button:hover{background:#edf7f1}.drawer-links button span{width:26px;text-align:center;font-size:18px}.drawer-contact{margin:4px 16px 18px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#f8fbf9}.drawer-contact h4{margin:0 0 8px;color:var(--d)}.drawer-contact p{font-size:13px;overflow-wrap:anywhere;margin:6px 0}.drawer-foot{margin-top:auto;padding:16px;color:var(--mut);font-size:12px;border-top:1px solid var(--line)}
@@ -488,15 +488,7 @@ $("verifyAdminEmailOtp").onclick=async()=>{
  finally{b.disabled=false;b.textContent="OTP যাচাই করে প্রবেশ করুন"}
 };
 const privateLogo=document.querySelector(".brand");let privateLogoTaps=0,privateLogoReset;if(privateLogo){privateLogo.style.cursor="pointer";privateLogo.addEventListener("click",()=>{privateLogoTaps++;clearTimeout(privateLogoReset);privateLogoReset=setTimeout(()=>privateLogoTaps=0,2500);if(privateLogoTaps>=5){document.body.classList.add("admin-reveal");$("footerAdminLogin").textContent="Private Admin";toast("Private Admin login unlocked");privateLogoTaps=0;}})}$("footerAdminLogin").onclick=()=>{adminLoginMode=true;adminOtpPending=false;setAuthMode("login");$("signupTab").classList.add("hidden");$("authTitle").textContent="Secure Admin Login";$("authMsg").textContent="Admin Email + Password দিন। এরপর email OTP verify করতে হবে।";setAdminOtpMode(false);$("adminOtpPanel").classList.add("hidden");$("authSubmit").classList.remove("hidden");modal("authModal")};
-/* Support the dedicated /#admin-login entry point used by the admin portal. */
-function openAdminLoginFromHash(){
- if(location.hash.toLowerCase()!=="#admin-login")return;
- document.body.classList.add("admin-reveal");
- $("footerAdminLogin").textContent="Private Admin";
- $("footerAdminLogin").click();
-}
-window.addEventListener("hashchange",openAdminLoginFromHash);
-if(location.hash.toLowerCase()==="#admin-login")setTimeout(openAdminLoginFromHash,0);
+/* Admin entry is available only after the five-tap private logo gesture. URL hashes cannot reveal or open it. */
 $("accountBtn").onclick=()=>{adminLoginMode=false;$("adminOtpModeBtn").classList.add("hidden");$("adminOtpModeBtn").style.setProperty("display","none","important");$("signupTab").classList.remove("hidden");if(session){$("dashboard").scrollIntoView({behavior:"smooth"})}else{setAuthMode("login");modal("authModal")}};$("signupBtn").onclick=()=>{adminLoginMode=false;$("adminOtpModeBtn").classList.add("hidden");$("adminOtpModeBtn").style.setProperty("display","none","important");setAuthMode("signup");modal("authModal")};
 $("logoutBtn").onclick=async()=>{await db.auth.signOut();session=null;profile=null;await refreshSession();toast("লগআউট হয়েছে")};
 $("cartBtn").onclick=()=>{drawCart();modal("cartModal")};
