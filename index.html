@@ -623,7 +623,8 @@ if(window.__amarAdminHistoryChannel)db.removeChannel(window.__amarAdminHistoryCh
 window.__amarAdminHistoryChannel=db.channel("amar-admin-history-live").on("postgres_changes",{event:"INSERT",schema:"public",table:"order_status_history"},()=>loadAdminOrders()).subscribe();
 if(window.__amarAdminOrdersTimer)clearInterval(window.__amarAdminOrdersTimer);
 window.__amarAdminOrdersTimer=setInterval(()=>{if(!document.hidden)loadAdminOrders()},30000);
-if(window.mountAmarShoppingOrderDashboard)window.mountAmarShoppingOrderDashboard({db,profile,session,el,labels:ORDER_STATUS_LABELS,money,toast,loadAdminOrders,loadChatMessages,sendChatMessage,signedAttachment,adminOtpVerified:!!(session?.user?.id&&adminOtpVerifiedUserId===session.user.id)});
+const mountDedicatedOrderDashboard=()=>{if(window.mountAmarShoppingOrderDashboard)window.mountAmarShoppingOrderDashboard({db,profile,session,el,labels:ORDER_STATUS_LABELS,money,toast,loadAdminOrders,loadChatMessages,sendChatMessage,signedAttachment,adminOtpVerified:!!(session?.user?.id&&adminOtpVerifiedUserId===session.user.id)});};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mountDedicatedOrderDashboard,{once:true});else mountDedicatedOrderDashboard();
 
 
 async function loadCustomers(){
