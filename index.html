@@ -413,6 +413,7 @@ async function refreshSession(){
  if(session&&profile?.role==="admin"){
   try{let st=await adminOtpRequest("/admin/email-otp/status",session.access_token);if(!st.verified){try{await adminOtpRequest("/admin/email-otp/verify",session.access_token,"POST");st=await adminOtpRequest("/admin/email-otp/status",session.access_token)}catch(_){}}adminEmailVerified=st.verified===true||adminOtpVerifiedUserId===session.user.id}catch(e){console.warn("Admin email OTP status:",e.message);adminEmailVerified=adminOtpVerifiedUserId===session.user.id}
  }
+ window.__amarAdminOtpSessionVerifiedUserId=adminEmailVerified&&session?.user?.id?session.user.id:null;
  $("accountBtn").textContent=session?(profile?.name||"অ্যাকাউন্ট যাচাই হচ্ছে"):"লগইন";
  $("dashboard").classList.toggle("hidden",!session||!profile||(profile.role==="admin"&&!adminEmailVerified));
  $("adminTab").classList.toggle("hidden",profile?.role!=="admin"||!adminEmailVerified);
@@ -612,6 +613,7 @@ async function loadAdminOrders(){
   box.querySelectorAll("[data-history]").forEach(btn=>btn.onclick=async()=>{const id=Number(btn.dataset.history),target=box.querySelector("#orderHistory"+id);target.textContent="History loading…";const {data,error}=await db.from("order_status_history").select("status,note,courier_name,tracking_number,created_at").eq("order_id",id).order("created_at",{ascending:true});target.innerHTML=error?'<span class="bad">'+esc(error.message)+'</span>':(data||[]).map(h=>'<p>• <b>'+esc(ORDER_STATUS_LABELS[h.status]||h.status)+'</b> — '+esc(h.note||"")+' <small>'+new Date(h.created_at).toLocaleString("bn-BD")+'</small>'+(h.courier_name?' • '+esc(h.courier_name):'')+(h.tracking_number?' • '+esc(h.tracking_number):'')+'</p>').join("")||"কোনো history নেই"});
  };
  await render();
+ if(window.refreshAmarShoppingOrderDashboard)await window.refreshAmarShoppingOrderDashboard();
  ["#orderSearch","#orderStatusFilter","#orderDateFrom","#orderDateTo"].forEach(sel=>{const node=el.querySelector(sel);if(node)node.oninput=render});
 }
 loadAdminOrders();
@@ -622,6 +624,8 @@ if(window.__amarAdminHistoryChannel)db.removeChannel(window.__amarAdminHistoryCh
 window.__amarAdminHistoryChannel=db.channel("amar-admin-history-live").on("postgres_changes",{event:"INSERT",schema:"public",table:"order_status_history"},()=>loadAdminOrders()).subscribe();
 if(window.__amarAdminOrdersTimer)clearInterval(window.__amarAdminOrdersTimer);
 window.__amarAdminOrdersTimer=setInterval(()=>{if(!document.hidden)loadAdminOrders()},30000);
+const mountDedicatedOrderDashboard=()=>{if(window.mountAmarShoppingOrderDashboard)window.mountAmarShoppingOrderDashboard({db,profile,session,el,labels:ORDER_STATUS_LABELS,money,toast,loadAdminOrders,loadChatMessages,sendChatMessage,signedAttachment,adminOtpVerified:!!(session?.user?.id&&(adminOtpVerifiedUserId===session.user.id||window.__amarAdminOtpSessionVerifiedUserId===session.user.id))});};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mountDedicatedOrderDashboard,{once:true});else mountDedicatedOrderDashboard();
 
 
 async function loadCustomers(){
@@ -801,6 +805,7 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
   if(attempts>=40)clearInterval(timer);
  },500);
 })();</script>
+<script src="./order-management-dashboard.js" defer></script>
 <!-- Amar Shopping deployment sync -->
 <!-- Trigger Render auto-deploy for admin login hash fix -->
 
