@@ -444,7 +444,7 @@ $("resendAdminEmailOtp").onclick=async()=>{
  catch(error){$("authMsg").textContent="OTP পাঠানো যায়নি: "+(error?.message||"আবার চেষ্টা করুন।");if(Date.now()>=adminOtpCooldownUntil){b.disabled=false;b.textContent="আবার OTP পাঠান"}}
 };
 $("verifyAdminEmailOtp").onclick=async()=>{
- const email=String(new FormData($("authForm")).get("email")||"").trim().toLowerCase(),token=String($("adminEmailOtp").value||"").trim();if(!email||!/^\\S+@\\S+\\.\\S+$/.test(email)){$("authMsg").textContent="সঠিক Admin email লিখুন।";return}if(!/^[0-9]{6}$/.test(token)){$("authMsg").textContent="ইমেইলে পাওয়া ৬ সংখ্যার OTP লিখুন।";return}
+ const email=String(new FormData($("authForm")).get("email")||"").trim().toLowerCase(),token=String($("adminEmailOtp").value||"").trim();if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){$("authMsg").textContent="সঠিক Admin email লিখুন।";return}if(!/^[0-9]{6}$/.test(token)){$("authMsg").textContent="ইমেইলে পাওয়া ৬ সংখ্যার OTP লিখুন।";return}
  const b=$("verifyAdminEmailOtp");b.disabled=true;b.textContent="যাচাই হচ্ছে...";
  try{
   const {data,error}=await db.auth.verifyOtp({email,token,type:"email"});if(error)throw error;if(!data?.session?.access_token)throw new Error("OTP session পাওয়া যায়নি।");
