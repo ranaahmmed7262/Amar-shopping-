@@ -19,6 +19,10 @@ const requiredAnchors = [
   "loadAdminOrders",
   "All-in-One",
   "Master Control",
+  "mountAmarShoppingOrderDashboard",
+  "refreshAmarShoppingOrderDashboard",
+  "amarDedicatedOrderDashboard",
+  "order-management-dashboard.js",
 ];
 
 let failed = false;
@@ -29,6 +33,19 @@ for (const anchor of requiredAnchors) {
   } else {
     console.log(`PASS: protected feature anchor present: ${anchor}`);
   }
+}
+
+const dashboardPath = path.resolve("order-management-dashboard.js");
+if (!fs.existsSync(dashboardPath)) {
+  console.error("FAIL: order-management-dashboard.js is missing");
+  failed = true;
+} else {
+  const dashboardCheck = spawnSync(process.execPath, ["--check", dashboardPath], { encoding: "utf8" });
+  if (dashboardCheck.status !== 0) {
+    console.error("FAIL: dedicated order dashboard JavaScript syntax");
+    if (dashboardCheck.stderr) console.error(dashboardCheck.stderr.trim());
+    failed = true;
+  } else console.log("PASS: dedicated order dashboard JavaScript syntax");
 }
 
 const scriptTags = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
