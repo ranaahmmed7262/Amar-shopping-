@@ -455,6 +455,15 @@ $("verifyAdminEmailOtp").onclick=async()=>{
  finally{b.disabled=false;b.textContent="OTP যাচাই করে প্রবেশ করুন"}
 };
 const privateLogo=document.querySelector(".brand");let privateLogoTaps=0,privateLogoReset;if(privateLogo){privateLogo.style.cursor="pointer";privateLogo.addEventListener("click",()=>{privateLogoTaps++;clearTimeout(privateLogoReset);privateLogoReset=setTimeout(()=>privateLogoTaps=0,2500);if(privateLogoTaps>=5){document.body.classList.add("admin-reveal");$("footerAdminLogin").textContent="Private Admin";toast("Private Admin login unlocked");privateLogoTaps=0;}})}$("footerAdminLogin").onclick=()=>{adminLoginMode=true;adminOtpPending=false;setAuthMode("login");$("signupTab").classList.add("hidden");$("authTitle").textContent="Secure Admin Login";$("authMsg").textContent="Admin Email + Password দিন। এরপর email OTP verify করতে হবে।";setAdminOtpMode(false);$("adminOtpPanel").classList.add("hidden");$("authSubmit").classList.remove("hidden");modal("authModal")};
+/* Support the dedicated /#admin-login entry point used by the admin portal. */
+function openAdminLoginFromHash(){
+ if(location.hash.toLowerCase()!=="#admin-login")return;
+ document.body.classList.add("admin-reveal");
+ $("footerAdminLogin").textContent="Private Admin";
+ $("footerAdminLogin").click();
+}
+window.addEventListener("hashchange",openAdminLoginFromHash);
+if(location.hash.toLowerCase()==="#admin-login")setTimeout(openAdminLoginFromHash,0);
 $("accountBtn").onclick=()=>{adminLoginMode=false;$("adminOtpModeBtn").classList.add("hidden");$("adminOtpModeBtn").style.setProperty("display","none","important");$("signupTab").classList.remove("hidden");if(session){$("dashboard").scrollIntoView({behavior:"smooth"})}else{setAuthMode("login");modal("authModal")}};$("signupBtn").onclick=()=>{adminLoginMode=false;$("adminOtpModeBtn").classList.add("hidden");$("adminOtpModeBtn").style.setProperty("display","none","important");setAuthMode("signup");modal("authModal")};
 $("logoutBtn").onclick=async()=>{await db.auth.signOut();session=null;profile=null;await refreshSession();toast("লগআউট হয়েছে")};
 $("cartBtn").onclick=()=>{drawCart();modal("cartModal")};
