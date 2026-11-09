@@ -22,7 +22,6 @@ const requiredAnchors = [
   "Master Control",
   "mountAmarShoppingOrderDashboard",
   "refreshAmarShoppingOrderDashboard",
-  "amarDedicatedOrderDashboard",
   "order-management-dashboard.js",
 ];
 
@@ -41,6 +40,11 @@ if (!fs.existsSync(dashboardPath)) {
   console.error("FAIL: order-management-dashboard.js is missing");
   failed = true;
 } else {
+  const dashboardSource = fs.readFileSync(dashboardPath, "utf8");
+  if (!dashboardSource.includes("amarDedicatedOrderDashboard")) {
+    console.error("FAIL: dedicated order dashboard mount anchor missing from module");
+    failed = true;
+  } else console.log("PASS: dedicated order dashboard mount anchor present");
   const dashboardCheck = spawnSync(process.execPath, ["--check", dashboardPath], { encoding: "utf8" });
   if (dashboardCheck.status !== 0) {
     console.error("FAIL: dedicated order dashboard JavaScript syntax");
