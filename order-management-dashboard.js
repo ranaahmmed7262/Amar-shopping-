@@ -9,6 +9,16 @@ window.mountAmarShoppingOrderDashboard=function(d){
  addStyle();let p=d.el.querySelector("#amarDedicatedOrderDashboard");if(!p){p=document.createElement("section");p.id="amarDedicatedOrderDashboard";d.el.querySelector("#adminOverview").insertAdjacentElement("afterend",p)}
  let active="all",selected=null,q="";
  p.innerHTML='<div class="row"><div><h3 style="margin:0;color:#075b43">📦 Dedicated Customer Order Management</h3><small class="muted">Live updates • Serial-wise • Customer communication</small></div><button class="light" id="aomRefresh">↻ Refresh</button></div><div class="aom-tabs" id="aomTabs"></div><input class="aom-search" id="aomSearch" placeholder="Order number / customer / phone / email / tracking"><p class="muted" id="aomCount"></p><div id="aomList"></div><div id="aomDetail" class="aom-detail" hidden></div>';
+ const ORDER_SELECT="id,customer_id,total_bdt,delivery_fee_bdt,status,payment_method,payment_status,created_at,recipient_name,recipient_phone,recipient_email,district,upazila,postal_code,delivery_address,customer_note,attachment_path,tracking_note,courier_name,tracking_number,order_items(quantity,unit_price_bdt,products(name))";
+ async function loadAllOrders(){
+  const accumulated=[];let offset=0;const pageSize=500;
+  while(true){
+   const {data,error}=await d.db.from("orders").select(ORDER_SELECT).order("id",{ascending:true}).range(offset,offset+pageSize-1);
+   if(error){d.toast("সব অর্ডার লোড হয়নি: "+error.message,true);return false}
+   accumulated.push(...(data||[]));if(!data||data.length<pageSize)break;offset+=pageSize;
+  }
+  window.__amarAdminOrdersData=accumulated;return true;
+ }
  const all=()=>[...(window.__amarAdminOrdersData||[])].sort((a,b)=>Number(a.id)-Number(b.id));
  const label=s=>d.labels?.[s]||s;
  const byGroup=k=>{const g=groups.find(x=>x[0]===k);return g&&g[2]?all().filter(o=>g[2].includes(o.status)):all()};
@@ -30,12 +40,12 @@ window.mountAmarShoppingOrderDashboard=function(d){
   const tab=e.target.closest("[data-aom-tab]");if(tab){active=tab.dataset.aomTab;tabs();list();return}
   const open=e.target.closest("[data-aom-open]");if(open){selected=Number(open.dataset.aomOpen);await detail();p.querySelector("#aomDetail").scrollIntoView({behavior:"smooth"});return}
   if(e.target.closest("[data-aom-close]")){selected=null;await detail();return}
-  if(e.target.closest("#aomRefresh")){await d.loadAdminOrders();tabs();list();if(selected)await detail();return}
+  if(e.target.closest("#aomRefresh")){const ok=await loadAllOrders();if(ok){tabs();list();if(selected)await detail()}return}
   if(e.target.closest("#aomSave")){const o=all().find(x=>String(x.id)===String(selected));if(!o)return;const b=e.target.closest("#aomSave");b.disabled=true;const {error}=await d.db.from("orders").update({status:p.querySelector("#aomStatus").value,courier_name:p.querySelector("#aomCourier").value.trim()||null,tracking_number:p.querySelector("#aomTracking").value.trim()||null,tracking_note:p.querySelector("#aomNote").value.trim()||null,payment_status:p.querySelector("#aomPayment").value}).eq("id",o.id);b.disabled=false;if(error){const perm=/permission denied|not allowed|403|42501/i.test(error.message||"");d.toast(perm?"Tracking-column permission fix pending; update not saved. Customer write access remains closed.":"অর্ডার আপডেট হয়নি: "+error.message,true);return}d.toast("অর্ডার ও Customer tracking আপডেট হয়েছে");await d.loadAdminOrders();await detail()}
  });
  p.addEventListener("submit",async e=>{if(e.target.id==="aomChatForm"){const o=all().find(x=>String(x.id)===String(selected));if(o?.customer_id)await d.sendChatMessage(e,Number(o.customer_id),true,p.querySelector("#aomChat"))}});
  p.querySelector("#aomSearch").addEventListener("input",e=>{q=e.target.value.trim().toLowerCase();list()});
- window.refreshAmarShoppingOrderDashboard=async()=>{tabs();list();const editing=p.contains(document.activeElement)&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);if(selected&&!editing)await detail()};
- tabs();list();return true;
+ window.refreshAmarShoppingOrderDashboard=async()=>{const ok=await loadAllOrders();if(!ok)return;tabs();list();const editing=p.contains(document.activeElement)&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);if(selected&&!editing)await detail()};
+ tabs();list();loadAllOrders().then(ok=>{if(ok){tabs();list()}});return true;
 };
 })();
