@@ -274,6 +274,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 #dashContent .admin-home-panel{margin-top:12px}
 #dashContent .admin-home-panel[hidden],#dashContent .admin-panel[hidden]{display:none!important}
 #dashContent .admin-control-nav button.active{background:#e8f5ed!important;border-color:#087f5b!important;color:#075b43!important}
+
+/* Language picker labels stay in each language's native script; only page content is translated. */
+.language-menu,.language-menu select,.language-menu select option{translate:no!important}
+.language-menu{notranslate: no}
 </style>
 <script>
 /* Keep the retired GitHub Pages address pointed at the current live storefront. */
@@ -621,8 +625,11 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
   selector.dir=(code==="ar"||code==="ur")?"rtl":"ltr";
  }
  function localizeLanguageOptions(code){
-  const names=labels[code]||labels.bn;
-  [...selector.options].forEach((option,i)=>{if(names[i])option.textContent=names[i]});
+  /* Keep each language's own native name; do not translate the option labels when the page language changes. */
+  const nativeNames=["বাংলা","English","العربية","हिन्दी","اردو","中文","Français","Español","Deutsch","日本語"];
+  [...selector.options].forEach((option,i)=>{if(nativeNames[i])option.textContent=nativeNames[i]});
+  selector.classList.add("notranslate");
+  selector.setAttribute("translate","no");
   selector.setAttribute("aria-label",({bn:"ভাষা নির্বাচন",en:"Select language",ar:"اختر اللغة",hi:"भाषा चुनें",ur:"زبان منتخب کریں","zh-CN":"选择语言",fr:"Choisir la langue",es:"Seleccionar idioma",de:"Sprache auswählen",ja:"言語を選択"}[code]||"Select language"));
  }
  function setTranslateCookie(code){
