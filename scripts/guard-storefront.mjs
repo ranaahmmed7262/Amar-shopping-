@@ -11,6 +11,7 @@ if (!fs.existsSync(htmlPath)) {
 const html = fs.readFileSync(htmlPath, "utf8");
 const requiredAnchors = [
   "adminOtpVerifiedUserId",
+  "__amarAdminOtpSessionVerifiedUserId",
   "privateLogo",
   "admin-reveal",
   "email-otp/status",
@@ -19,6 +20,9 @@ const requiredAnchors = [
   "loadAdminOrders",
   "All-in-One",
   "Master Control",
+  "mountAmarShoppingOrderDashboard",
+  "refreshAmarShoppingOrderDashboard",
+  "order-management-dashboard.js",
 ];
 
 let failed = false;
@@ -29,6 +33,24 @@ for (const anchor of requiredAnchors) {
   } else {
     console.log(`PASS: protected feature anchor present: ${anchor}`);
   }
+}
+
+const dashboardPath = path.resolve("order-management-dashboard.js");
+if (!fs.existsSync(dashboardPath)) {
+  console.error("FAIL: order-management-dashboard.js is missing");
+  failed = true;
+} else {
+  const dashboardSource = fs.readFileSync(dashboardPath, "utf8");
+  if (!dashboardSource.includes("amarDedicatedOrderDashboard")) {
+    console.error("FAIL: dedicated order dashboard mount anchor missing from module");
+    failed = true;
+  } else console.log("PASS: dedicated order dashboard mount anchor present");
+  const dashboardCheck = spawnSync(process.execPath, ["--check", dashboardPath], { encoding: "utf8" });
+  if (dashboardCheck.status !== 0) {
+    console.error("FAIL: dedicated order dashboard JavaScript syntax");
+    if (dashboardCheck.stderr) console.error(dashboardCheck.stderr.trim());
+    failed = true;
+  } else console.log("PASS: dedicated order dashboard JavaScript syntax");
 }
 
 const scriptTags = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
