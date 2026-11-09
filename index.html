@@ -278,6 +278,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* Language picker labels stay in each language's native script; only page content is translated. */
 .language-menu,.language-menu select,.language-menu select option{translate:no!important}
 .language-menu{notranslate: no}
+
+/* Final admin navigation rules: compact left hamburger, vertical menu, one active panel. */
+#dashContent .admin-shell{position:relative!important;padding:14px 16px 12px 66px!important}
+#dashContent .admin-menu-toggle{display:flex!important;visibility:visible!important;position:absolute!important;left:14px!important;top:14px!important;z-index:40!important;width:42px!important;height:42px!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;opacity:1!important}
+#dashContent .admin-menu-toggle span{display:block!important;width:21px!important;height:2px!important;background:#fff!important}
+#dashContent .admin-control-nav{display:none!important;position:absolute!important;left:12px!important;top:62px!important;z-index:35!important;width:min(340px,calc(100vw - 56px))!important;max-height:min(72vh,620px)!important;overflow-y:auto!important;padding:10px!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;border:1px solid #d5e7dc!important;border-radius:14px!important;background:#fff!important;box-shadow:0 18px 44px #102f2440!important;margin:0!important}
+#dashContent .admin-shell.menu-open .admin-control-nav{display:flex!important}
+#dashContent .admin-control-nav button{display:flex!important;align-items:center!important;justify-content:flex-start!important;width:100%!important;min-height:46px!important;padding:10px 12px!important;text-align:left!important;white-space:normal!important}
+#dashContent .admin-panel[hidden],#dashContent .admin-home-panel[hidden]{display:none!important}
+@media(max-width:600px){#dashContent .admin-shell{padding:12px 12px 10px 62px!important}#dashContent .admin-menu-toggle{left:10px!important;top:12px!important}}
 </style>
 <script>
 /* Keep the retired GitHub Pages address pointed at the current live storefront. */
@@ -504,25 +514,13 @@ dashboardGroups.forEach((group,index)=>{
  group.forEach(node=>panel.appendChild(node));el.appendChild(panel);
 });
 const adminPanels=[...el.querySelectorAll(".admin-panel")];
-/* Permanent dashboard layout: show every admin category and every control together.
-   Do not depend on a hamburger menu state or per-section visibility toggles. */
+/* Keep dashboard navigation inside the left-side hamburger menu. */
 const adminNav=adminShell.querySelector(".admin-control-nav");
-if(adminNav){
- adminNav.style.setProperty("display","flex","important");
- adminNav.style.setProperty("flex-direction","column","important");
- adminNav.style.setProperty("position","static","important");
- adminNav.style.setProperty("width","100%","important");
- adminNav.style.setProperty("max-height","none","important");
- adminNav.style.setProperty("overflow","visible","important");
- adminNav.style.setProperty("box-shadow","none","important");
- adminNav.style.setProperty("margin-top","14px","important");
- adminNav.style.setProperty("border","0","important");
- adminNav.style.setProperty("padding","0","important");
-}
+if(adminNav)adminNav.removeAttribute("style");
 const platformDbCheck=el.querySelector("#platformDbCheck");
 if(platformDbCheck)platformDbCheck.onclick=async()=>{const out=el.querySelector("#platformDbStatus");platformDbCheck.disabled=true;out.textContent="Checking read-only database access…";try{const results=await Promise.all([db.from("products").select("id",{count:"exact",head:true}),db.from("orders").select("id",{count:"exact",head:true}),db.from("app_settings").select("key",{count:"exact",head:true}),db.auth.getSession()]);const failed=results.find(x=>x.error);if(failed)throw failed.error;out.textContent="✓ Database read-only checks passed · Products: "+(results[0].count??"—")+" · Orders: "+(results[1].count??"—")+" · Settings: "+(results[2].count??"—")+" · Session: "+(results[3].data?.session?"signed in":"not signed in")+" · "+new Date().toLocaleString("en-GB");}catch(error){out.textContent="⚠ Check failed: "+(error?.message||"Unknown error");}finally{platformDbCheck.disabled=false}};
 const adminMenuButton=adminShell.querySelector("#adminMenuToggle");
-if(adminMenuButton)adminMenuButton.hidden=true;
+if(adminMenuButton){adminMenuButton.hidden=false;adminMenuButton.style.removeProperty("display");}
 adminShell.classList.remove("menu-open");
 const adminHome=document.createElement("section");
 adminHome.className="admin-panel admin-home-panel";
@@ -533,7 +531,7 @@ function showAdminPanel(targetId){
  const target=el.querySelector("#"+CSS.escape(targetId));
  const panel=target?.closest(".admin-panel");
  if(!panel){toast("এই বিভাগটি পাওয়া যায়নি",true);return}
- adminPanels.forEach(item=>{item.hidden=false});
+ adminPanels.forEach(item=>{item.hidden=item!==panel;});
  adminHome.hidden=true;
  el.querySelectorAll("[data-admin-jump]").forEach(button=>button.classList.toggle("active",button.dataset.adminJump===targetId));
  panel.scrollIntoView({behavior:"smooth",block:"start"});
@@ -550,13 +548,13 @@ el.querySelectorAll("[data-admin-jump]").forEach(button=>button.onclick=()=>{
  menuToggle.setAttribute("aria-expanded","false");
  menuToggle.setAttribute("aria-label","অ্যাডমিন মেনু খুলুন");
 });
-/* All owner controls remain visible after admin login, regardless of old hidden attributes/CSS. */
+/* Show the dashboard landing panel first; individual controls open from the hamburger. */
 adminPanels.forEach(item=>{
- item.hidden=false;
- item.style.setProperty("display","block","important");
+ item.hidden=true;
+ item.style.removeProperty("display");
 });
-adminHome.hidden=true;
-adminHome.style.setProperty("display","none","important");
+adminHome.hidden=false;
+adminHome.style.removeProperty("display");
 el.querySelectorAll("[data-admin-jump]").forEach(button=>button.classList.remove("active"));el.querySelector("#adminNewProduct").onclick=()=>{document.querySelector("#productForm button.primary").textContent="পণ্য প্রকাশ করুন";modal("productModal")};db.from("products").select("id,name,price_bdt,users(name)").eq("status","pending").then(({data})=>{el.querySelector("#pendingProducts").innerHTML=(data||[]).map(p=>'<div class="adminitem">'+esc(p.name)+' '+money(p.price_bdt)+' <button class="light" data-prod="'+p.id+'|1">অনুমোদন</button> <button class="light" data-prod="'+p.id+'|0">বাতিল</button></div>').join("")||"কোনো pending পণ্য নেই";el.querySelectorAll("[data-prod]").forEach(b=>b.onclick=async()=>{let [id,yes]=b.dataset.prod.split("|");let {error}=await db.rpc("admin_review_product",{p_product_id:Number(id),p_approve:yes==="1"});if(error)toast(error.message,true);else{toast("পণ্যের স্ট্যাটাস আপডেট হয়েছে");showTab("admin");loadProducts()}})});db.from("seller_applications").select("id,shop_name,address,users(name,email)").eq("status","pending").then(({data})=>{el.querySelector("#pendingSellers").innerHTML=(data||[]).map(s=>'<div class="adminitem"><b>'+esc(s.shop_name)+'</b> — '+esc(s.address)+' <button class="light" data-seller="'+s.id+'|1">অনুমোদন</button> <button class="light" data-seller="'+s.id+'|0">বাতিল</button></div>').join("")||"কোনো pending আবেদন নেই";el.querySelectorAll("[data-seller]").forEach(b=>b.onclick=async()=>{let [id,yes]=b.dataset.seller.split("|");let {error}=await db.rpc("admin_review_seller_application",{p_application_id:Number(id),p_approve:yes==="1"});if(error)toast(error.message,true);else{toast("বিক্রেতার আবেদন আপডেট হয়েছে");showTab("admin")}})});db.from("orders").select("id,total_bdt,status,payment_method,payment_status,created_at,recipient_name,recipient_phone,recipient_email,district,delivery_address,customer_note,attachment_path,order_items(quantity,unit_price_bdt,products(name))").order("created_at",{ascending:false}).limit(200).then(async({data,error})=>{const box=el.querySelector("#allOrders");if(error){box.textContent=error.message;return}box.innerHTML=(data||[]).map(o=>'<div class="adminitem"><b>অর্ডার #'+o.id+' — '+money(o.total_bdt)+'</b><br><b>ক্রেতা:</b> '+esc(o.recipient_name||"")+' • '+esc(o.recipient_phone||"মোবাইল নেই")+' • '+esc(o.recipient_email||"ইমেইল নেই")+'<br><b>ঠিকানা:</b> '+esc(o.district||"")+' • '+esc(o.delivery_address||"")+'<br><b>পণ্য:</b> '+(o.order_items||[]).map(i=>esc(i.products?.name||"পণ্য")+" × "+i.quantity).join(", ")+'<br><b>মন্তব্য:</b> '+esc(o.customer_note||"নেই")+'<br><span data-order-image="'+esc(o.attachment_path||"")+'"></span><br><b>পেমেন্ট:</b> '+esc(o.payment_method)+' • '+esc(o.payment_status||"unpaid")+'<select data-payment="'+o.id+'"><option value="pending">Payment Pending</option><option value="paid">Paid / Verified</option><option value="failed">Failed</option></select><button class="light" data-savepayment="'+o.id+'">Save Payment</button><br><b>স্ট্যাটাস:</b> '+esc(o.status)+' <select data-order="'+o.id+'"><option value="placed">Placed</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select><button class="light" data-saveorder="'+o.id+'">আপডেট</button></div>').join("")||"অর্ডার নেই";(data||[]).forEach(o=>{const ps=box.querySelector('[data-payment="'+o.id+'"]'),os=box.querySelector('[data-order="'+o.id+'"]');if(ps)ps.value=o.payment_status||"pending";if(os)os.value=o.status||"placed"});for(const span of box.querySelectorAll("[data-order-image]")){const path=span.dataset.orderImage;if(path){const url=await signedAttachment(path);span.innerHTML=url?'<a href="'+esc(url)+'" target="_blank" rel="noopener">ক্রেতার সংযুক্ত পণ্য ছবি দেখুন</a>':'ছবি পাওয়া যায়নি'}}box.querySelectorAll("[data-saveorder]").forEach(btn=>btn.onclick=async()=>{let id=btn.dataset.saveorder,status=box.querySelector('[data-order="'+id+'"]').value;let {error}=await db.from("orders").update({status}).eq("id",id);if(error)toast(error.message,true);else toast("অর্ডার আপডেট হয়েছে")});box.querySelectorAll("[data-savepayment]").forEach(btn=>btn.onclick=async()=>{const id=Number(btn.dataset.savepayment),payment_status=box.querySelector('[data-payment="'+id+'"]').value;const {error}=await db.from("orders").update({payment_status}).eq("id",id);if(error)toast("Payment update হয়নি: "+error.message,true);else toast("Payment status আপডেট হয়েছে")})});
 async function loadCustomers(){
  const box=el.querySelector("#customerList"); if(!box)return;
