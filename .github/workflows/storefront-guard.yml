@@ -2,7 +2,7 @@ name: Amar Shopping storefront protection
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "protection/**"]
   push:
     branches:
       - main
