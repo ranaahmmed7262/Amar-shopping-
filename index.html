@@ -523,3 +523,60 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
  },500);
 })();</script>
 </body></html>
+
+/* Dashboard categories displayed as an ordered hamburger-style vertical menu. */
+#dashContent .admin-control-nav{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:6px!important;
+  margin-top:14px!important;
+  counter-reset:admin-category;
+}
+#dashContent .admin-control-nav button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  width:100%!important;
+  min-height:48px!important;
+  padding:11px 14px!important;
+  border:1px solid #dce9e1!important;
+  border-radius:11px!important;
+  background:#fff!important;
+  color:#164b37!important;
+  text-align:left!important;
+  font-size:14px!important;
+  font-weight:750!important;
+  white-space:normal!important;
+  box-shadow:0 2px 8px #103b2d0a!important;
+  counter-increment:admin-category;
+}
+#dashContent .admin-control-nav button::before{
+  content:counter(admin-category,decimal-leading-zero);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 30px;
+  width:30px;
+  height:30px;
+  margin-right:11px;
+  border-radius:9px;
+  background:#eaf5ee;
+  color:#087f5b;
+  font-size:11px;
+  font-weight:900;
+}
+#dashContent .admin-control-nav button:hover{
+  background:#f0f8f3!important;
+  border-color:#a9d6bb!important;
+  transform:translateX(2px);
+}
+#dashContent .admin-control-nav button[data-admin-jump="siteSettingsForm"]{
+  background:#fff!important;
+  color:#075b43!important;
+  border-color:#dce9e1!important;
+}
+@media(max-width:600px){
+  #dashContent .admin-control-nav{display:flex!important;flex-direction:column!important}
+  #dashContent .admin-control-nav button{min-height:46px!important;font-size:13px!important}
+}
