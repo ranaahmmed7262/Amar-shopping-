@@ -26,3 +26,12 @@ The source guard checks the new module syntax and protected anchors. Browser jou
 
 ## CI trigger note
 This PR targets the protection branch, whose current workflow does not yet include this PR target in its pull_request branch filter. The feature branch workflow includes a feature/** push trigger. A documentation-only commit is used to request that branch-push CI run; this does not alter storefront runtime behavior.
+
+
+## Existing Admin controls preservation audit
+- The new dashboard is inserted after the existing `#adminOverview`; it does not replace the Admin dashboard markup or existing order list, filters, order detail actions, customer/seller/product/settings controls.
+- Existing `loadAdminOrders`, realtime subscriptions and 30-second fallback remain in place. Their refresh cycle also refreshes the dedicated dashboard.
+- Status values and payment-status options were matched to the existing storefront source. Existing order SELECT relation shape is reused.
+- The dashboard mount checks the Admin profile and the OTP verification result for the current authenticated session. A small session-scoped flag mirrors the existing server OTP status so an already-verified Admin session can mount after page reload; it does not bypass OTP or change RLS.
+- No existing Admin control handlers were removed or rewritten.
+- Regression tests still required: Admin login/OTP (fresh and reloaded session), all existing Admin tabs and save buttons, product/seller/customer/settings workflows, current order filters/detail/status/payment/history, customer order history, cart/checkout/payment, plus the new dashboard flows.
