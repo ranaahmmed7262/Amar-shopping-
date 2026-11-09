@@ -729,4 +729,32 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
 })();</script>
 <!-- Amar Shopping deployment sync -->
 <!-- Trigger Render auto-deploy for admin login hash fix -->
+
+<!-- Amar Shopping: responsive side campaign banners (visual-only; storefront logic/settings untouched) -->
+<style id="amar-side-campaigns">
+.amar-side-campaign{display:none;position:fixed;z-index:2;top:210px;width:clamp(90px,calc((100vw - 1360px)/2 - 24px),170px);min-height:290px;padding:15px 10px;border:1px solid #dcebe1;border-radius:18px;background:linear-gradient(160deg,#ffffff 0%,#eaf7ef 100%);box-shadow:0 10px 28px #0a382014;text-align:center;color:#174a36;text-decoration:none;overflow:hidden}
+.amar-side-campaign:before{content:"";position:absolute;width:130px;height:130px;border-radius:50%;background:#0a9b6c12;top:-48px;left:50%;transform:translateX(-50%)}
+.amar-side-campaign .asc-icon{position:relative;display:grid;place-items:center;width:58px;height:58px;margin:10px auto 16px;border-radius:18px;background:#087f5b;color:#fff;font-size:30px;box-shadow:0 8px 18px #087f5b30}
+.amar-side-campaign strong{position:relative;display:block;font-size:14px;line-height:1.55;font-weight:900}
+.amar-side-campaign small{position:relative;display:block;margin-top:10px;color:#61796c;font-size:11px;line-height:1.65}
+.amar-side-campaign .asc-tag{position:relative;display:inline-block;margin-top:16px;padding:7px 9px;border-radius:999px;background:#e0f3e7;color:#08724f;font-size:10px;font-weight:850}
+.amar-side-campaign.left{left:12px}.amar-side-campaign.right{right:12px;background:linear-gradient(160deg,#fffaf0 0%,#fff1d8 100%);border-color:#f0dfbd}
+.amar-side-campaign.right .asc-icon{background:#d88a16;box-shadow:0 8px 18px #d88a1630}
+.amar-side-campaign.right .asc-tag{background:#ffebc6;color:#8b570b}
+@media(min-width:1600px){.amar-side-campaign{display:block}}
+@media(max-height:650px) and (min-width:1600px){.amar-side-campaign{top:150px;min-height:245px;padding:10px 8px}.amar-side-campaign .asc-icon{margin:5px auto 10px}}
+</style>
+<a class="amar-side-campaign left" href="#products" aria-label="পণ্য দেখুন">
+  <span class="asc-icon" aria-hidden="true">🛍️</span>
+  <strong>Amar Shopping</strong>
+  <small>পছন্দের পণ্য খুঁজুন, সহজেই অর্ডার করুন</small>
+  <span class="asc-tag">SHOP NOW</span>
+</a>
+<a class="amar-side-campaign right" href="#contactSection" aria-label="বিক্রেতা ও যোগাযোগ তথ্য">
+  <span class="asc-icon" aria-hidden="true">🏪</span>
+  <strong>আপনার ব্যবসা অনলাইনে আনুন</strong>
+  <small>ক্রেতা ও বিক্রেতার জন্য এক মার্কেটপ্লেস</small>
+  <span class="asc-tag">SELL WITH US</span>
+</a>
+
 </body></html>
