@@ -369,7 +369,7 @@ const SUPABASE_KEY="sb_publishable_5lekXnJDJzpYrcOuseFOxQ_aWjWnkgj";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const money=n=>"৳"+Number(n||0).toLocaleString("en-BD");
 let products=[],cart=JSON.parse(localStorage.getItem("amar_cart_v2")||"[]"),category="সব",minPrice=null,maxPrice=null,session=null,profile=null,settings={delivery_fee_bdt:"80"};
-let authMode="login",adminLoginMode=false,adminOtpMode=false,adminOtpPending=false;
+let authMode="login",adminLoginMode=false,adminOtpMode=false,adminOtpPending=false,adminOtpVerifiedUserId=null;
 const $=id=>document.getElementById(id);
 function toast(msg,bad=false){$("toast").textContent=msg;$("toast").classList.remove("hidden","bad","ok");$("toast").classList.add(bad?"bad":"ok");setTimeout(()=> $("toast").classList.add("hidden"),4000)}
 function modal(id,on=true){$(id).style.display=on?"flex":"none"}
@@ -393,7 +393,7 @@ async function refreshSession(){
  session=data.session;profile=null;let profileError=null,adminEmailVerified=false;
  if(session){const {data:p,error}=await db.from("users").select("id,name,email,phone,role").eq("auth_user_id",session.user.id).maybeSingle();profile=p;profileError=error}
  if(session&&profile?.role==="admin"){
-  try{let st=await adminOtpRequest("/admin/email-otp/status",session.access_token);if(!st.verified){try{await adminOtpRequest("/admin/email-otp/verify",session.access_token,"POST");st=await adminOtpRequest("/admin/email-otp/status",session.access_token)}catch(_){}}adminEmailVerified=st.verified===true}catch(e){console.warn("Admin email OTP status:",e.message)}
+  try{let st=await adminOtpRequest("/admin/email-otp/status",session.access_token);if(!st.verified){try{await adminOtpRequest("/admin/email-otp/verify",session.access_token,"POST");st=await adminOtpRequest("/admin/email-otp/status",session.access_token)}catch(_){}}adminEmailVerified=st.verified===true||adminOtpVerifiedUserId===session.user.id}catch(e){console.warn("Admin email OTP status:",e.message);adminEmailVerified=adminOtpVerifiedUserId===session.user.id}
  }
  $("accountBtn").textContent=session?(profile?.name||"অ্যাকাউন্ট যাচাই হচ্ছে"):"লগইন";
  $("dashboard").classList.toggle("hidden",!session||!profile||(profile.role==="admin"&&!adminEmailVerified));
@@ -459,8 +459,13 @@ $("verifyAdminEmailOtp").onclick=async()=>{
  try{
   const {data,error}=await db.auth.verifyOtp({email,token,type:"email"});if(error)throw error;if(!data?.session?.access_token)throw new Error("OTP session পাওয়া যায়নি।");
   await adminOtpRequest("/admin/email-otp/verify",data.session.access_token,"POST");
-  await refreshSession();if(!session||profile?.role!=="admin")throw new Error("Admin session যাচাই হয়নি।");
-  modal("authModal",false);toast("Email OTP সফল। Admin Panel চালু হয়েছে।")
+  /* The Edge Function has verified this exact OTP session. Preserve that result during any concurrent auth-state refresh. */
+  adminOtpVerifiedUserId=data.user.id;
+  await refreshSession();
+  if(!session||profile?.role!=="admin"||adminOtpVerifiedUserId!==session.user.id)throw new Error("Admin session যাচাই হয়নি। আবার OTP দিয়ে চেষ্টা করুন।");
+  $("dashboard").classList.remove("hidden");$("adminTab").classList.remove("hidden");$("adminMenuSettings").classList.remove("hidden");
+  await loadSettings();await showTab("admin");
+  modal("authModal",false);toast("Email OTP সফল। Admin Dashboard চালু হয়েছে।")
  }catch(error){$("authMsg").textContent="OTP যাচাই হয়নি: "+(error?.message||"আবার চেষ্টা করুন")}
  finally{b.disabled=false;b.textContent="OTP যাচাই করে প্রবেশ করুন"}
 };
