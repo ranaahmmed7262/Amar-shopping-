@@ -22,6 +22,23 @@ const requiredAnchors = [
 ];
 
 let failed = false;
+const requiredExternalScripts = ["order-management-dashboard.js", "customer-management-dashboard.js", "customer-account-dashboard.js"];
+for (const file of requiredExternalScripts) {
+  if (!fs.existsSync(path.resolve(file))) {
+    console.error(`FAIL: required external script is missing: ${file}`);
+    failed = true;
+    continue;
+  }
+  const result = spawnSync(process.execPath, ["--check", path.resolve(file)], { encoding: "utf8" });
+  if (result.status !== 0) {
+    console.error(`FAIL: external script has a JavaScript syntax error: ${file}`);
+    if (result.stderr) console.error(result.stderr.trim());
+    failed = true;
+  } else {
+    console.log(`PASS: external script syntax checked: ${file}`);
+  }
+}
+
 for (const anchor of requiredAnchors) {
   if (!html.includes(anchor)) {
     console.error(`FAIL: protected feature anchor missing: ${anchor}`);
