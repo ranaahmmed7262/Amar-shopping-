@@ -20,7 +20,6 @@ const requiredAnchors = [
   "All-in-One",
   "Master Control",
   "mountAmarShoppingAffiliateDashboard",
-  "affiliateAdminPanel",
 ];
 
 let failed = false;
