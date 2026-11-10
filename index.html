@@ -416,7 +416,7 @@ function drawCart(){let rows=cart.map(x=>{let p=products.find(p=>p.id===x.id);if
 async function refreshSession(){
  const {data,error}=await db.auth.getSession();if(error){toast("Login session load হয়নি: "+error.message,true);return}
  session=data.session;profile=null;let profileError=null,adminEmailVerified=false;
- if(session){const {data:p,error}=await db.from("users").select("id,name,email,phone,role,account_status").eq("auth_user_id",session.user.id).maybeSingle();profile=p;profileError=error;if(!profileError&&profile?.account_status==="deactive"){await db.auth.signOut();session=null;profile=null;toast("আপনার customer account Deactive করা হয়েছে। Admin-এর সঙ্গে যোগাযোগ করুন।",true);return}}
+ if(session){const {data:p,error}=await db.from("users").select("id,name,email,phone,role,account_status").eq("auth_user_id",session.user.id).maybeSingle();profile=p;profileError=error;if(!profileError&&profile?.account_status==="deactive"){await db.auth.signOut();session=null;profile=null;toast("আপনার customer account Deactive করা হয়েছে। Admin-এর সঙ্গে যোগাযোগ করুন।",true)}}
  if(session&&profile?.role==="admin"){
   try{let st=await adminOtpRequest("/admin/email-otp/status",session.access_token);if(!st.verified){try{await adminOtpRequest("/admin/email-otp/verify",session.access_token,"POST");st=await adminOtpRequest("/admin/email-otp/status",session.access_token)}catch(_){}}adminEmailVerified=st.verified===true||adminOtpVerifiedUserId===session.user.id}catch(e){console.warn("Admin email OTP status:",e.message);adminEmailVerified=adminOtpVerifiedUserId===session.user.id}
  }
