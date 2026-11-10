@@ -29,6 +29,7 @@ ALTER TABLE public.affiliate_products ENABLE ROW LEVEL SECURITY;
 
 GRANT SELECT ON TABLE public.affiliate_products TO anon, authenticated;
 GRANT INSERT, UPDATE ON TABLE public.affiliate_products TO authenticated;
+GRANT USAGE, SELECT ON SEQUENCE public.affiliate_products_id_seq TO authenticated;
 
 DROP POLICY IF EXISTS "OTP verified marketplace admins manage affiliate products" ON public.affiliate_products;
 CREATE POLICY "OTP verified marketplace admins manage affiliate products"
