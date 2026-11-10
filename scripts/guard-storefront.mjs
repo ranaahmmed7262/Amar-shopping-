@@ -19,10 +19,12 @@ const requiredAnchors = [
   "loadAdminOrders",
   "All-in-One",
   "Master Control",
+  "mountAmarShoppingAffiliateDashboard",
+  "affiliateAdminPanel",
 ];
 
 let failed = false;
-const requiredExternalScripts = ["order-management-dashboard.js", "customer-management-dashboard.js", "customer-account-dashboard.js"];
+const requiredExternalScripts = ["order-management-dashboard.js", "customer-management-dashboard.js", "customer-account-dashboard.js", "daraz-affiliate-admin-dashboard.js"];
 for (const file of [...requiredExternalScripts, "scripts/update-sitemap.mjs"]) {
   if (!fs.existsSync(path.resolve(file))) {
     console.error(`FAIL: required external script is missing: ${file}`);
