@@ -310,6 +310,7 @@ header.bar .top .brand img{display:block!important;width:100%!important;max-widt
 @media(max-width:950px){header.bar .top .brand{max-width:190px!important;height:48px!important}header.bar .top .brand img{max-width:190px!important;max-height:48px!important}}
 @media(max-width:650px){header.bar .top .brand{max-width:150px!important;height:38px!important}header.bar .top .brand img{max-width:150px!important;max-height:38px!important}}
 </style>
+<script src="./customer-account-dashboard.js"></script>
 </head>
 <body>
 <header class="bar"><div class="top"><button type="button" class="menu-trigger" id="menuTrigger" aria-label="মেনু খুলুন" aria-expanded="false" style="display:flex!important;visibility:visible!important;align-items:center!important;justify-content:center!important;min-width:44px!important;min-height:44px!important;padding:0!important;position:relative;z-index:30"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="24" height="24" style="display:block!important;width:24px!important;height:24px!important;min-width:24px;overflow:visible"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="#103b2d" stroke-width="2.8" stroke-linecap="round"/></svg></button><div class="brand" aria-label="Amar Shopping"><img src="./assets/amar-shopping-logo.svg" alt="Amar Shopping" width="190" height="48" decoding="async"><span class="sr-only">Amar Shopping</span></div><div class="search"><input id="search" placeholder="পণ্য খুঁজুন..."><button id="searchBtn">খুঁজুন</button></div><div class="language-menu" aria-label="Select website language">
@@ -795,7 +796,7 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
 })();</script>
 <script src="./order-management-dashboard.js" defer></script>
 <script src="./customer-management-dashboard.js" defer></script>
-<script src="./customer-account-dashboard.js"></script>
+
 <!-- Amar Shopping deployment sync -->
 <!-- Trigger Render auto-deploy for admin login hash fix -->
 
