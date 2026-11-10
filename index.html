@@ -456,7 +456,7 @@ function showCustomerOtpPanel(show){
 }
 $("customerOtpStartBtn").onclick=async()=>{
  const email=String(new FormData($("authForm")).get("email")||"").trim().toLowerCase();
- if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){$("authMsg").textContent="আগে সঠিক Customer email লিখুন।";return}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){$("authMsg").textContent="আগে সঠিক Customer email লিখুন।";return}
  const b=$("customerOtpStartBtn");b.disabled=true;b.textContent="OTP পাঠানো হচ্ছে...";
  try{await requestCustomerEmailOtp(email);customerOtpPendingEmail=email;showCustomerOtpPanel(true);$("authMsg").textContent="আপনার Customer email-এ ৬ সংখ্যার OTP পাঠানো হয়েছে। Inbox/Spam দেখুন।"}
  catch(error){$("authMsg").textContent=error?.code==="over_email_send_rate_limit"?"ইমেইল পাঠানোর সীমা অতিক্রম হয়েছে। কিছুক্ষণ অপেক্ষা করে আবার চেষ্টা করুন।":"OTP পাঠানো যায়নি: "+(error?.message||"আবার চেষ্টা করুন।");}
