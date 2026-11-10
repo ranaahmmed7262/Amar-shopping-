@@ -428,6 +428,7 @@ async function refreshSession(){
  if(profileError){$("dashContent").innerHTML='<p class="bad">Customer profile লোড হয়নি: '+esc(profileError.message)+'</p>';toast("Account profile load হয়নি। Reload করে আবার চেষ্টা করুন।",true);return}
  if(session&&!profile){$("dashContent").innerHTML='<p class="bad">এই Login-এর Customer profile পাওয়া যায়নি।</p>';toast("Customer profile পাওয়া যায়নি।",true);return}
  if(session&&profile&&profile.role!=="admin")await showTab("orders");
+ if(session&&profile?.role==="customer"&&window.mountAmarShoppingCustomerDashboard)window.mountAmarShoppingCustomerDashboard({db,profile,session,el:$("dashboard"),toast});
  if(session&&profile?.role==="admin"&&adminEmailVerified){await loadSettings();await showTab("admin")}
 }
 function setAuthMode(mode){authMode=mode;$("authTitle").textContent=mode==="login"?"লগইন":"নতুন অ্যাকাউন্ট";$("authSubmit").textContent=mode==="login"?"লগইন করুন":"অ্যাকাউন্ট তৈরি করুন";$("nameField").classList.toggle("hidden",mode==="login");$("phoneField").classList.toggle("hidden",mode==="login");$("authForm").elements.password.autocomplete=mode==="login"?"current-password":"new-password";$("resendConfirmBtn").classList.add("hidden");$("authMsg").textContent=mode==="signup"?"Customer account-এর জন্য নিজের নতুন/আগে নিবন্ধন না করা ইমেইল ব্যবহার করুন। Admin email দিয়ে Customer account তৈরি হবে না.":""}
@@ -794,6 +795,7 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
 })();</script>
 <script src="./order-management-dashboard.js" defer></script>
 <script src="./customer-management-dashboard.js" defer></script>
+<script src="./customer-account-dashboard.js"></script>
 <!-- Amar Shopping deployment sync -->
 <!-- Trigger Render auto-deploy for admin login hash fix -->
 
