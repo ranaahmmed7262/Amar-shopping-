@@ -62,7 +62,16 @@ window.mountAmarShoppingCustomerDashboard=function(d){
    if(next!==confirmPassword){msg.textContent="নতুন পাসওয়ার্ড দুটি মিলছে না।";return}
    if(next===current){msg.textContent="নতুন পাসওয়ার্ডটি বর্তমান পাসওয়ার্ড থেকে আলাদা দিন।";return}
    btn.disabled=true;btn.textContent="যাচাই ও পরিবর্তন হচ্ছে...";
-   try{const {error}=await d.db.auth.updateUser({password:next,current_password:current});if(error)throw error;form.reset();msg.textContent="পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে।"}
+   try{
+    const email=d.session.user.email||d.profile.email;
+    if(!email)throw new Error("Account email পাওয়া যায়নি।");
+    const {data:verified,error:verifyError}=await d.db.auth.signInWithPassword({email,password:current});
+    if(verifyError)throw new Error("বর্তমান পাসওয়ার্ড সঠিক নয়।");
+    if(!verified?.user?.id||verified.user.id!==d.session.user.id)throw new Error("Account verification মেলেনি; নিরাপত্তার জন্য পরিবর্তন বন্ধ করা হয়েছে।");
+    const {error}=await d.db.auth.updateUser({password:next});
+    if(error)throw error;
+    d.session=verified.session||d.session;
+    form.reset();msg.textContent="পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে।"}
    catch(err){msg.textContent="পাসওয়ার্ড পরিবর্তন হয়নি: "+(err.message||"বর্তমান password যাচাই করুন অথবা ইমেইল Reset Link ব্যবহার করুন।")}
    finally{btn.disabled=false;btn.textContent="পাসওয়ার্ড পরিবর্তন করুন"}
   };
