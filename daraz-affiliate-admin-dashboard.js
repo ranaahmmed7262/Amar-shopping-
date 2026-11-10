@@ -236,6 +236,9 @@
     });
 
     button.addEventListener("click", openPanel);
+    nav.addEventListener("click", (event) => {
+      if (event.target !== button && !button.contains(event.target)) panel.hidden = true;
+    }, true);
     panel.querySelector("#affiliateRefresh").addEventListener("click", loadProducts);
     panel.querySelector("#affiliateCancel").addEventListener("click", resetForm);
     loadProducts();
