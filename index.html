@@ -681,7 +681,7 @@ async function exportAdminOrders(){
   data.push(...(page||[]));if(!page||page.length<pageSize)break;offset+=pageSize;
  }
  const cols=["serial","order_id","customer_id","created_at","recipient_name","recipient_phone","recipient_email","district","upazila","postal_code","delivery_address","items","total_bdt","delivery_fee_bdt","payment_method","payment_status","status"];
- const cell=v=>{let x=String(v??"");if(/^[=+\\-@\\t\\r]/.test(x))x="'"+x;return '"'+x.replace(/"/g,'""')+'"'};
+ const cell=v=>{let x=String(v??"");if(/^[=+\-@\t\r]/.test(x))x="'"+x;return '"'+x.replace(/"/g,'""')+'"'};
  const csv=[cols.join(","),...data.map((row,i)=>{const items=(row.order_items||[]).map(x=>(x.products?.name||"Product")+" x "+x.quantity+" @ "+x.unit_price_bdt).join(" | ");return [i+1,row.id,row.customer_id,row.created_at,row.recipient_name,row.recipient_phone,row.recipient_email,row.district,row.upazila,row.postal_code,row.delivery_address,items,row.total_bdt,row.delivery_fee_bdt,row.payment_method,row.payment_status,row.status].map(cell).join(",")})].join("\r\n");
  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="amar-shopping-orders-excel.csv";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("সম্পূর্ণ Order Excel-compatible CSV ডাউনলোড শুরু হয়েছে");
 }
