@@ -106,10 +106,7 @@
         toast("Admin email OTP verification প্রয়োজন।", true);
         return;
       }
-      const prompt = connected
-        ? "Daraz Affiliate integration আবার Connect করবেন?"
-        : "Daraz Affiliate integration এক ক্লিকে Disconnect করবেন? Affiliate listing বন্ধ থাকবে; সংরক্ষিত পণ্য মুছে যাবে না।";
-      if (!window.confirm(prompt)) return;
+      // User explicitly requested a true one-click toggle; no second confirmation dialog.
       connectButton.disabled = true;
       disconnectButton.disabled = true;
       const { error } = await db.from("affiliate_integrations").upsert({
