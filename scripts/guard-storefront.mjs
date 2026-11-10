@@ -23,7 +23,7 @@ const requiredAnchors = [
 
 let failed = false;
 const requiredExternalScripts = ["order-management-dashboard.js", "customer-management-dashboard.js", "customer-account-dashboard.js"];
-for (const file of requiredExternalScripts) {
+for (const file of [...requiredExternalScripts, "scripts/update-sitemap.mjs"]) {
   if (!fs.existsSync(path.resolve(file))) {
     console.error(`FAIL: required external script is missing: ${file}`);
     failed = true;
