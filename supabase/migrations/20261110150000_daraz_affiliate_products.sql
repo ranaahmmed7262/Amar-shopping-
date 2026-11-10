@@ -45,5 +45,39 @@ CREATE POLICY "OTP verified marketplace admins manage affiliate products"
   USING (public.is_marketplace_admin())
   WITH CHECK (public.is_marketplace_admin());
 
+
+-- One-row-per-platform switch. Disconnect preserves affiliate_products unchanged.
+CREATE TABLE IF NOT EXISTS public.affiliate_integrations (
+  affiliate_platform text PRIMARY KEY CHECK (affiliate_platform = 'daraz'),
+  is_connected boolean NOT NULL DEFAULT false,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+INSERT INTO public.affiliate_integrations (affiliate_platform, is_connected)
+VALUES ('daraz', false)
+ON CONFLICT (affiliate_platform) DO NOTHING;
+
+ALTER TABLE public.affiliate_integrations ENABLE ROW LEVEL SECURITY;
+GRANT SELECT ON TABLE public.affiliate_integrations TO anon, authenticated;
+GRANT INSERT, UPDATE ON TABLE public.affiliate_integrations TO authenticated;
+
+DROP POLICY IF EXISTS "Public can read affiliate integration state" ON public.affiliate_integrations;
+CREATE POLICY "Public can read affiliate integration state"
+  ON public.affiliate_integrations
+  FOR SELECT
+  TO anon, authenticated
+  USING (true);
+
+DROP POLICY IF EXISTS "OTP verified marketplace admins manage affiliate integration" ON public.affiliate_integrations;
+CREATE POLICY "OTP verified marketplace admins manage affiliate integration"
+  ON public.affiliate_integrations
+  FOR ALL
+  TO authenticated
+  USING (public.is_marketplace_admin())
+  WITH CHECK (public.is_marketplace_admin());
+
+-- Rollback (run only with separate owner approval):
+-- DROP TABLE IF EXISTS public.affiliate_integrations;
+
 -- Rollback (run only with separate owner approval):
 -- DROP TABLE IF EXISTS public.affiliate_products;
