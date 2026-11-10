@@ -42,7 +42,7 @@ window.mountAmarShoppingOrderDashboard=function(d){
   if(e.target.closest("[data-aom-close]")){selected=null;await detail();return}
   if(e.target.closest("#aomRefresh")){const ok=await loadAllOrders();if(ok){tabs();list();if(selected)await detail()}return}if(e.target.closest("#aomExport")){
   const ok=await loadAllOrders();if(!ok)return;
-  const rows=all(),cell=v=>{let x=String(v??"");if(/^[=+\\-@\\t\\r]/.test(x))x="'"+x;return '"'+x.replace(/"/g,'""')+'"';};
+  const rows=all(),cell=v=>{let x=String(v??"");if(/^[=+\-@\t\r]/.test(x))x="'"+x;return '"'+x.replace(/"/g,'""')+'"';};
   const cols=["serial","order_id","customer_id","created_at","recipient_name","recipient_phone","recipient_email","district","upazila","postal_code","delivery_address","items","total_bdt","delivery_fee_bdt","payment_method","payment_status","status"];
   const csv=[cols.join(","),...rows.map((o,i)=>[i+1,o.id,o.customer_id,o.created_at,o.recipient_name,o.recipient_phone,o.recipient_email,o.district,o.upazila,o.postal_code,o.delivery_address,(o.order_items||[]).map(x=>(x.products?.name||"Product")+" x "+x.quantity+" @ "+x.unit_price_bdt).join(" | "),o.total_bdt,o.delivery_fee_bdt,o.payment_method,o.payment_status,o.status].map(cell).join(","))].join("\r\n");
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="amar-shopping-orders-excel.csv";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);return
