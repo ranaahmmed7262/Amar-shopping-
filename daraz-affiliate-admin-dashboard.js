@@ -39,6 +39,16 @@
           <div><h3 style="margin:0">Daraz Affiliate Manager</h3><p class="muted">শুধু Affiliate পণ্যের আলাদা ব্যবস্থাপনা</p></div>
           <button type="button" class="light" id="affiliateRefresh">Refresh</button>
         </div>
+        <div class="adminitem" style="margin-top:12px;padding:14px">
+          <div class="row" style="justify-content:space-between;gap:10px;align-items:center">
+            <div><b>Daraz সংযোগ নিয়ন্ত্রণ</b><p id="darazConnectionStatus" class="muted" aria-live="polite">সংযোগের অবস্থা যাচাই হচ্ছে...</p></div>
+            <div class="row" style="gap:8px">
+              <button type="button" class="primary" id="darazConnectButton" disabled>Connect Daraz</button>
+              <button type="button" class="light" id="darazDisconnectButton" disabled>Disconnect Daraz</button>
+            </div>
+          </div>
+          <p class="muted">Disconnect করলে Daraz Affiliate integration বন্ধ হিসেবে চিহ্নিত হবে। Reconnect করলে আগের Affiliate পণ্য/তথ্য অক্ষত থাকবে। এটি Daraz অ্যাকাউন্ট বা তাদের সাইটে লগইন বাতিল করে না।</p>
+        </div>
         <div class="notice">এটি Amar Shopping-এর নিজস্ব পণ্য, অর্ডার, কাস্টমার, Seller Panel বা পেমেন্ট নিয়ন্ত্রণ করে না। Daraz affiliate link ও পণ্যের তথ্য এখানে ম্যানুয়ালি যোগ হবে।</div>
         <form id="affiliateProductForm" class="adminitem" style="margin-top:14px">
           <h4 id="affiliateFormTitle">নতুন Daraz Affiliate পণ্য</h4>
@@ -69,6 +79,54 @@
     const message = panel.querySelector("#affiliateFormMessage");
     const save = panel.querySelector("#affiliateSave");
     const count = panel.querySelector("#affiliateCount");
+    const connectionStatus = panel.querySelector("#darazConnectionStatus");
+    const connectButton = panel.querySelector("#darazConnectButton");
+    const disconnectButton = panel.querySelector("#darazDisconnectButton");
+    let darazConnected = false;
+    const loadConnection = async () => {
+      connectionStatus.textContent = "সংযোগের অবস্থা যাচাই হচ্ছে...";
+      connectButton.disabled = true;
+      disconnectButton.disabled = true;
+      const { data, error } = await db.from("affiliate_integrations")
+        .select("is_connected").eq("affiliate_platform", "daraz").maybeSingle();
+      if (error) {
+        connectionStatus.textContent = "অবস্থা লোড হয়নি। Database migration প্রয়োজন হতে পারে।";
+        toast("Daraz connection status লোড হয়নি: " + error.message, true);
+        return;
+      }
+      darazConnected = data?.is_connected === true;
+      connectionStatus.textContent = darazConnected
+        ? "Connected — Daraz Affiliate integration চালু"
+        : "Disconnected — Daraz Affiliate integration বন্ধ";
+      connectButton.disabled = darazConnected;
+      disconnectButton.disabled = !darazConnected;
+    };
+    const setConnection = async (connected) => {
+      if (profile?.role !== "admin" || adminOtpVerified !== true) {
+        toast("Admin email OTP verification প্রয়োজন।", true);
+        return;
+      }
+      const prompt = connected
+        ? "Daraz Affiliate integration আবার Connect করবেন?"
+        : "Daraz Affiliate integration এক ক্লিকে Disconnect করবেন? Affiliate listing বন্ধ থাকবে; সংরক্ষিত পণ্য মুছে যাবে না।";
+      if (!window.confirm(prompt)) return;
+      connectButton.disabled = true;
+      disconnectButton.disabled = true;
+      const { error } = await db.from("affiliate_integrations").upsert({
+        affiliate_platform: "daraz",
+        is_connected: connected,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "affiliate_platform" });
+      if (error) {
+        toast("Daraz connection পরিবর্তন হয়নি: " + error.message, true);
+        await loadConnection();
+        return;
+      }
+      toast(connected ? "Daraz Affiliate connected হয়েছে" : "Daraz Affiliate disconnected হয়েছে");
+      await loadConnection();
+    };
+    connectButton.addEventListener("click", () => setConnection(true));
+    disconnectButton.addEventListener("click", () => setConnection(false));
     const value = (name) => String(form.elements[name]?.value || "").trim();
     const setMessage = (text, isError = false) => {
       message.textContent = text;
@@ -241,6 +299,7 @@
     }, true);
     panel.querySelector("#affiliateRefresh").addEventListener("click", loadProducts);
     panel.querySelector("#affiliateCancel").addEventListener("click", resetForm);
+    loadConnection();
     loadProducts();
   };
 })();
