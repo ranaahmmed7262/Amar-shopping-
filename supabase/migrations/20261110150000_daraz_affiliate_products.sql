@@ -30,13 +30,6 @@ ALTER TABLE public.affiliate_products ENABLE ROW LEVEL SECURITY;
 GRANT SELECT ON TABLE public.affiliate_products TO anon, authenticated;
 GRANT INSERT, UPDATE ON TABLE public.affiliate_products TO authenticated;
 
-DROP POLICY IF EXISTS "Public can view active affiliate products" ON public.affiliate_products;
-CREATE POLICY "Public can view active affiliate products"
-  ON public.affiliate_products
-  FOR SELECT
-  TO anon, authenticated
-  USING (status = 'active');
-
 DROP POLICY IF EXISTS "OTP verified marketplace admins manage affiliate products" ON public.affiliate_products;
 CREATE POLICY "OTP verified marketplace admins manage affiliate products"
   ON public.affiliate_products
@@ -76,8 +69,24 @@ CREATE POLICY "OTP verified marketplace admins manage affiliate integration"
   USING (public.is_marketplace_admin())
   WITH CHECK (public.is_marketplace_admin());
 
--- Rollback (run only with separate owner approval):
--- DROP TABLE IF EXISTS public.affiliate_integrations;
+
+-- Public listings are visible only while the Daraz integration switch is ON.
+-- Admins retain access through the separate OTP-verified admin policy above.
+DROP POLICY IF EXISTS "Public can view active affiliate products" ON public.affiliate_products;
+CREATE POLICY "Public can view active affiliate products"
+  ON public.affiliate_products
+  FOR SELECT
+  TO anon, authenticated
+  USING (
+    status = 'active'
+    AND EXISTS (
+      SELECT 1
+      FROM public.affiliate_integrations ai
+      WHERE ai.affiliate_platform = 'daraz'
+        AND ai.is_connected = true
+    )
+  );
 
 -- Rollback (run only with separate owner approval):
 -- DROP TABLE IF EXISTS public.affiliate_products;
+-- DROP TABLE IF EXISTS public.affiliate_integrations;
