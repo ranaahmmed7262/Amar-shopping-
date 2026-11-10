@@ -54,12 +54,23 @@ window.mountAmarShoppingCustomerDashboard=function(d){
   }catch(err){box.innerHTML='<p class="bad">Tracking load হয়নি: '+esc(err.message||"Unknown error")+'</p>'}
  }
  function showPassword(){
-  active("password");content.innerHTML='<section class="cad-shell"><h3 style="margin-top:0;color:#075b43">পাসওয়ার্ড পরিবর্তন</h3><p>Account-এর নিরাপত্তার জন্য আপনার registered email-এ password reset link পাঠানো হবে। Link খুলে নতুন password সেট করুন।</p><p class="cad-muted">ইমেইল: '+esc(d.session.user.email||d.profile.email||"")+'</p><button type="button" class="primary" id="cadSendReset">Password Reset Link পাঠান</button><p class="cad-muted" id="cadResetMsg" aria-live="polite"></p></section>';
-  content.querySelector("#cadSendReset").onclick=async e=>{
-   const btn=e.currentTarget,msg=content.querySelector("#cadResetMsg");btn.disabled=true;btn.textContent="পাঠানো হচ্ছে...";
+  active("password");content.innerHTML='<section class="cad-shell"><h3 style="margin-top:0;color:#075b43">পাসওয়ার্ড পরিবর্তন</h3><p class="cad-muted">বর্তমান পাসওয়ার্ড দিয়ে যাচাই করে নতুন পাসওয়ার্ড সেট করুন। আপনার password আমাদের website database-এ সংরক্ষণ করা হয় না।</p><form id="cadPasswordForm"><label class="cad-field">বর্তমান পাসওয়ার্ড<input name="current" type="password" autocomplete="current-password" required></label><label class="cad-field">নতুন পাসওয়ার্ড<input name="next" type="password" minlength="8" autocomplete="new-password" required></label><label class="cad-field">নতুন পাসওয়ার্ড আবার লিখুন<input name="confirm" type="password" minlength="8" autocomplete="new-password" required></label><button type="submit" class="primary" id="cadPasswordSave">পাসওয়ার্ড পরিবর্তন করুন</button></form><div style="margin-top:12px"><button type="button" class="light" id="cadPasswordReset">ইমেইলে Reset Link নিন (বিকল্প)</button></div><p class="cad-muted" id="cadResetMsg" aria-live="polite"></p></section>';
+  const form=content.querySelector("#cadPasswordForm"),msg=content.querySelector("#cadResetMsg");
+  form.onsubmit=async e=>{
+   e.preventDefault();const fd=new FormData(form),current=String(fd.get("current")||""),next=String(fd.get("next")||""),confirmPassword=String(fd.get("confirm")||""),btn=content.querySelector("#cadPasswordSave");
+   if(next.length<8){msg.textContent="নতুন পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।";return}
+   if(next!==confirmPassword){msg.textContent="নতুন পাসওয়ার্ড দুটি মিলছে না।";return}
+   if(next===current){msg.textContent="নতুন পাসওয়ার্ডটি বর্তমান পাসওয়ার্ড থেকে আলাদা দিন।";return}
+   btn.disabled=true;btn.textContent="যাচাই ও পরিবর্তন হচ্ছে...";
+   try{const {error}=await d.db.auth.updateUser({password:next,current_password:current});if(error)throw error;form.reset();msg.textContent="পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে।"}
+   catch(err){msg.textContent="পাসওয়ার্ড পরিবর্তন হয়নি: "+(err.message||"বর্তমান password যাচাই করুন অথবা ইমেইল Reset Link ব্যবহার করুন।")}
+   finally{btn.disabled=false;btn.textContent="পাসওয়ার্ড পরিবর্তন করুন"}
+  };
+  content.querySelector("#cadPasswordReset").onclick=async e=>{
+   const btn=e.currentTarget;btn.disabled=true;
    try{const email=d.session.user.email||d.profile.email;if(!email)throw new Error("Account email পাওয়া যায়নি।");const {error}=await d.db.auth.resetPasswordForEmail(email,{redirectTo:"https://amar-shopping-bd-live.onrender.com/"});if(error)throw error;msg.textContent="Reset link পাঠানো হয়েছে। Inbox ও Spam folder দেখুন।"}
-   catch(err){msg.textContent="Reset link পাঠানো যায়নি: "+(err.message||"আবার চেষ্টা করুন");}
-   finally{btn.disabled=false;btn.textContent="Password Reset Link পাঠান"}
+   catch(err){msg.textContent="Reset link পাঠানো যায়নি: "+(err.message||"আবার চেষ্টা করুন")}
+   finally{btn.disabled=false}
   };
  }
  bar.onclick=async e=>{
