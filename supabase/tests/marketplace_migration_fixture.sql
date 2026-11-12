@@ -109,3 +109,6 @@ insert into public.app_settings (key, value) values
   ('payment_methods', 'cod,bkash'),
   ('delivery_fee_bdt', '80'),
   ('seller_payout_hold_days', '0');
+
+-- Match the existing storefront base-table grants used by Supabase.
+grant select on public.products, public.users to anon, authenticated;
