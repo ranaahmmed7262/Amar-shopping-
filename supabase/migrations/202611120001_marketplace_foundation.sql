@@ -378,7 +378,8 @@ begin
   if exists (
     select 1 from jsonb_array_elements(p_items) as x(item)
     where jsonb_typeof(x.item) <> 'object'
-       or coalesce(x.item->>'product_id','') !~ '^[1-9][0-9]*       or coalesce(x.item->>'quantity','') !~ '^[1-9][0-9]*
+       or coalesce(x.item->>'product_id','') !~ '^[1-9][0-9]*
+       or coalesce(x.item->>'quantity','') !~ '^[1-9][0-9]*
 -- Intentionally not included:
 -- * Payout API / bKash / Nagad / bank transfer execution (requires approved provider credentials).
 -- * Automatic payout scheduling (must not be enabled before provider settlement and refund reconciliation).
@@ -504,7 +505,9 @@ commit;
 -- * Product variant checkout/stock reservation until storefront variant selection is implemented and tested.
 -- * Category commission override until checkout_order is updated and regression-tested.
 
-       or coalesce(x.item->>'quantity','') !~ '^[1-9][0-9]*       or (x.item ? 'variant_id' and coalesce(x.item->>'variant_id','') !~ '^[1-9][0-9]*
+
+       or coalesce(x.item->>'quantity','') !~ '^[1-9][0-9]*
+       or (x.item ? 'variant_id' and coalesce(x.item->>'variant_id','') !~ '^[1-9][0-9]*
 -- Intentionally not included:
 -- * Payout API / bKash / Nagad / bank transfer execution (requires approved provider credentials).
 -- * Automatic payout scheduling (must not be enabled before provider settlement and refund reconciliation).
@@ -622,6 +625,7 @@ commit;
 -- * Automatic payout scheduling (must not be enabled before provider settlement and refund reconciliation).
 -- * Product variant checkout/stock reservation until storefront variant selection is implemented and tested.
 -- * Category commission override until checkout_order is updated and regression-tested.
+
 
        or (x.item ? 'variant_id' and coalesce(x.item->>'variant_id','') !~ '^[1-9][0-9]*)
   ) then raise exception 'Invalid product, variant or quantity'; end if;
