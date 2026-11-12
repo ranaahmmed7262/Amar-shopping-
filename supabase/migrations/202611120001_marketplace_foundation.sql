@@ -441,6 +441,9 @@ begin
       end if;
       v_unit_price := coalesce(v_variant.sale_price_bdt,v_variant.price_bdt);
     else
+      if exists (select 1 from public.product_variants v where v.product_id = v_item.product_id and v.is_active) then
+        raise exception 'Please select a product variant before checkout';
+      end if;
       if v_product.stock < v_item.quantity then raise exception 'Product unavailable or insufficient stock'; end if;
       v_unit_price := coalesce(v_product.sale_price_bdt,v_product.price_bdt);
     end if;
