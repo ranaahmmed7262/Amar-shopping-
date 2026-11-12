@@ -272,7 +272,7 @@ select
   coalesce((
     select max(h.created_at) from public.order_status_history h
     where h.order_id = c.order_id and h.status = 'delivered'
-  ), o.created_at, now()) + make_interval(days => coalesce((
+  ), now()) + make_interval(days => coalesce((
     select nullif(a.value, '')::integer from public.app_settings a where a.key = 'seller_payout_hold_days'
   ), 7))
 from public.seller_commissions c
