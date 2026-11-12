@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 190" role="img" aria-labelledby="title desc">
+<title id="title">Amar Shopping mark</title>
+<desc id="desc">Shopping bag and cart mark with a navy bag and orange motion swoosh.</desc>
+<defs>
+<linearGradient id="orange" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffb21b"/><stop offset="1" stop-color="#f04419"/></linearGradient>
+<linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0754a8"/><stop offset="1" stop-color="#071d50"/></linearGradient>
+</defs>
+<g transform="translate(8 8)">
+<path d="M39 61 Q39 48 53 48 H150 Q164 48 164 62 L178 157 Q180 174 162 174 H38 Q20 174 23 157 Z" fill="url(#navy)"/>
+<path d="M66 54 V39 Q66 8 101 8 Q136 8 136 39 V55" fill="none" stroke="#0a3979" stroke-width="12" stroke-linecap="round"/>
+<path d="M76 119 L101 75 L126 119" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M47 132 Q99 93 173 96 Q130 107 77 145" fill="none" stroke="url(#orange)" stroke-width="10" stroke-linecap="round"/>
+<g transform="translate(68 129)" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0 H12 L20 38 H76 L88 9 H18"/><path d="M24 20 H82 M29 9 L32 37 M53 9 L53 37 M20 48 H76"/><circle cx="32" cy="57" r="6" fill="#fff" stroke="none"/><circle cx="69" cy="57" r="6" fill="#fff" stroke="none"/></g>
+</g>
+</svg>
