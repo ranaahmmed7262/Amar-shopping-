@@ -173,6 +173,8 @@ using (
 grant select on public.seller_wallet_balances to authenticated;
 grant select on public.product_variants to anon, authenticated;
 grant insert, update, delete on public.product_variants to authenticated;
+grant select on public.seller_wallet_ledger to authenticated;
+grant usage, select on sequence public.product_variants_id_seq to authenticated;
 
 
 create or replace function public.get_seller_wallet_summary(p_seller_id bigint default null)
