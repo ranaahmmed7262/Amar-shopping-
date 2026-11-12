@@ -587,7 +587,7 @@ productForm.onsubmit=async e=>{e.preventDefault();if(profile?.role!=="seller"&&p
 let publicTrackingTimer=null;
 async function trackPublicOrder(orderId,phone,target,quiet=false){
  const cleanId=String(orderId||"").trim(),cleanPhone=String(phone||"").trim();
- if(!/^\\d+$/.test(cleanId)||cleanPhone.replace(/\\D/g,"").length<10){if(!quiet)target.innerHTML='<p class="bad">সঠিক Order ID ও অর্ডারের মোবাইল নম্বর দিন। নিরাপত্তার জন্য দুটিই প্রয়োজন।</p>';return}
+ if(!/^\d+$/.test(cleanId)||cleanPhone.replace(/\D/g,"").length<10){if(!quiet)target.innerHTML='<p class="bad">সঠিক Order ID ও অর্ডারের মোবাইল নম্বর দিন। নিরাপত্তার জন্য দুটিই প্রয়োজন।</p>';return}
  if(!quiet)target.innerHTML='<p class="muted">অর্ডারের সর্বশেষ তথ্য খোঁজা হচ্ছে...</p>';
  const {data,error}=await db.rpc("track_order_by_phone",{p_order_id:cleanId,p_phone:cleanPhone});
  if(error){if(!quiet)target.innerHTML='<p class="bad">Tracking করা যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।</p>';return}
