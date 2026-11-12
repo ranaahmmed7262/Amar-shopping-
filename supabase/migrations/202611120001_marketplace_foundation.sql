@@ -65,7 +65,11 @@ begin
     (commission_id, order_id, seller_id, gross_bdt, commission_bdt, earning_bdt, available_after)
   values
     (new.id, new.order_id, new.seller_id, new.gross_bdt, new.commission_bdt,
-     new.seller_earning_bdt, now() + make_interval(days => v_hold_days))
+     new.seller_earning_bdt,
+     case when exists (select 1 from public.orders o where o.id = new.order_id and o.status = 'delivered')
+       then now() + make_interval(days => v_hold_days)
+       else now() + make_interval(days => 36500)
+     end)
   on conflict (commission_id) do nothing;
 
   return new;
@@ -263,12 +267,53 @@ insert into public.seller_wallet_ledger
   (commission_id, order_id, seller_id, gross_bdt, commission_bdt, earning_bdt, available_after)
 select
   c.id, c.order_id, c.seller_id, c.gross_bdt, c.commission_bdt, c.seller_earning_bdt,
-  coalesce(o.created_at, now()) + make_interval(days => coalesce((
+  coalesce((
+    select max(h.created_at) from public.order_status_history h
+    where h.order_id = c.order_id and h.status = 'delivered'
+  ), o.created_at, now()) + make_interval(days => coalesce((
     select nullif(a.value, '')::integer from public.app_settings a where a.key = 'seller_payout_hold_days'
   ), 7))
 from public.seller_commissions c
 join public.orders o on o.id = c.order_id
 on conflict (commission_id) do nothing;
+
+
+-- Start the payout hold window only after delivery, not at checkout time.
+create or replace function public.refresh_seller_wallet_hold_after_delivery()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $wallet_delivery_hold$
+declare
+  v_hold_days integer := 7;
+begin
+  select coalesce(nullif(value, '')::integer, 7)
+    into v_hold_days
+  from public.app_settings
+  where key = 'seller_payout_hold_days';
+  if v_hold_days is null then v_hold_days := 7; end if;
+  if v_hold_days < 0 or v_hold_days > 90 then
+    raise exception 'seller_payout_hold_days must be between 0 and 90';
+  end if;
+
+  if new.status = 'delivered' and old.status is distinct from 'delivered' then
+    update public.seller_wallet_ledger
+    set available_after = now() + make_interval(days => v_hold_days)
+    where order_id = new.id;
+  elsif old.status = 'delivered' and new.status is distinct from 'delivered' then
+    update public.seller_wallet_ledger
+    set available_after = now() + make_interval(days => 36500)
+    where order_id = new.id;
+  end if;
+  return new;
+end;
+$wallet_delivery_hold$;
+
+drop trigger if exists orders_refresh_seller_wallet_hold on public.orders;
+create trigger orders_refresh_seller_wallet_hold
+after update of status on public.orders
+for each row execute function public.refresh_seller_wallet_hold_after_delivery();
 
 -- Variant-aware checkout. Existing carts without variant_id continue to work unchanged.
 create or replace function public.checkout_order(
