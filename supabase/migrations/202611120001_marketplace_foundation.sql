@@ -110,15 +110,29 @@ group by l.seller_id;
 
 alter table public.product_variants enable row level security;
 drop policy if exists product_variants_read_visible on public.product_variants;
-create policy product_variants_read_visible
-on public.product_variants for select to anon, authenticated
+drop policy if exists product_variants_public_read on public.product_variants;
+drop policy if exists product_variants_authenticated_read on public.product_variants;
+
+-- Keep anonymous storefront reads independent of authenticated-only admin RPCs.
+create policy product_variants_public_read
+on public.product_variants for select to anon
+using (
+  exists (
+    select 1 from public.products p
+    where p.id = product_variants.product_id
+      and p.status = 'approved'
+  )
+);
+
+create policy product_variants_authenticated_read
+on public.product_variants for select to authenticated
 using (
   exists (
     select 1 from public.products p
     where p.id = product_variants.product_id
       and (
         p.status = 'approved'
-        or (select auth.uid()) is not null and exists (
+        or exists (
           select 1 from public.users u
           where u.id = p.seller_id and u.auth_user_id = (select auth.uid())
         )
