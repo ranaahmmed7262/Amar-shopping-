@@ -425,6 +425,89 @@ header.bar .top .brand img{display:block!important;width:100%!important;max-widt
 <style id="amar-wishlist-v1">
 .product{position:relative}.amar-wishlist-heart{position:absolute;z-index:3;top:9px;right:9px;width:42px;height:42px;border:1px solid #e7ece8;border-radius:50%;background:#ffffffed;color:#9a4b5a;font-size:25px;line-height:1;box-shadow:0 4px 13px #183b2b20;cursor:pointer;transition:transform .18s,background .18s,color .18s}.amar-wishlist-heart:hover{transform:scale(1.08)}.amar-wishlist-heart.is-saved{background:#fff0f2;color:#d72f55;border-color:#f4b9c5}.amar-wishlist-nav{white-space:nowrap}.amar-wishlist-nav b{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#087f5b;color:white;font-size:11px}.amar-wishlist-nav span{font-size:12px}@media(max-width:600px){.amar-wishlist-nav{padding:8px 9px}.amar-wishlist-nav span{display:none}.amar-wishlist-heart{width:40px;height:40px;top:7px;right:7px}}@media(prefers-reduced-motion:reduce){.amar-wishlist-heart{transition:none}}
 </style>
+
+<style id="amar-hybrid-editorial-phase1">
+/* Phase 1: original Amar Shopping hybrid editorial storefront skin.
+   CSS-only layer: preserves existing IDs, forms, product rendering and app logic. */
+:root{--amar-ink:#17251f;--amar-forest:#073f32;--amar-green:#087f5b;--amar-ivory:#fbfaf7;--amar-sand:#e9dfd0;--amar-wine:#963d50}
+body{background:var(--amar-ivory);color:var(--amar-ink)}
+.bar{background:rgba(251,250,247,.96);border-bottom:1px solid #e8e1d7;box-shadow:0 8px 28px #1c2c2410}
+.top{max-width:1380px;min-height:82px;padding:13px clamp(12px,2.5vw,30px);gap:clamp(7px,1.2vw,16px)}
+.brand{color:var(--amar-forest)}
+.search{border:1px solid #e5ddd1;background:#fff;border-radius:14px;box-shadow:inset 0 1px 2px #1b2a2108}
+.search input{background:transparent!important}
+.search button{background:var(--amar-forest);box-shadow:none}
+.top>.light{background:#fff;border-color:#e6dfd5;color:#253b30}
+#cartBtn{background:#edf5ef;border-color:#dce9df;color:var(--amar-forest)}
+.amar-wishlist-nav b{background:var(--amar-wine)}
+.trust-strip{max-width:1340px;border-color:#e8e0d5;background:linear-gradient(100deg,#fff,#f5f0e8);color:#385747}
+.amar-smart-ribbon>div{border-color:#e9e0d4;background:#fffdfa;color:#385747}
+.hero{max-width:1340px;min-height:clamp(310px,34vw,440px);margin:22px auto 28px;padding:clamp(25px,5vw,68px);border:1px solid #ffffff24;border-radius:26px;background-color:var(--amar-forest);background-size:cover!important;background-position:center!important;box-shadow:0 24px 58px #142d221c}
+.hero:before{width:46%;height:150%;right:-8%;top:-25%;border:1px solid #ffffff32;border-radius:50%;box-shadow:0 0 0 30px #ffffff0b,0 0 0 68px #ffffff08;pointer-events:none}
+.hero:after{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,#052c23e8 0%,#073f32c9 48%,#073f3250 100%);pointer-events:none}
+.hero-copy{position:relative;z-index:2;max-width:690px}
+.hero-kicker{background:#ffffff1c;border-color:#ffffff55;letter-spacing:1.7px}
+.hero h1{max-width:690px;font-size:clamp(34px,5.2vw,62px);line-height:1.08;letter-spacing:-1.9px}
+.hero p{max-width:560px;font-size:clamp(14px,1.3vw,16px);line-height:1.85}
+.hero-benefits span{border-color:#ffffff38;background:#ffffff16;backdrop-filter:blur(8px)}
+.hero-shop-link{border-radius:5px;background:var(--amar-ivory);color:var(--amar-forest);padding:15px 21px;letter-spacing:.1px;box-shadow:0 10px 26px #001d1438}
+.hero-shop-link:hover{background:#fff;transform:translateY(-2px)}
+.hero-art{z-index:1;min-height:250px;border:1px solid #ffffff36;border-radius:28px;background:linear-gradient(145deg,#ffffff28,#ffffff08);backdrop-filter:blur(5px);box-shadow:0 24px 50px #001b1430}
+.hero-bag{border:1px solid #ffffffb8;box-shadow:0 24px 48px #001b1445}
+.hero-float-card{border:1px solid #ffffff80;box-shadow:0 14px 32px #001b1435}
+.amar-home-discovery{max-width:1340px}
+.amar-discovery-inner{border-color:#e8e0d5;border-radius:22px;background:linear-gradient(145deg,#fffdfa 0%,#f7f3ec 60%,#fff 100%);box-shadow:0 14px 38px #23362b0a}
+.amar-eyebrow{color:var(--amar-wine);letter-spacing:2px}
+.amar-heading-sticker{background:#fff8ed;border-color:#ead7b7;color:#805b2d}
+.amar-category-tile{border-radius:8px;box-shadow:0 8px 22px #1c2c2414}
+.amar-category-tile:hover{transform:translateY(-4px)}
+.amar-tile-shade{background:linear-gradient(180deg,#071c1500 8%,#071c1540 48%,#071c15e8 100%)}
+.amar-category-tile em{background:#963d50ed;border-color:#ffffffa0}
+.amar-promo-banner{border-radius:9px;min-height:205px}
+.amar-promo-gold{background:linear-gradient(110deg,#403020,#9d713e 70%,#d2b17c)}
+.amar-promo-green{background:linear-gradient(110deg,#073f32,#087f5b 70%,#3b9272)}
+.amar-promo-cta{border-radius:4px}
+.wrap{max-width:1340px}
+.wrap>.row h2,.section h2{color:var(--amar-forest);letter-spacing:-.65px}
+.product,.panel{border-color:#e9e3da}
+#products .product{border-radius:10px;box-shadow:0 7px 20px #1c2c240c}
+#products .product:hover{border-color:#c7d9cc;box-shadow:0 15px 30px #1c2c2418}
+#products .add{border-radius:7px}
+.side-drawer{width:min(370px,90vw);background:#fbfaf7}
+.drawer-head{padding:25px;background:linear-gradient(135deg,#052f26,#087f5b)}
+.drawer-links{padding:14px}
+.drawer-links button{min-height:48px;margin:3px 0;border:1px solid transparent;border-radius:8px;padding:13px 14px;color:#20382c;transition:background .18s,border-color .18s,transform .18s}
+.drawer-links button:hover,.drawer-links button:focus-visible{background:#eef5ef;border-color:#d9e7dc;transform:translateX(3px);outline:none}
+.drawer-links button span{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:#edf4ed}
+.drawer-contact{border-color:#e6ded2;background:#fffdfa}
+#dashContent .admin-shell{border-radius:10px}
+#dashContent .admin-panel{border-radius:10px;border-color:#e8e1d7}
+#dashContent .admin-control-nav button{border-radius:7px!important}
+#dashContent .admin-control-nav button.active{box-shadow:inset 3px 0 var(--amar-wine)!important;border-color:#d7c4c7!important;background:#fbf1f2!important;color:#713443!important}
+.foot{background:linear-gradient(120deg,#052e25,#073f32)}
+@media(max-width:850px){
+ .hero{grid-template-columns:1fr .7fr;min-height:300px}
+ .hero-art{min-height:210px}
+ .hero-bag{width:125px;height:125px;font-size:70px}
+}
+@media(max-width:650px){
+ .top{min-height:70px;padding:9px 11px}
+ .hero{grid-template-columns:1fr;gap:14px;min-height:0;margin:12px 11px 20px;padding:24px 19px;border-radius:17px}
+ .hero:before{width:80%;height:100%;right:-35%;top:0}
+ .hero:after{background:linear-gradient(180deg,#052c23e8 0%,#073f32c9 70%,#073f3280 100%)}
+ .hero h1{font-size:clamp(29px,8vw,39px);letter-spacing:-1px}
+ .hero-art{min-height:150px;max-width:100%;border-radius:17px}
+ .hero-art .hero-bag{width:100px;height:100px;font-size:58px}
+ .hero-live-sticker{right:4%;top:5%}
+ .hero-float-sticker{left:4%;top:10%}
+ .amar-promo-banner{min-height:160px}
+ .side-drawer{width:min(370px,92vw)}
+}
+@media(prefers-reduced-motion:reduce){
+ .drawer-links button,.hero-shop-link{transition:none!important}
+ .drawer-links button:hover,.hero-shop-link:hover{transform:none}
+}
+</style>
 </head>
 <body>
 <header class="bar"><div class="top"><button type="button" class="menu-trigger" id="menuTrigger" aria-label="মেনু খুলুন" aria-expanded="false" style="display:flex!important;visibility:visible!important;align-items:center!important;justify-content:center!important;min-width:44px!important;min-height:44px!important;padding:0!important;position:relative;z-index:30"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="24" height="24" style="display:block!important;width:24px!important;height:24px!important;min-width:24px;overflow:visible"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="#103b2d" stroke-width="2.8" stroke-linecap="round"/></svg></button><div class="brand" aria-label="Amar Shopping"><img src="./assets/amar-shopping-logo.svg" alt="Amar Shopping" width="190" height="48" decoding="async"><span class="sr-only">Amar Shopping</span></div><div class="search"><input id="search" placeholder="পণ্য খুঁজুন..."><button id="searchBtn">খুঁজুন</button></div><div class="language-menu" aria-label="Select website language">
