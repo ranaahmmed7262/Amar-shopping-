@@ -545,7 +545,7 @@ let products=[],cart=loadSavedCart(),category="সব",minPrice=null,maxPrice=nu
 let authMode="login",adminLoginMode=false,adminOtpMode=false,adminOtpPending=false,adminOtpVerifiedUserId=null;
 const $=id=>document.getElementById(id);
 let wishlistIds=loadWishlist();
-function loadWishlist(){try{const value=JSON.parse(localStorage.getItem("amar_wishlist_v1")||"[]");return Array.isArray(value)?[...new Set(value.map(x=>String(x)).filter(x=>/^\\d+$/.test(x)))]:[]}catch(error){console.warn("Wishlist storage unavailable:",error);return []}}
+function loadWishlist(){try{const value=JSON.parse(localStorage.getItem("amar_wishlist_v1")||"[]");return Array.isArray(value)?[...new Set(value.map(x=>String(x)).filter(x=>/^\d+$/.test(x)))]:[]}catch(error){console.warn("Wishlist storage unavailable:",error);return []}}
 function saveWishlist(){try{localStorage.setItem("amar_wishlist_v1",JSON.stringify(wishlistIds));return true}catch(error){toast("পছন্দের তালিকা এই ব্রাউজারে সংরক্ষণ করা যায়নি।",true);return false}}
 function updateWishlistCount(){const n=$("wishlistCount");if(n)n.textContent=wishlistIds.length}
 function toggleWishlist(id){const key=String(id);if(wishlistIds.includes(key)){wishlistIds=wishlistIds.filter(x=>x!==key);toast("পণ্যটি পছন্দের তালিকা থেকে সরানো হয়েছে")}else{wishlistIds.push(key);toast("পণ্যটি পছন্দের তালিকায় যোগ হয়েছে")}saveWishlist();updateWishlistCount();drawProducts();renderWishlist()}
