@@ -222,6 +222,232 @@ $;
 revoke all on function public.get_seller_wallet_summary(bigint) from public;
 grant execute on function public.get_seller_wallet_summary(bigint) to authenticated;
 
+
+-- Keep product-level stock in sync with the sum of variant stock.
+alter table public.order_items
+  add column if not exists variant_id bigint references public.product_variants(id) on delete restrict;
+
+create or replace function public.sync_product_stock_from_variants()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $
+declare
+  v_product_id bigint;
+begin
+  v_product_id := coalesce(new.product_id, old.product_id);
+  update public.products p
+  set stock = coalesce((select sum(v.stock)::integer from public.product_variants v where v.product_id = v_product_id and v.is_active), 0)
+  where p.id = v_product_id;
+  if tg_op = 'UPDATE' and old.product_id is distinct from new.product_id then
+    update public.products p
+    set stock = coalesce((select sum(v.stock)::integer from public.product_variants v where v.product_id = old.product_id and v.is_active), 0)
+    where p.id = old.product_id;
+  end if;
+  return coalesce(new, old);
+end;
+$;
+
+drop trigger if exists product_variants_sync_stock on public.product_variants;
+create trigger product_variants_sync_stock
+after insert or update or delete on public.product_variants
+for each row execute function public.sync_product_stock_from_variants();
+
+-- Backfill existing commission records into the new ledger, idempotently.
+insert into public.seller_wallet_ledger
+  (commission_id, order_id, seller_id, gross_bdt, commission_bdt, earning_bdt, available_after)
+select
+  c.id, c.order_id, c.seller_id, c.gross_bdt, c.commission_bdt, c.seller_earning_bdt,
+  coalesce(o.created_at, now()) + make_interval(days => coalesce((
+    select nullif(a.value, '')::integer from public.app_settings a where a.key = 'seller_payout_hold_days'
+  ), 7))
+from public.seller_commissions c
+join public.orders o on o.id = c.order_id
+on conflict (commission_id) do nothing;
+
+-- Variant-aware checkout. Existing carts without variant_id continue to work unchanged.
+create or replace function public.checkout_order(
+  p_customer_id bigint,
+  p_items jsonb,
+  p_delivery_address text,
+  p_payment_method text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, auth
+as $
+declare
+  v_profile_id bigint;
+  v_item record;
+  v_product public.products%rowtype;
+  v_variant public.product_variants%rowtype;
+  v_subtotal bigint := 0;
+  v_delivery integer := 80;
+  v_total bigint;
+  v_order_id bigint;
+  v_commission_pct numeric := 5;
+  v_fee bigint;
+  v_updated integer;
+  v_methods text := 'cod,bkash';
+  v_unit_price integer;
+  v_stock integer;
+begin
+  if exists (select 1 from public.app_settings where key='store_status' and value='closed') then
+    raise exception 'Store is temporarily closed for orders';
+  end if;
+
+  if (select auth.uid()) is null then
+    if p_customer_id is not null then raise exception 'Invalid guest checkout'; end if;
+  else
+    select id into v_profile_id from public.users where auth_user_id = (select auth.uid());
+    if v_profile_id is null or p_customer_id is distinct from v_profile_id then
+      raise exception 'Customer profile mismatch';
+    end if;
+  end if;
+
+  select coalesce(value,'cod,bkash') into v_methods
+  from public.app_settings where key='payment_methods';
+  v_methods := replace(coalesce(v_methods,'cod,bkash'),' ','');
+  if coalesce(p_payment_method,'') not in ('cod','bkash','nagad','rocket')
+     or position(','||p_payment_method||',' in ','||v_methods||',') = 0 then
+    raise exception 'Selected payment method is not enabled';
+  end if;
+
+  if coalesce(trim(p_delivery_address),'') = ''
+     or p_items is null
+     or jsonb_typeof(p_items) <> 'array'
+     or jsonb_array_length(p_items) = 0
+     or jsonb_array_length(p_items) > 100 then
+    raise exception 'Valid items and delivery address are required';
+  end if;
+
+  if exists (
+    select 1 from jsonb_array_elements(p_items) as x(item)
+    where jsonb_typeof(x.item) <> 'object'
+       or coalesce(x.item->>'product_id','') !~ '^[1-9][0-9]*
+-- Intentionally not included:
+-- * Payout API / bKash / Nagad / bank transfer execution (requires approved provider credentials).
+-- * Automatic payout scheduling (must not be enabled before provider settlement and refund reconciliation).
+-- * Product variant checkout/stock reservation until storefront variant selection is implemented and tested.
+-- * Category commission override until checkout_order is updated and regression-tested.
+
+       or coalesce(x.item->>'quantity','') !~ '^[1-9][0-9]*
+-- Intentionally not included:
+-- * Payout API / bKash / Nagad / bank transfer execution (requires approved provider credentials).
+-- * Automatic payout scheduling (must not be enabled before provider settlement and refund reconciliation).
+-- * Product variant checkout/stock reservation until storefront variant selection is implemented and tested.
+-- * Category commission override until checkout_order is updated and regression-tested.
+
+       or (x.item ? 'variant_id' and coalesce(x.item->>'variant_id','') !~ '^[1-9][0-9]*
+-- Intentionally not included:
+-- * Payout API / bKash / Nagad / bank transfer execution (requires approved provider credentials).
+-- * Automatic payout scheduling (must not be enabled before provider settlement and refund reconciliation).
+-- * Product variant checkout/stock reservation until storefront variant selection is implemented and tested.
+-- * Category commission override until checkout_order is updated and regression-tested.
+)
+  ) then raise exception 'Invalid product, variant or quantity'; end if;
+
+  if exists (
+    select 1 from jsonb_array_elements(p_items) as x(item)
+    group by (x.item->>'product_id')::bigint, nullif(x.item->>'variant_id','')::bigint
+    having sum((x.item->>'quantity')::bigint) > 50
+  ) then raise exception 'Maximum quantity per product variant is 50'; end if;
+
+  select coalesce(
+    (select nullif(value::jsonb ->> split_part(p_delivery_address, ', ', 1), '')::integer
+     from public.app_settings where key='district_delivery_fees'),
+    (select value::integer from public.app_settings where key='delivery_fee_bdt'),
+    80
+  ) into v_delivery;
+
+  select coalesce(value::numeric,5) into v_commission_pct
+  from public.app_settings where key='commission_percent';
+
+  if coalesce(v_delivery,80) < 0 or coalesce(v_commission_pct,5) < 0 or coalesce(v_commission_pct,5) > 50 then
+    raise exception 'Marketplace settings are invalid';
+  end if;
+
+  for v_item in
+    select (x.item->>'product_id')::bigint as product_id,
+           nullif(x.item->>'variant_id','')::bigint as variant_id,
+           sum((x.item->>'quantity')::integer)::integer as quantity
+    from jsonb_array_elements(p_items) as x(item)
+    group by (x.item->>'product_id')::bigint, nullif(x.item->>'variant_id','')::bigint
+    order by (x.item->>'product_id')::bigint, nullif(x.item->>'variant_id','')::bigint
+  loop
+    select * into v_product from public.products
+    where id=v_item.product_id and status='approved'
+    for update;
+    if not found then raise exception 'Product unavailable'; end if;
+    if v_item.variant_id is not null then
+      select * into v_variant from public.product_variants
+      where id=v_item.variant_id and product_id=v_item.product_id and is_active
+      for update;
+      if not found or v_variant.stock < v_item.quantity then
+        raise exception 'Selected product variant unavailable or insufficient stock';
+      end if;
+      v_unit_price := coalesce(v_variant.sale_price_bdt,v_variant.price_bdt);
+    else
+      if v_product.stock < v_item.quantity then raise exception 'Product unavailable or insufficient stock'; end if;
+      v_unit_price := coalesce(v_product.sale_price_bdt,v_product.price_bdt);
+    end if;
+    v_subtotal := v_subtotal + (v_unit_price::bigint * v_item.quantity);
+  end loop;
+
+  v_total := v_subtotal + coalesce(v_delivery,80);
+  if v_total > 2147483647 then raise exception 'Order total exceeds supported limit'; end if;
+
+  insert into public.orders(customer_id,total_bdt,delivery_fee_bdt,payment_method,delivery_address)
+  values(v_profile_id,v_total::integer,coalesce(v_delivery,80),p_payment_method,p_delivery_address)
+  returning id into v_order_id;
+
+  for v_item in
+    select (x.item->>'product_id')::bigint as product_id,
+           nullif(x.item->>'variant_id','')::bigint as variant_id,
+           sum((x.item->>'quantity')::integer)::integer as quantity
+    from jsonb_array_elements(p_items) as x(item)
+    group by (x.item->>'product_id')::bigint, nullif(x.item->>'variant_id','')::bigint
+    order by (x.item->>'product_id')::bigint, nullif(x.item->>'variant_id','')::bigint
+  loop
+    select * into v_product from public.products where id=v_item.product_id for update;
+    if v_item.variant_id is not null then
+      select * into v_variant from public.product_variants
+      where id=v_item.variant_id and product_id=v_item.product_id and is_active
+      for update;
+      if not found or v_variant.stock < v_item.quantity then raise exception 'Variant stock changed; please retry'; end if;
+      v_unit_price := coalesce(v_variant.sale_price_bdt,v_variant.price_bdt);
+      insert into public.order_items(order_id,product_id,variant_id,quantity,unit_price_bdt)
+      values(v_order_id,v_product.id,v_variant.id,v_item.quantity,v_unit_price);
+      update public.product_variants set stock=stock-v_item.quantity, updated_at=now()
+      where id=v_variant.id and stock>=v_item.quantity;
+    else
+      v_unit_price := coalesce(v_product.sale_price_bdt,v_product.price_bdt);
+      insert into public.order_items(order_id,product_id,quantity,unit_price_bdt)
+      values(v_order_id,v_product.id,v_item.quantity,v_unit_price);
+      update public.products set stock=stock-v_item.quantity
+      where id=v_product.id and stock>=v_item.quantity;
+    end if;
+    get diagnostics v_updated = row_count;
+    if v_updated <> 1 then raise exception 'Product unavailable or insufficient stock'; end if;
+
+    if v_product.seller_id is not null then
+      v_fee := round((v_unit_price::bigint*v_item.quantity)*v_commission_pct/100);
+      insert into public.seller_commissions(order_id,seller_id,product_id,gross_bdt,commission_bdt,seller_earning_bdt)
+      values(v_order_id,v_product.seller_id,v_product.id,
+        (v_unit_price::bigint*v_item.quantity)::integer,
+        v_fee::integer,
+        ((v_unit_price::bigint*v_item.quantity)-v_fee)::integer);
+    end if;
+  end loop;
+
+  return jsonb_build_object('order_id',v_order_id,'subtotal_bdt',v_subtotal,
+    'delivery_fee_bdt',coalesce(v_delivery,80),'total_bdt',v_total,
+    'payment_method',p_payment_method,'status','placed');
+end;
+$;
+
 commit;
 
 -- Intentionally not included:
