@@ -382,6 +382,45 @@ header.bar .top .brand img{display:block!important;width:100%!important;max-widt
 @media(max-width:700px){#filters{gap:7px}.category-mega-item{max-width:100%}#filters .category-mega-trigger{min-height:42px;padding:7px 10px;gap:6px;font-size:12px}.category-mega-panel{position:relative;top:auto;left:auto;width:min(100%,calc(100vw - 30px));margin-top:7px;padding:12px;display:none;opacity:1;visibility:visible;pointer-events:auto;transform:none;box-shadow:0 10px 26px #0a382018}.category-mega-item.is-open .category-mega-panel{display:block}.category-mega-products{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.category-mega-product{padding:6px;gap:7px}.category-mega-product>img,.category-mega-placeholder{width:39px;height:39px;flex-basis:39px}.category-mega-product-copy b,.category-mega-product-copy small{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.category-mega-panel,#filters .category-mega-trigger,.category-mega-chevron{transition:none}}
 </style>
+
+<style id="amar-myntra-inspired-home-refresh">
+.amar-home-discovery{max-width:1320px;margin:28px auto 36px;padding:0 24px}
+.amar-discovery-inner{padding:25px;border:1px solid #e5ece6;border-radius:25px;background:linear-gradient(145deg,#fff 0%,#f7faf7 58%,#fff8ed 100%);box-shadow:0 12px 34px #143d2809}
+.amar-discovery-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+.amar-eyebrow{font-size:10px;font-weight:950;letter-spacing:1.8px;color:#0a8a60}
+.amar-discovery-heading h2{margin:5px 0 3px;color:#103b2d;font-size:clamp(21px,3vw,29px);font-weight:950;letter-spacing:-.7px}
+.amar-discovery-heading p{margin:0;color:#718078;font-size:13px}
+.amar-heading-sticker{padding:9px 13px;border:1px solid #f1dba9;border-radius:999px;background:#fff7e7;color:#865d18;font-size:10px;font-weight:950;white-space:nowrap;transform:rotate(2deg)}
+.amar-category-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.amar-category-tile{position:relative;isolation:isolate;display:block;min-width:0;height:245px;overflow:hidden;border-radius:17px;background:#e8efe9;color:#fff;text-decoration:none;box-shadow:0 6px 18px #143d2812;transition:transform .25s ease,box-shadow .25s ease}
+.amar-category-tile>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .55s cubic-bezier(.2,.75,.25,1),filter .35s}
+.amar-category-tile:hover{transform:translateY(-5px);box-shadow:0 17px 32px #143d2826}
+.amar-category-tile:hover>img{transform:scale(1.09);filter:saturate(1.08)}
+.amar-tile-shade{position:absolute;inset:0;background:linear-gradient(180deg,#071c1500 20%,#071c1540 53%,#071c15d9 100%);z-index:1}
+.amar-tile-copy{position:absolute;z-index:2;left:16px;right:12px;bottom:17px;display:grid;gap:4px}
+.amar-tile-copy small{font-size:9px;letter-spacing:1.1px;font-weight:900;color:#f9e3b5}
+.amar-tile-copy b{font-size:clamp(16px,1.7vw,21px);line-height:1.2;font-weight:950;text-shadow:0 2px 8px #0005}
+.amar-tile-copy i{font-size:11px;font-style:normal;font-weight:750;color:#fff}
+.amar-category-tile em{position:absolute;z-index:3;top:13px;right:13px;padding:6px 9px;border:1px solid #ffffff80;border-radius:999px;background:#fff2;color:#fff;font-size:9px;font-style:normal;font-weight:950;letter-spacing:.8px;backdrop-filter:blur(8px)}
+.amar-promo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:15px}
+.amar-promo-banner{position:relative;isolation:isolate;display:flex;align-items:center;min-height:190px;overflow:hidden;padding:22px 24px;border-radius:18px;color:#fff;text-decoration:none;box-shadow:0 8px 22px #143d2810;transition:transform .22s,box-shadow .22s}
+.amar-promo-banner:hover{transform:translateY(-4px);box-shadow:0 16px 30px #143d2820}
+.amar-promo-gold{background:linear-gradient(110deg,#50351a,#b47a32 67%,#e6bd70)}
+.amar-promo-green{background:linear-gradient(110deg,#073e31,#087f5b 68%,#18a879)}
+.amar-promo-banner:after{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,#071b12a8 0%,#071b124d 52%,#071b1200 100%)}
+.amar-promo-banner>div{position:relative;z-index:2;max-width:62%;display:grid;justify-items:start;gap:8px}
+.amar-promo-banner>div>small{font-size:9px;letter-spacing:1.2px;font-weight:950;color:#ffe5b5}
+.amar-promo-banner>div>b{font-size:clamp(19px,2.5vw,27px);line-height:1.2;font-weight:950}
+.amar-promo-cta{padding:8px 11px;border:1px solid #ffffff8c;border-radius:8px;background:#ffffff20;font-size:10px;font-weight:950;letter-spacing:.5px;backdrop-filter:blur(6px)}
+.amar-promo-banner>img{position:absolute;z-index:-2;right:0;top:0;width:54%;height:100%;object-fit:cover;opacity:.9;transition:transform .5s}
+.amar-promo-banner:hover>img{transform:scale(1.07)}
+.amar-promo-sticker{position:absolute;z-index:3;top:12px;right:13px;padding:7px 10px;border:1px solid #ffffff8a;border-radius:999px;background:#ffffffed;color:#164b36;font-size:9px;font-weight:950;box-shadow:0 5px 14px #001b1320;animation:amarSticker 5s ease-in-out infinite}
+.amar-category-tile:focus-visible,.amar-promo-banner:focus-visible{outline:3px solid #dca94e;outline-offset:3px}
+@media(max-width:850px){.amar-category-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.amar-category-tile{height:220px}}
+@media(max-width:600px){.amar-home-discovery{margin:19px auto 25px;padding:0 11px}.amar-discovery-inner{padding:14px;border-radius:18px}.amar-discovery-heading{align-items:flex-start;margin-bottom:13px}.amar-discovery-heading h2{font-size:20px}.amar-discovery-heading p{font-size:11px}.amar-heading-sticker{padding:7px 8px;font-size:8px}.amar-category-tiles{gap:9px}.amar-category-tile{height:172px;border-radius:13px}.amar-tile-copy{left:10px;bottom:11px}.amar-tile-copy b{font-size:15px}.amar-tile-copy small{font-size:8px}.amar-tile-copy i{font-size:9px}.amar-category-tile em{top:8px;right:8px;padding:5px 7px;font-size:8px}.amar-promo-grid{grid-template-columns:1fr;gap:9px;margin-top:10px}.amar-promo-banner{min-height:155px;padding:17px;border-radius:14px}.amar-promo-banner>div{max-width:66%}.amar-promo-banner>div>b{font-size:21px}.amar-promo-sticker{top:9px;right:9px;font-size:8px}}
+@media(prefers-reduced-motion:reduce){.amar-category-tile,.amar-category-tile>img,.amar-promo-banner,.amar-promo-banner>img{transition:none!important;animation:none!important}}
+</style>
+
 </head>
 <body>
 <header class="bar"><div class="top"><button type="button" class="menu-trigger" id="menuTrigger" aria-label="মেনু খুলুন" aria-expanded="false" style="display:flex!important;visibility:visible!important;align-items:center!important;justify-content:center!important;min-width:44px!important;min-height:44px!important;padding:0!important;position:relative;z-index:30"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="24" height="24" style="display:block!important;width:24px!important;height:24px!important;min-width:24px;overflow:visible"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="#103b2d" stroke-width="2.8" stroke-linecap="round"/></svg></button><div class="brand" aria-label="Amar Shopping"><img src="./assets/amar-shopping-logo.svg" alt="Amar Shopping" width="190" height="48" decoding="async"><span class="sr-only">Amar Shopping</span></div><div class="search"><input id="search" placeholder="পণ্য খুঁজুন..."><button id="searchBtn">খুঁজুন</button></div><div class="language-menu" aria-label="Select website language">
@@ -411,6 +450,21 @@ header.bar .top .brand img{display:block!important;width:100%!important;max-widt
   <div class="hero-bag">🛍️</div><div class="hero-box">📦</div><div class="hero-spark">✦</div><span class="hero-live-sticker"><i></i> LIVE STORE</span><span class="hero-float-sticker">✨ SMART PICKS</span>
   <div class="hero-float-card"><span>🇧🇩</span><div><b>বাংলাদেশজুড়ে</b><small>আপনার দোরগোড়ায়</small></div></div>
   <div class="emoji" id="heroEmoji" style="display:none">📦 🛍️</div>
+ </div>
+</section>
+<section class="amar-home-discovery" aria-label="Shop by category and featured campaigns">
+ <div class="amar-discovery-inner">
+  <div class="amar-discovery-heading"><div><span class="amar-eyebrow">DISCOVER YOUR STYLE</span><h2>আপনার পছন্দের কালেকশন</h2><p>নতুন স্টাইল, পছন্দের পণ্য—সব এক জায়গায়</p></div><span class="amar-heading-sticker">✨ JUST FOR YOU</span></div>
+  <div class="amar-category-tiles">
+   <a class="amar-category-tile amar-tile-fashion" href="#products"><img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=700&q=85" alt="Fashion collection" loading="lazy"><span class="amar-tile-shade"></span><span class="amar-tile-copy"><small>FRESH ARRIVALS</small><b>Women’s Style</b><i>Explore collection ↗</i></span><em>NEW</em></a>
+   <a class="amar-category-tile amar-tile-men" href="#products"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=700&q=85" alt="Modern fashion collection" loading="lazy"><span class="amar-tile-shade"></span><span class="amar-tile-copy"><small>EVERYDAY ESSENTIALS</small><b>Trending Fashion</b><i>Explore collection ↗</i></span></a>
+   <a class="amar-category-tile amar-tile-shoes" href="#products"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=85" alt="Red sports sneaker" loading="lazy"><span class="amar-tile-shade"></span><span class="amar-tile-copy"><small>STEP INTO COMFORT</small><b>Shoes & Sneakers</b><i>Explore collection ↗</i></span><em>HOT</em></a>
+   <a class="amar-category-tile amar-tile-bags" href="#products"><img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=700&q=85" alt="Designer handbag" loading="lazy"><span class="amar-tile-shade"></span><span class="amar-tile-copy"><small>THE FINISHING TOUCH</small><b>Bags & Accessories</b><i>Explore collection ↗</i></span></a>
+  </div>
+  <div class="amar-promo-grid">
+   <a class="amar-promo-banner amar-promo-gold" href="#products"><span class="amar-promo-sticker">🎉 SPECIAL DEAL</span><div><small>MAKE EVERY DAY SPECIAL</small><b>দারুণ সব অফার<br>এক জায়গায়!</b><span class="amar-promo-cta">SHOP DEALS ↗</span></div><img src="https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=650&q=85" alt="Shopping bags and special offers" loading="lazy"></a>
+   <a class="amar-promo-banner amar-promo-green" href="#products"><span class="amar-promo-sticker">💚 AMAR PICKS</span><div><small>CURATED FOR YOU</small><b>নতুন পছন্দের<br>খোঁজে বেরিয়ে পড়ুন</b><span class="amar-promo-cta">EXPLORE NOW ↗</span></div><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=650&q=85" alt="Contemporary fashion editorial" loading="lazy"></a>
+  </div>
  </div>
 </section>
 <main class="wrap">
