@@ -446,7 +446,36 @@ async function refreshSession(){
 }
 function setAuthMode(mode){authMode=mode;$("authTitle").textContent=mode==="login"?"লগইন":"নতুন অ্যাকাউন্ট";$("authSubmit").textContent=mode==="login"?"লগইন করুন":"অ্যাকাউন্ট তৈরি করুন";$("nameField").classList.toggle("hidden",mode==="login");$("phoneField").classList.toggle("hidden",mode==="login");$("authForm").elements.password.autocomplete=mode==="login"?"current-password":"new-password";$("resendConfirmBtn").classList.add("hidden");$("authMsg").textContent=mode==="signup"?"Customer account-এর জন্য নিজের নতুন/আগে নিবন্ধন না করা ইমেইল ব্যবহার করুন। Admin email দিয়ে Customer account তৈরি হবে না.":""}
 $("loginTab").onclick=()=>setAuthMode("login");$("signupTab").onclick=()=>setAuthMode("signup");$("forgotPasswordBtn").onclick=async()=>{const email=String(new FormData($("authForm")).get("email")||"").trim();if(!email){$("authMsg").textContent="আগে আপনার Admin email লিখুন।";return}const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:"https://amar-shopping-bd-live.onrender.com/"});$("authMsg").textContent=error?"Reset email পাঠানো যায়নি: "+error.message:"Password reset link পাঠানো হয়েছে। Inbox/Spam দেখুন।"};
-$("resendConfirmBtn").onclick=async()=>{let email=new FormData($("authForm")).get("email");if(!email){$("authMsg").textContent="আগে ইমেইল লিখুন।";return}let {error}=await db.auth.resend({type:"signup",email,options:{emailRedirectTo:"https://amar-shopping-bd-live.onrender.com/"}});$("authMsg").textContent=error?("লিংক পাঠানো যায়নি: "+error.message):"Confirmation link আবার পাঠানো হয়েছে। Gmail Inbox/Spam দেখুন।";};
+let customerResendTimer=null;
+const CUSTOMER_RESEND_KEY="amar_customer_signup_resend_after";
+function customerResendUntil(){try{return Number(localStorage.getItem(CUSTOMER_RESEND_KEY)||0)}catch(_){return 0}}
+function startCustomerResendCooldown(){
+ const btn=$("resendConfirmBtn");if(!btn)return;
+ const until=Date.now()+60000;
+ try{localStorage.setItem(CUSTOMER_RESEND_KEY,String(until))}catch(_){}
+ clearInterval(customerResendTimer);
+ const tick=()=>{const left=Math.max(0,Math.ceil((customerResendUntil()-Date.now())/1000));btn.disabled=left>0;btn.textContent=left?("আবার confirmation link পাঠান ("+left+"s)"):"আবার confirmation link পাঠান";if(!left){clearInterval(customerResendTimer);customerResendTimer=null}};
+ tick();customerResendTimer=setInterval(tick,1000);
+}
+function explainCustomerEmailError(error){
+ const message=String(error?.message||"");
+ if(error?.code==="over_email_send_rate_limit"||/rate.?limit|too many requests|after \d+ seconds/i.test(message)){
+  startCustomerResendCooldown();
+  return "ইমেইল পাঠানোর সীমা অতিক্রম হয়েছে। অনুগ্রহ করে ৬০ সেকেন্ড অপেক্ষা করে একবার আবার চেষ্টা করুন। একই ইমেইল দিয়ে নতুন account খুলবেন না।";
+ }
+ return "Confirmation link পাঠানো যায়নি: "+message+"। কিছুক্ষণ পরে আবার চেষ্টা করুন।";
+}
+function restoreCustomerResendCooldown(){if(customerResendUntil()>Date.now())startCustomerResendCooldown()}
+$("resendConfirmBtn").onclick=async()=>{
+ const btn=$("resendConfirmBtn"),email=String(new FormData($("authForm")).get("email")||"").trim().toLowerCase();
+ if(!email){$("authMsg").textContent="আগে আপনার account-এর ইমেইল লিখুন।";return}
+ if(customerResendUntil()>Date.now()){startCustomerResendCooldown();$("authMsg").textContent="নিরাপত্তার জন্য অপেক্ষা করুন; সময় শেষ হলে আবার চেষ্টা করুন।";return}
+ btn.disabled=true;$("authMsg").textContent="Confirmation link পাঠানো হচ্ছে...";
+ try{const {error}=await db.auth.resend({type:"signup",email,options:{emailRedirectTo:"https://amar-shopping-bd-live.onrender.com/"}});if(error)throw error;startCustomerResendCooldown();$("authMsg").textContent="Confirmation link পাঠানোর অনুরোধ সফল হয়েছে। Gmail Inbox/Spam দেখুন। ৬০ সেকেন্ডের আগে আবার পাঠাবেন না।"}
+ catch(error){$("authMsg").textContent=explainCustomerEmailError(error)}
+ finally{if(customerResendUntil()<=Date.now())btn.disabled=false}
+};
+restoreCustomerResendCooldown();
 async function adminOtpRequest(path,token,method="GET"){
  const res=await fetch(SUPABASE_URL+"/functions/v1/amar-shopping"+path,{method,headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+token,"Content-Type":"application/json"}});
  const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||"Admin verification request failed");return data
@@ -471,7 +500,7 @@ $("authForm").onsubmit=async e=>{
   if(mode==="signup"){r=await db.auth.signUp({email,password,options:{emailRedirectTo:"https://amar-shopping-bd-live.onrender.com/",data:{name:f.get("name"),phone:f.get("phone")}}})}
   else{r=await db.auth.signInWithPassword({email,password})}
   if(r.error)throw r.error;
-  if(mode==="signup"&&!r.data.session){$("authMsg").textContent="ইমেইল verify করুন। Gmail Inbox/Spam দেখুন অথবা confirmation link আবার পাঠান।";$("resendConfirmBtn").classList.remove("hidden");return}
+  if(mode==="signup"&&!r.data.session){$("authMsg").textContent="আপনার account তৈরি হয়েছে। লগইন করার আগে Gmail Inbox/Spam থেকে email verify করুন। Link না পেলে ৬০ সেকেন্ড পরে একবার resend করুন। একই ইমেইল দিয়ে আবার signup করবেন না।";$("resendConfirmBtn").classList.remove("hidden");startCustomerResendCooldown();return}
   if(mode==="login"&&adminLoginMode){
    const {data:ap,error:pe}=await db.from("users").select("role").eq("auth_user_id",r.data.user.id).maybeSingle();if(pe)throw pe;if(ap?.role!=="admin"){await db.auth.signOut();throw new Error("এই অ্যাকাউন্টটি Admin নয়।")}
    await adminOtpRequest("/admin/email-otp/start",r.data.session.access_token,"POST");
@@ -481,7 +510,7 @@ $("authForm").onsubmit=async e=>{
    $("authMsg").textContent="Password সঠিক। আপনার Admin email-এ ৬ সংখ্যার OTP পাঠানো হয়েছে। Inbox/Spam দেখুন।";return
   }
   await refreshSession();if(mode==="login"&&!session)throw new Error("লগইন হয়েছে, কিন্তু প্রোফাইল লোড হয়নি। পেজ Reload করে আবার চেষ্টা করুন।");modal("authModal",false);toast(mode==="login"?"লগইন সফল":"অ্যাকাউন্ট তৈরি হয়েছে")
- }catch(error){const message=error?.message||"লগইন করা যায়নি। আবার চেষ্টা করুন।";$("authMsg").textContent=error?.code==="invalid_credentials"||/invalid login credentials/i.test(message)?(adminLoginMode?"Admin email অথবা password সঠিক নয়।":"এই ইমেইলে Customer account নেই অথবা পাসওয়ার্ড ভুল।"):message;console.error("Authentication failed",error)}
+ }catch(error){const message=error?.message||"লগইন করা যায়নি। আবার চেষ্টা করুন।";if(!adminLoginMode&&mode==="login"&&(error?.code==="email_not_confirmed"||/email not confirmed/i.test(message))){$("resendConfirmBtn").classList.remove("hidden");restoreCustomerResendCooldown();$("authMsg").textContent="আপনার account তৈরি হয়েছে, কিন্তু ইমেইল এখনো verify হয়নি। Signup-এর সময় দেওয়া একই ইমেইল লিখে Inbox/Spam থেকে link খুলুন; প্রয়োজন হলে নিচের Resend বাটন ব্যবহার করুন।"}else{$("authMsg").textContent=error?.code==="invalid_credentials"||/invalid login credentials/i.test(message)?(adminLoginMode?"Admin email অথবা password সঠিক নয়।":"এই ইমেইলে Customer account নেই অথবা পাসওয়ার্ড ভুল।"):message}console.error("Authentication failed",error)}
  finally{button.disabled=false;button.textContent=mode==="login"?"লগইন করুন":"অ্যাকাউন্ট তৈরি করুন"}
 };
 function setAdminOtpMode(on){adminOtpMode=false;$("passwordField").classList.remove("hidden");$("authForm").elements.password.required=true;$("authSubmit").classList.remove("hidden");$("adminOtpPanel").classList.add("hidden");$("adminOtpModeBtn").classList.add("hidden");$("adminOtpModeBtn").style.setProperty("display","none","important")}
