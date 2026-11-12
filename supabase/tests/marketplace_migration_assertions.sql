@@ -67,7 +67,7 @@ insert into public.product_variants (product_id, attributes, price_bdt, stock)
 values (3, '{"size":"L","color":"Blue"}'::jsonb, 300, 1);
 
 set role anon;
-do $
+do $$
 begin
   if (select count(*) from public.product_variants where product_id = 2) <> 1 then
     raise exception 'Anonymous storefront cannot read approved product variants';
@@ -76,21 +76,21 @@ begin
     raise exception 'Anonymous user can read a pending seller product variant';
   end if;
 end
-$;
+$$;
 reset role;
 
 set role authenticated;
 select set_config('request.jwt.claim.sub', '11111111-1111-4111-8111-111111111111', false);
-do $
+do $$
 begin
   if (select count(*) from public.product_variants where product_id = 3) <> 1 then
     raise exception 'Seller cannot read own pending product variants';
   end if;
 end
-$;
+$$;
 reset role;
 
-do $
+do $$
 begin
   if has_function_privilege('anon', 'public.capture_seller_commission_ledger()', 'EXECUTE')
      or has_function_privilege('authenticated', 'public.capture_seller_commission_ledger()', 'EXECUTE')
@@ -101,6 +101,6 @@ begin
     raise exception 'Trigger-only SECURITY DEFINER function is directly executable by API role';
   end if;
 end
-$;
+$$;
 
 select 'Marketplace migration smoke tests passed' as result;
