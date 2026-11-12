@@ -102,8 +102,8 @@ select
         and l.available_after <= now()
       )
   ), 0)::bigint as pending_bdt,
-  coalesce(sum(l.gross_bdt), 0)::bigint as lifetime_gross_bdt,
-  coalesce(sum(l.commission_bdt), 0)::bigint as lifetime_commission_bdt
+  coalesce(sum(l.gross_bdt) filter (where o.status <> 'cancelled'), 0)::bigint as lifetime_gross_bdt,
+  coalesce(sum(l.commission_bdt) filter (where o.status <> 'cancelled'), 0)::bigint as lifetime_commission_bdt
 from public.seller_wallet_ledger l
 join public.orders o on o.id = l.order_id
 group by l.seller_id;
