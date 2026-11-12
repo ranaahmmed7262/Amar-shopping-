@@ -406,13 +406,29 @@ const SUPABASE_URL="https://awqnglmraehpxyhezhdx.supabase.co";
 const SUPABASE_KEY="sb_publishable_5lekXnJDJzpYrcOuseFOxQ_aWjWnkgj";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const money=n=>"৳"+Number(n||0).toLocaleString("en-BD");
-let products=[],cart=JSON.parse(localStorage.getItem("amar_cart_v2")||"[]"),category="সব",minPrice=null,maxPrice=null,session=null,profile=null,settings={delivery_fee_bdt:"80"};
+function loadSavedCart(){
+ let raw=null;
+ try{
+  raw=localStorage.getItem("amar_cart_v2");
+  if(!raw)return [];
+  const parsed=JSON.parse(raw);
+  if(!Array.isArray(parsed)||!parsed.every(item=>item&&Number.isSafeInteger(Number(item.id))&&Number(item.id)>0&&Number.isSafeInteger(Number(item.qty))&&Number(item.qty)>0)){
+   throw new Error("Saved cart format is invalid");
+  }
+  return parsed;
+ }catch(error){
+  try{if(raw!==null&&!localStorage.getItem("amar_cart_v2_recovery_backup"))localStorage.setItem("amar_cart_v2_recovery_backup",raw)}catch(_){}
+  console.warn("Saved cart could not be read; original data preserved in recovery backup when storage permits:",error);
+  return [];
+ }
+}
+let products=[],cart=loadSavedCart(),category="সব",minPrice=null,maxPrice=null,session=null,profile=null,settings={delivery_fee_bdt:"80"};
 let authMode="login",adminLoginMode=false,adminOtpMode=false,adminOtpPending=false,adminOtpVerifiedUserId=null;
 const $=id=>document.getElementById(id);
 function toast(msg,bad=false){$("toast").textContent=msg;$("toast").classList.remove("hidden","bad","ok");$("toast").classList.add(bad?"bad":"ok");setTimeout(()=> $("toast").classList.add("hidden"),4000)}
 function modal(id,on=true){$(id).style.display=on?"flex":"none"}
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>modal(b.dataset.close,false));
-function persistCart(){localStorage.setItem("amar_cart_v2",JSON.stringify(cart));$("cartCount").textContent=cart.reduce((s,x)=>s+x.qty,0)}
+function persistCart(){try{localStorage.setItem("amar_cart_v2",JSON.stringify(cart))}catch(error){console.warn("Cart could not be saved in this browser:",error)}$("cartCount").textContent=cart.reduce((s,x)=>s+x.qty,0)}
 function drawProducts(){let cats=["সব",...new Set(products.map(p=>p.category).filter(Boolean))];$("filters").innerHTML=cats.map(c=>'<button class="'+(c===category?'active':'')+'" data-cat="'+encodeURIComponent(c)+'">'+esc(c)+'</button>').join("");$("filters").querySelectorAll("button").forEach(b=>b.onclick=()=>{category=decodeURIComponent(b.dataset.cat);drawProducts()});let q=$("search").value.trim().toLowerCase();let list=products.filter(p=>(category==="সব"||p.category===category)&&((p.name||"").toLowerCase().includes(q)||(p.description||"").toLowerCase().includes(q))&&(minPrice===null||Number(p.sale_price_bdt??p.price_bdt)>=minPrice)&&(maxPrice===null||Number(p.sale_price_bdt??p.price_bdt)<=maxPrice)).sort((a,b)=>Number(!!b.is_featured)-Number(!!a.is_featured));const hint=$("priceFilterHint");if(hint)hint.textContent=(minPrice!==null||maxPrice!==null)?"দামের ফিল্টার চালু: "+(minPrice===null?"যেকোনো":money(minPrice))+" থেকে "+(maxPrice===null?"যেকোনো":money(maxPrice))+" • "+list.length+"টি পণ্য পাওয়া গেছে।":"সর্বনিম্ন ও সর্বোচ্চ দাম দিয়ে পণ্য খুঁজুন। চাইলে একটি ঘরও ব্যবহার করতে পারবেন।";$("products").innerHTML=list.length?list.map(p=>'<article class="product"><a href="?product='+encodeURIComponent(p.id)+'" style="color:inherit;text-decoration:none"><div class="photo">'+(p.image_url&&/^https:\/\//i.test(p.image_url)?'<img src="'+esc(p.image_url)+'" alt="'+esc(p.name)+'" loading="lazy">':'🛍️')+'</div><div class="info"><h3>'+esc(p.name)+'</h3><div class="price">'+money(p.sale_price_bdt??p.price_bdt)+'</div><small class="muted">'+esc(p.category||"")+' • স্টক '+p.stock+'</small><div class="muted" style="margin-top:6px">বিস্তারিত দেখুন →</div></div></a><div class="info" style="padding-top:0"><button class="add" data-add="'+p.id+'" '+(settings.store_status==="closed"||p.stock<1?"disabled":"")+'>'+(settings.store_status==="closed"?"অর্ডার বন্ধ":p.stock<1?"স্টক শেষ":"কার্টে যোগ করুন")+'</button><button class="add buy" data-buy="'+p.id+'" '+(settings.store_status==="closed"||p.stock<1?"disabled":"")+'>'+(settings.store_status==="closed"?"অর্ডার বন্ধ":p.stock<1?"স্টক শেষ":"এখনই কিনুন")+'</button></div></article>').join(""):'<div class="empty">কোনো পণ্য পাওয়া যায়নি</div>';document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>addToCart(Number(b.dataset.add)));document.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>buyNow(Number(b.dataset.buy)))}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 async function loadProducts(){try{const {data,error}=await db.from("products").select("id,name,description,category,price_bdt,sale_price_bdt,is_featured,stock,image_url,attributes").eq("status","approved").order("created_at",{ascending:false});if(error)throw error;products=data||[];drawProducts();renderProductDetail()}catch(error){$("products").innerHTML='<div class="empty">পণ্য লোড হয়নি: '+esc(error?.message||"সার্ভার সংযোগ সমস্যা")+' <button class="light" id="retryProducts">আবার চেষ্টা করুন</button></div>';const b=$("retryProducts");if(b)b.onclick=loadProducts}}
@@ -784,7 +800,7 @@ document.querySelectorAll("[data-menu-action]").forEach(b=>b.addEventListener("c
 
 document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwordResetModal");setTimeout(refreshSession,0)});$("passwordResetForm").onsubmit=async e=>{e.preventDefault();const password=new FormData(e.target).get("password");if(String(password||"").length<8){toast("পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে",true);return}const {error}=await db.auth.updateUser({password});if(error){toast("পাসওয়ার্ড পরিবর্তন হয়নি: "+error.message,true);return}modal("passwordResetModal",false);e.target.reset();toast("পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে।")};
-(async()=>{setAuthMode("login");await loadSettings();await loadProducts();persistCart();await refreshSession()})();
+(async()=>{try{setAuthMode("login");await loadSettings();await loadProducts();persistCart();await refreshSession()}catch(error){console.error("Amar Shopping startup task failed",error);try{toast("অ্যাকাউন্ট/সেশন লোডে সমস্যা হয়েছে। পণ্যের তালিকা চালু থাকলে কেনাকাটা চালিয়ে যেতে পারবেন।",true)}catch(_){}}})();
 }catch(error){console.error("Amar Shopping startup failed",error);const p=document.getElementById("products");if(p){p.innerHTML="<div class=\"empty\"><b>ওয়েবসাইট চালু করতে সমস্যা হয়েছে।</b><pre id=\"startupErrorDetails\" style=\"white-space:pre-wrap;overflow-wrap:anywhere\"></pre><button class=\"light\" id=\"startupRetry\">আবার চেষ্টা করুন</button></div>";const d=document.getElementById("startupErrorDetails");if(d)d.textContent=String(error?.message||error||"Unknown startup error");const retry=document.getElementById("startupRetry");if(retry)retry.onclick=()=>location.reload();};document.querySelectorAll("#accountBtn,#signupBtn").forEach(b=>b.onclick=()=>alert(error?.message||"সার্ভার সংযোগ সমস্যা"));}
 })();
 </script>
