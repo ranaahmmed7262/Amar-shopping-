@@ -170,6 +170,58 @@ grant select on public.seller_wallet_balances to authenticated;
 grant select on public.product_variants to anon, authenticated;
 grant insert, update, delete on public.product_variants to authenticated;
 
+
+create or replace function public.get_seller_wallet_summary(p_seller_id bigint default null)
+returns table (
+  seller_id bigint,
+  available_bdt bigint,
+  pending_bdt bigint,
+  lifetime_gross_bdt bigint,
+  lifetime_commission_bdt bigint
+)
+language plpgsql
+security definer
+set search_path = public, auth
+as $
+declare
+  v_my_seller_id bigint;
+  v_admin boolean := public.is_marketplace_admin();
+begin
+  select u.id into v_my_seller_id
+  from public.users u
+  where u.auth_user_id = (select auth.uid())
+  limit 1;
+
+  if not v_admin then
+    if v_my_seller_id is null or (p_seller_id is not null and p_seller_id <> v_my_seller_id) then
+      raise exception 'Seller account access required';
+    end if;
+  end if;
+
+  return query
+  select
+    l.seller_id,
+    coalesce(sum(l.earning_bdt) filter (
+      where o.status = 'delivered'
+        and o.payment_status = 'paid'
+        and l.available_after <= now()
+    ), 0)::bigint,
+    coalesce(sum(l.earning_bdt) filter (
+      where not (o.status = 'delivered' and o.payment_status = 'paid' and l.available_after <= now())
+    ), 0)::bigint,
+    coalesce(sum(l.gross_bdt), 0)::bigint,
+    coalesce(sum(l.commission_bdt), 0)::bigint
+  from public.seller_wallet_ledger l
+  join public.orders o on o.id = l.order_id
+  where (v_admin and (p_seller_id is null or l.seller_id = p_seller_id))
+     or (not v_admin and l.seller_id = v_my_seller_id)
+  group by l.seller_id;
+end;
+$;
+
+revoke all on function public.get_seller_wallet_summary(bigint) from public;
+grant execute on function public.get_seller_wallet_summary(bigint) to authenticated;
+
 commit;
 
 -- Intentionally not included:
