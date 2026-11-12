@@ -59,4 +59,48 @@ begin
 end
 $$;
 
+
+-- Verify storefront/public and seller-private variant visibility under RLS.
+insert into public.products (seller_id, name, status, price_bdt, stock)
+values (1, 'Pending seller variant product', 'pending', 300, 1);
+insert into public.product_variants (product_id, attributes, price_bdt, stock)
+values (3, '{"size":"L","color":"Blue"}'::jsonb, 300, 1);
+
+set role anon;
+do $
+begin
+  if (select count(*) from public.product_variants where product_id = 2) <> 1 then
+    raise exception 'Anonymous storefront cannot read approved product variants';
+  end if;
+  if (select count(*) from public.product_variants where product_id = 3) <> 0 then
+    raise exception 'Anonymous user can read a pending seller product variant';
+  end if;
+end
+$;
+reset role;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', '11111111-1111-4111-8111-111111111111', false);
+do $
+begin
+  if (select count(*) from public.product_variants where product_id = 3) <> 1 then
+    raise exception 'Seller cannot read own pending product variants';
+  end if;
+end
+$;
+reset role;
+
+do $
+begin
+  if has_function_privilege('anon', 'public.capture_seller_commission_ledger()', 'EXECUTE')
+     or has_function_privilege('authenticated', 'public.capture_seller_commission_ledger()', 'EXECUTE')
+     or has_function_privilege('anon', 'public.sync_product_stock_from_variants()', 'EXECUTE')
+     or has_function_privilege('authenticated', 'public.sync_product_stock_from_variants()', 'EXECUTE')
+     or has_function_privilege('anon', 'public.refresh_seller_wallet_hold_after_delivery()', 'EXECUTE')
+     or has_function_privilege('authenticated', 'public.refresh_seller_wallet_hold_after_delivery()', 'EXECUTE') then
+    raise exception 'Trigger-only SECURITY DEFINER function is directly executable by API role';
+  end if;
+end
+$;
+
 select 'Marketplace migration smoke tests passed' as result;
