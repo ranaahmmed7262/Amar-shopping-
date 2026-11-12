@@ -35,7 +35,10 @@ EOF
 
 echo "Encrypting backup archive with GPG AES-256..."
 tar -C "$WORK" -czf "$WORK/amar-shopping-$STAMP.tar.gz" production.dump storage backup-manifest.txt
-gpg --batch --yes --pinentry-mode loopback --passphrase "$BACKUP_PASSPHRASE" --symmetric --cipher-algo AES256 --output "$DEST/amar-shopping-$STAMP.tar.gz.gpg" "$WORK/amar-shopping-$STAMP.tar.gz"
+printf '%s' "$BACKUP_PASSPHRASE" > "$WORK/.gpg-passphrase"
+chmod 600 "$WORK/.gpg-passphrase"
+unset BACKUP_PASSPHRASE
+gpg --batch --yes --pinentry-mode loopback --passphrase-file "$WORK/.gpg-passphrase" --symmetric --cipher-algo AES256 --output "$DEST/amar-shopping-$STAMP.tar.gz.gpg" "$WORK/amar-shopping-$STAMP.tar.gz"
 sha256sum "$DEST/amar-shopping-$STAMP.tar.gz.gpg" > "$DEST/amar-shopping-$STAMP.tar.gz.gpg.sha256"
 chmod 600 "$DEST/amar-shopping-$STAMP.tar.gz.gpg" "$DEST/amar-shopping-$STAMP.tar.gz.gpg.sha256"
 
