@@ -182,7 +182,7 @@ returns table (
 language plpgsql
 security definer
 set search_path = public, auth
-as $
+as $wallet_summary$
 declare
   v_my_seller_id bigint;
   v_admin boolean := public.is_marketplace_admin();
@@ -207,17 +207,18 @@ begin
         and l.available_after <= now()
     ), 0)::bigint,
     coalesce(sum(l.earning_bdt) filter (
-      where not (o.status = 'delivered' and o.payment_status = 'paid' and l.available_after <= now())
+      where o.status <> 'cancelled'
+        and not (o.status = 'delivered' and o.payment_status = 'paid' and l.available_after <= now())
     ), 0)::bigint,
-    coalesce(sum(l.gross_bdt), 0)::bigint,
-    coalesce(sum(l.commission_bdt), 0)::bigint
+    coalesce(sum(l.gross_bdt) filter (where o.status <> 'cancelled'), 0)::bigint,
+    coalesce(sum(l.commission_bdt) filter (where o.status <> 'cancelled'), 0)::bigint
   from public.seller_wallet_ledger l
   join public.orders o on o.id = l.order_id
   where (v_admin and (p_seller_id is null or l.seller_id = p_seller_id))
      or (not v_admin and l.seller_id = v_my_seller_id)
   group by l.seller_id;
 end;
-$;
+$wallet_summary$;
 
 revoke all on function public.get_seller_wallet_summary(bigint) from public;
 grant execute on function public.get_seller_wallet_summary(bigint) to authenticated;
@@ -232,7 +233,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path = public
-as $
+as $sync_stock$
 declare
   v_product_id bigint;
 begin
@@ -245,9 +246,12 @@ begin
     set stock = coalesce((select sum(v.stock)::integer from public.product_variants v where v.product_id = old.product_id and v.is_active), 0)
     where p.id = old.product_id;
   end if;
-  return coalesce(new, old);
+  if tg_op = 'DELETE' then
+    return old;
+  end if;
+  return new;
 end;
-$;
+$sync_stock$;
 
 drop trigger if exists product_variants_sync_stock on public.product_variants;
 create trigger product_variants_sync_stock
@@ -277,7 +281,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = public, auth
-as $
+as $variant_checkout$
 declare
   v_profile_id bigint;
   v_item record;
@@ -446,7 +450,7 @@ begin
     'delivery_fee_bdt',coalesce(v_delivery,80),'total_bdt',v_total,
     'payment_method',p_payment_method,'status','placed');
 end;
-$;
+$variant_checkout$;
 
 commit;
 
