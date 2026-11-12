@@ -488,6 +488,12 @@ begin
 end;
 $variant_checkout$;
 
+-- These functions are trigger-only SECURITY DEFINER entry points. Revoke direct
+-- RPC execution from API roles; trigger invocation does not require caller EXECUTE.
+revoke all on function public.capture_seller_commission_ledger() from public, anon, authenticated;
+revoke all on function public.sync_product_stock_from_variants() from public, anon, authenticated;
+revoke all on function public.refresh_seller_wallet_hold_after_delivery() from public, anon, authenticated;
+
 commit;
 
 -- Intentionally not included:
