@@ -3,6 +3,7 @@
 <head>
   <meta name="google-site-verification" content="MDmSqx-rBiyU5emyKuJ1HSSrslRzzhBB8OhgR6i3H2A" />
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#087f5b">
 <title>Amar Shopping — বাংলাদেশের অনলাইন শপিং</title>
 <meta name="description" content="Amar Shopping — বাংলাদেশের অনলাইন মাল্টি-ভেন্ডর মার্কেটপ্লেস। ফ্যাশন, ইলেকট্রনিক্স, ঘর ও লাইফস্টাইল পণ্য কিনুন।">
 <meta name="robots" content="index,follow">
@@ -1246,4 +1247,5 @@ db.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")modal("passwo
 </a>
 
 <div id="amarScrollProgress" aria-hidden="true"><span></span></div><button id="amarBackToTop" type="button" aria-label="উপরে যান" title="উপরে যান">↑</button><script id="amar-smart-scroll">(()=>{"use strict";const bar=document.querySelector("#amarScrollProgress span"),topBtn=document.getElementById("amarBackToTop");if(!bar||!topBtn)return;let queued=false;const update=()=>{const root=document.documentElement,max=root.scrollHeight-root.clientHeight;bar.style.width=(max>0?Math.min(100,Math.max(0,root.scrollTop/max*100)):0)+"%";topBtn.classList.toggle("is-visible",root.scrollTop>420);queued=false};const onScroll=()=>{if(!queued){queued=true;requestAnimationFrame(update)}};window.addEventListener("scroll",onScroll,{passive:true});window.addEventListener("resize",onScroll,{passive:true});topBtn.addEventListener("click",()=>window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));update()})();</script>
+<script src="./amar-free-enhancements.js" defer></script>
 </body></html>
