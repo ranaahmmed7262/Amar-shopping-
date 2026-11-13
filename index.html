@@ -697,6 +697,7 @@ function loadSavedCart(){
  }
 }
 let products=[],cart=loadSavedCart(),category="সব",minPrice=null,maxPrice=null,session=null,profile=null,settings={delivery_fee_bdt:"80"};
+window.amarShoppingGetProducts=()=>products;
 let authMode="login",adminLoginMode=false,adminOtpMode=false,adminOtpPending=false,adminOtpVerifiedUserId=null;
 const $=id=>document.getElementById(id);
 let wishlistIds=loadWishlist();
@@ -732,7 +733,7 @@ $("products").innerHTML=list.length?list.map(p=>{const regular=Number(p.price_bd
 document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>addToCart(Number(b.dataset.add)));document.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>buyNow(Number(b.dataset.buy)));document.querySelectorAll("[data-wishlist-toggle]").forEach(b=>b.onclick=()=>toggleWishlist(b.dataset.wishlistToggle))
 }
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-async function loadProducts(){try{const {data,error}=await db.from("products").select("id,name,description,category,price_bdt,sale_price_bdt,is_featured,stock,image_url,attributes").eq("status","approved").order("created_at",{ascending:false});if(error)throw error;products=data||[];setupProductFilters();drawProducts();renderProductDetail()}catch(error){$("products").innerHTML='<div class="empty">পণ্য লোড হয়নি: '+esc(error?.message||"সার্ভার সংযোগ সমস্যা")+' <button class="light" id="retryProducts">আবার চেষ্টা করুন</button></div>';const b=$("retryProducts");if(b)b.onclick=loadProducts}}
+async function loadProducts(){try{const {data,error}=await db.from("products").select("id,name,description,category,price_bdt,sale_price_bdt,is_featured,stock,image_url,attributes").eq("status","approved").order("created_at",{ascending:false});if(error)throw error;products=data||[];window.dispatchEvent(new Event("amar-products-loaded"));setupProductFilters();drawProducts();renderProductDetail()}catch(error){$("products").innerHTML='<div class="empty">পণ্য লোড হয়নি: '+esc(error?.message||"সার্ভার সংযোগ সমস্যা")+' <button class="light" id="retryProducts">আবার চেষ্টা করুন</button></div>';const b=$("retryProducts");if(b)b.onclick=loadProducts}}
 async function loadSettings(){try{const {data,error}=await db.from("app_settings").select("key,value");if(error)throw error;(data||[]).forEach(x=>settings[x.key]=x.value);applySiteSettings()}catch(error){console.error("Settings load failed",error)}}
 function applyCampaignSlider(){
  const hero=$("homeHero"),controls=$("amarCampaignControls");if(!hero||!controls)return;
