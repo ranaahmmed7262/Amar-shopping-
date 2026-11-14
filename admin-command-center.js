@@ -181,3 +181,130 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
  function watch(){const root=document.getElementById("dashContent")||document.body;new MutationObserver(mount).observe(root,{childList:true,subtree:true});mount();}
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();
 })();
+
+
+/* One global hamburger for storefront + admin controls. Admin permissions still come from the verified session. */
+(function(){
+ "use strict";
+ const groups=[
+  {title:"Overview & Master Control",icon:"📊",ids:["adminOverview","adminMasterControl"]},
+  {title:"Marketplace & Products",icon:"🛍️",ids:["pendingProducts","manageProducts","categoryManager","pendingSellers"]},
+  {title:"Customers & Support",icon:"👥",ids:["adminChats","customerList"]},
+  {title:"Website & Operations",icon:"⚙️",ids:["siteSettingsForm","adminDelivery","roleManager"]},
+  {title:"Finance & Reports",icon:"📈",ids:["commissionReport","exportOrdersCsv"]},
+  {title:"System & Platform",icon:"🛡️",ids:["adminHealth","platformControlCenter"]}
+ ];
+ const styleId="amar-single-global-menu-style";
+ function installStyle(){
+  if(document.getElementById(styleId))return;
+  const style=document.createElement("style");style.id=styleId;
+  style.textContent=[
+   "#dashContent:has(>.admin-shell){display:block!important;grid-template-columns:minmax(0,1fr)!important;column-gap:0!important}",
+   "#dashContent>.admin-shell{grid-column:auto!important;grid-row:auto!important;position:relative!important;top:auto!important;min-height:0!important;padding:16px!important;margin:0 0 14px!important}",
+   "#dashContent .admin-menu-toggle,#dashContent .admin-control-nav,#dashContent .amar-admin-tools,#dashContent .amar-admin-quick{display:none!important}",
+   "#dashContent>.admin-home-panel,#dashContent>.admin-panel{grid-column:auto!important;grid-row:auto!important;width:100%!important;min-width:0!important}",
+   ".amar-global-admin-menu{width:100%;margin:12px 0 4px;padding:12px;border:1px solid #dce9e1;border-radius:13px;background:#f7fbf8}",
+   ".amar-global-admin-menu h4{margin:0 0 10px;color:#075b43;font-size:14px}",
+   ".amar-global-admin-menu input{width:100%;padding:10px 12px;border:1px solid #d8e3dc;border-radius:9px;background:#fff;margin-bottom:10px}",
+   ".amar-global-admin-menu .amar-admin-order-entry{width:100%;margin:0 0 10px;padding:12px;border:1px solid #b9dfc9;border-radius:10px;background:#e7f7ed;color:#075b43;text-align:left;font-weight:850}",
+   ".amar-global-admin-menu details{margin:7px 0;border:1px solid #e0eae4;border-radius:10px;background:#fff;overflow:hidden}",
+   ".amar-global-admin-menu summary{padding:11px 12px;cursor:pointer;color:#174c38;font-weight:800;font-size:13px}",
+   ".amar-global-admin-menu .amar-admin-items{display:grid;gap:5px;padding:0 8px 9px}",
+   ".amar-global-admin-menu .amar-admin-items button{width:100%;padding:10px 11px;border:0;border-radius:8px;background:#f4f8f5;color:#244b39;text-align:left;font-size:12px;font-weight:700}",
+   ".amar-global-admin-menu .amar-admin-items button:active,.amar-global-admin-menu .amar-admin-items button:hover{background:#e3f3e9}",
+   ".amar-global-admin-menu [hidden]{display:none!important}",
+   "@media(max-width:600px){.amar-global-admin-menu{padding:10px}.amar-global-admin-menu summary{padding:10px}}"
+  ].join("");
+  document.head.appendChild(style);
+ }
+ function closeGlobalMenu(){
+  document.body.classList.remove("menu-open");
+  const trigger=document.getElementById("menuTrigger");
+  if(trigger)trigger.setAttribute("aria-expanded","false");
+ }
+ function openGlobalMenu(){
+  document.body.classList.add("menu-open");
+  const trigger=document.getElementById("menuTrigger");
+  if(trigger)trigger.setAttribute("aria-expanded","true");
+  const contact=document.getElementById("publicContact"),drawer=document.getElementById("drawerContact");
+  if(contact&&drawer)drawer.innerHTML=contact.innerHTML;
+ }
+ function renderAdminMenu(){
+  const settings=document.getElementById("adminMenuSettings");
+  const nav=document.querySelector("#sideDrawer .drawer-links");
+  const dashboard=document.getElementById("dashContent");
+  const originalNav=dashboard?.querySelector(".admin-control-nav");
+  const enabled=!!(settings&&!settings.classList.contains("hidden")&&originalNav);
+  let section=nav?.querySelector(".amar-global-admin-menu");
+  if(!enabled){section?.remove();return}
+  if(!nav||!originalNav)return;
+  if(section?.dataset.sourceNav===String(originalNav.dataset.premiumDrawer||"pending"))return;
+  section?.remove();
+  installStyle();
+  section=document.createElement("section");
+  section.className="amar-global-admin-menu";
+  section.dataset.sourceNav=String(originalNav.dataset.premiumDrawer||"pending");
+  const heading=document.createElement("h4");heading.textContent="🔐 Admin Control Center";
+  const search=document.createElement("input");search.type="search";search.placeholder="Admin control খুঁজুন...";search.setAttribute("aria-label","Search admin controls");
+  section.append(heading,search);
+  const orderButton=document.createElement("button");orderButton.type="button";orderButton.className="amar-admin-order-entry";orderButton.textContent="📦  Order Management  →";
+  orderButton.addEventListener("click",()=>activate("allOrders"));
+  section.append(orderButton);
+  const entries=[];
+  groups.forEach(group=>{
+   const details=document.createElement("details");details.className="amar-admin-menu-group";
+   const summary=document.createElement("summary");summary.textContent=group.icon+"  "+group.title;
+   const items=document.createElement("div");items.className="amar-admin-items";
+   group.ids.forEach(id=>{
+    const source=[...originalNav.querySelectorAll("[data-admin-jump]")].find(b=>b.dataset.adminJump===id);
+    if(!source)return;
+    const button=document.createElement("button");button.type="button";button.textContent=source.textContent.trim();button.dataset.searchText=button.textContent.toLocaleLowerCase();
+    button.addEventListener("click",()=>activate(id));items.appendChild(button);entries.push(button);
+   });
+   if(items.children.length){details.append(summary,items);section.append(details)}
+  });
+  search.addEventListener("input",()=>{
+   const term=search.value.trim().toLocaleLowerCase();
+   entries.forEach(button=>{button.hidden=!!term&&!button.dataset.searchText.includes(term)});
+   section.querySelectorAll("details").forEach(details=>{
+    const visible=[...details.querySelectorAll("button")].some(button=>!button.hidden);
+    details.hidden=!!term&&!visible;if(term&&visible)details.open=true;
+   });
+   orderButton.hidden=!!term&&!"order management orders".includes(term);
+  });
+  function activate(id){
+   const source=[...originalNav.querySelectorAll("[data-admin-jump]")].find(b=>b.dataset.adminJump===id);
+   if(!source)return;
+   closeGlobalMenu();
+   source.click();
+   if(id==="allOrders"){
+    const panel=document.getElementById("amarDedicatedOrderDashboard");
+    if(panel)panel.scrollIntoView({behavior:"smooth",block:"start"});
+   }
+  }
+  if(settings.parentElement===nav)settings.insertAdjacentElement("afterend",section);else nav.appendChild(section);
+ }
+ function watch(){
+  installStyle();
+  const trigger=document.getElementById("menuTrigger");
+  if(trigger&&!trigger.dataset.amarSingleMenu){
+   trigger.dataset.amarSingleMenu="1";
+   trigger.addEventListener("click",event=>{
+    event.preventDefault();event.stopImmediatePropagation();
+    document.body.classList.contains("menu-open")?closeGlobalMenu():openGlobalMenu();
+   },true);
+  }
+  const settings=document.getElementById("adminMenuSettings");
+  if(settings&&!settings.dataset.amarMenuObserver){
+   settings.dataset.amarMenuObserver="1";
+   new MutationObserver(renderAdminMenu).observe(settings,{attributes:true,attributeFilter:["class","hidden"]});
+  }
+  const dashboard=document.getElementById("dashContent");
+  if(dashboard&&!dashboard.dataset.amarGlobalMenuObserver){
+   dashboard.dataset.amarGlobalMenuObserver="1";
+   new MutationObserver(renderAdminMenu).observe(dashboard,{childList:true,subtree:true});
+  }
+  renderAdminMenu();
+ }
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();
+})();
