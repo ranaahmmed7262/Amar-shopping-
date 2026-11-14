@@ -42,6 +42,7 @@ window.mountAmarShoppingOrderDashboard=function(d){
   const shipping=rows.filter(o=>["shipped","out_for_delivery"].includes(o.status)).length;
   const delivered=rows.filter(o=>o.status==="delivered").length;
   const sales=activeRows.reduce((sum,o)=>sum+Number(o.total_bdt||0),0);
+  const deliveredSales=rows.filter(o=>o.status==="delivered").reduce((sum,o)=>sum+Number(o.total_bdt||0),0);
   const paid=activeRows.filter(o=>String(o.payment_status||"").toLowerCase()==="paid").reduce((sum,o)=>sum+Number(o.total_bdt||0),0);
   const extra=window.__amarAdminDashboardCounts||{};
   const box=p.querySelector("#aomKpis");
@@ -52,7 +53,8 @@ window.mountAmarShoppingOrderDashboard=function(d){
    '<div class="aom-kpi"><b>'+cancelled+'</b><small>Cancelled / Rejected</small></div>'+
    '<div class="aom-kpi"><b>'+pending+'</b><small>নতুন অর্ডার</small></div>'+
    '<div class="aom-kpi"><b>'+shipping+'</b><small>ডেলিভারির পথে</small></div>'+
-   '<div class="aom-kpi"><b>'+esc(d.money(sales))+'</b><small>Net Sales · Cancel বাদ</small></div>'+
+   '<div class="aom-kpi"><b>'+esc(d.money(sales))+'</b><small>Active Order Value · Cancel বাদ</small></div>'+
+   '<div class="aom-kpi"><b>'+esc(d.money(deliveredSales))+'</b><small>Delivered Sales · Delivered হলে +</small></div>'+
    '<div class="aom-kpi"><b>'+esc(d.money(paid))+'</b><small>Paid Sales · Cancel বাদ</small></div>'+
    '<div class="aom-kpi"><b>'+esc(extra.products??"—")+'</b><small>মোট পণ্য</small></div>'+
    '<div class="aom-kpi"><b>'+esc(extra.customers??"—")+'</b><small>কাস্টমার</small></div>'+
