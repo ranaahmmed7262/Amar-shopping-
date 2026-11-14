@@ -92,8 +92,16 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
   if(shell.dataset.amarPersistentSidebar==="1")return;
   shell.dataset.amarPersistentSidebar="1";
   document.body.classList.add("amar-admin-menu-open");
-  nav.querySelectorAll(".amar-admin-group-items button").forEach(button=>button.addEventListener("click",()=>{document.body.classList.add("amar-admin-menu-open");toggle.setAttribute("aria-expanded","true");}));
-  toggle.addEventListener("click",()=>requestAnimationFrame(()=>toggle.setAttribute("aria-expanded",String(document.body.classList.contains("amar-admin-menu-open")))));
+  toggle.onclick=function(event){
+   event.preventDefault();
+   event.stopImmediatePropagation();
+   const open=!document.body.classList.contains("amar-admin-menu-open");
+   document.body.classList.toggle("amar-admin-menu-open",open);
+   toggle.setAttribute("aria-expanded",String(open));
+   toggle.setAttribute("aria-label",open?"Collapse admin sidebar":"Expand admin sidebar");
+  };
+  toggle.setAttribute("aria-expanded","true");
+  nav.querySelectorAll(".amar-admin-group-items button").forEach(button=>button.addEventListener("click",()=>{document.body.classList.add("amar-admin-menu-open");toggle.setAttribute("aria-expanded","true");toggle.setAttribute("aria-label","Collapse admin sidebar");}));
  }
  function watch(){const root=document.getElementById("dashContent")||document.body;new MutationObserver(mount).observe(root,{childList:true,subtree:true});mount();}
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();
