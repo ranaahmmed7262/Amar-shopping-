@@ -10,7 +10,7 @@ function installStyle(){
 }
 function mount(root){
  if(!root||root.dataset.amarCommandReady==="1")return;
- const shell=root.querySelector(".admin-shell"),nav=shell?.querySelector(".admin-control-nav"),home=root.querySelector("#adminPanel-adminHome");
+ const shell=root.querySelector(".admin-shell"),nav=shell?.querySelector(".admin-control-nav"),home=root.querySelector("#adminPanel-adminOverview")||root.querySelector("#adminPanel-adminHome");
  if(!shell||!nav||!home)return;
  root.dataset.amarCommandReady="1";installStyle();
  const tools=document.createElement("div");tools.className="amar-admin-tools";
