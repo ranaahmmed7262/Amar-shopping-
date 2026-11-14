@@ -7,8 +7,10 @@ const call=async(db,name,args={})=>{const r=await db.rpc(name,args);if(r.error)t
 function css(){if(document.getElementById("amar-team-style"))return;const s=document.createElement("style");s.id="amar-team-style";s.textContent=".amar-team{margin:18px 0;padding:16px;border:1px solid #d5e8dc;border-radius:16px;background:#f5fbf7;color:#173d2d}.amar-team h3{margin:0 0 8px;color:#075b43}.amar-team .at-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin:12px 0}.amar-team .at-card{padding:12px;border:1px solid #dce9e1;border-radius:11px;background:white}.amar-team .at-muted{font-size:12px;color:#60776a}.amar-team input,.amar-team select,.amar-team textarea{width:100%;padding:9px;border:1px solid #cfddd4;border-radius:8px;background:white;color:#173d2d}.amar-team label{display:grid;gap:5px;font-size:12px;font-weight:700}.amar-team button{border:0;border-radius:8px;padding:9px 12px;background:#087f5b;color:white;font-weight:700;cursor:pointer}.amar-team button.secondary{background:#e6f2ea;color:#075b43;border:1px solid #d5e5da}.amar-team button.danger{background:#9c3333}.amar-team button:disabled{opacity:.5}.amar-team .at-list{display:grid;gap:8px;margin:10px 0}.amar-team .at-pill{display:inline-block;border-radius:20px;padding:4px 9px;background:#e2f3e8;color:#075b43;font-size:11px;font-weight:800}.amar-team .at-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.amar-team hr{border:0;border-top:1px solid #dce9e1;margin:14px 0}";document.head.appendChild(s)}
 function manager(d){
  const initial=d.teamAccess||{};
- const canOpen=!!d.adminOtpVerified||!!initial.is_ceo||!!initial.permissions?.["team.overview"];
- if(!canOpen)return;
+ // Always mount the Team Operations shell after the Admin dashboard opens.
+ // Actual CEO/team access is decided by the OTP-protected Supabase RPCs in load();
+ // a stale/missing client-side OTP flag must not hide the entire interface.
+
  css();
  const host=d.el.querySelector("#adminPanel-adminHome")||d.el.querySelector("#allOrders")?.parentElement||d.el;
  if(!host)return;
