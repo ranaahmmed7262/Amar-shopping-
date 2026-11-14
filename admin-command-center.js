@@ -246,7 +246,6 @@
       document.body.classList.add("amar-admin-workspace-active");
       document.body.classList.remove("amar-admin-nav-collapsed", "menu-open");
       requestAnimationFrame(() => (home?.querySelector("#amarTeamManager") || home)?.scrollIntoView({behavior:"smooth",block:"start"}));
-      recordRecent("teamOperations");
       const status = dashboard.querySelector(".amar-admin-menu-status");
       if (status) status.textContent = "খোলা: 00.03 · Team Operations · Menu stays open";
     });
