@@ -63,18 +63,30 @@ function manager(d){
  };
  async function load(){
   if(loading)return;loading=true;
+  root.innerHTML='<div class="at-row"><h3>👥 Team Order Operations</h3><span class="at-muted">লোড হচ্ছে…</span></div><p class="at-muted">Team Members, Join Requests ও Tool Permissions নিরাপদভাবে আনা হচ্ছে।</p><button class="secondary" id="atRefresh">↻ Retry</button>';
   try{
    access=await call(d.db,"get_my_team_access");
-   if(!isCeo()&&!allowed("team.overview"))throw new Error("Team overview permission is not enabled for this account.");
-   const [a,b,dir,mat]=await Promise.all([
+   if(!isCeo()&&!allowed("team.overview")){
+    root.innerHTML='<h3>👥 Team Order Operations</h3><div class="at-card"><b>Team access পাওয়া যায়নি</b><p class="at-muted">এই Admin OTP session CEO account হিসেবে স্বীকৃত নয়, অথবা Team Overview permission চালু নেই। CEO account দিয়ে OTP login করে আবার Refresh করো।</p><p class="at-muted">Account role: '+esc(access.role||"unknown")+' · Membership: '+esc(access.status||"unknown")+'</p><button class="secondary" id="atRefresh">↻ Retry</button></div>';
+    return;
+   }
+   const results=await Promise.allSettled([
     call(d.db,"manager_get_team_overview"),
     allowed("orders.assign")?call(d.db,"manager_get_assignable_orders"):Promise.resolve([]),
     (allowed("orders.assign")||allowed("orders.work.forward"))?call(d.db,"get_approved_team_colleagues"):Promise.resolve([]),
     isCeo()?call(d.db,"manager_get_team_access_matrix"):Promise.resolve(null)
    ]);
-   ov=a;orders=b||[];people=dir||[];matrix=mat;render();
-  }catch(e){root.innerHTML='<h3>Team Operations</h3><p class="at-muted">Load error: '+esc(e.message)+'</p><button id="atRefresh">Retry</button>'}
-  finally{loading=false}
+   if(results[0].status==="rejected")throw results[0].reason;
+   ov=results[0].value;
+   orders=results[1].status==="fulfilled"?(results[1].value||[]):[];
+   people=results[2].status==="fulfilled"?(results[2].value||[]):[];
+   matrix=results[3].status==="fulfilled"?results[3].value:null;
+   render();
+   const auxiliaryErrors=results.slice(1).map((r,i)=>r.status==="rejected"?["Order assignment","Team directory","CEO access matrix"][i]+": "+(r.reason?.message||"Load failed"):null).filter(Boolean);
+   if(auxiliaryErrors.length){const note=document.createElement("div");note.className="at-card";note.style.marginTop="12px";note.innerHTML='<b>কিছু অতিরিক্ত Tool লোড হয়নি</b><p class="at-muted">'+auxiliaryErrors.map(esc).join("<br>")+'</p>';root.appendChild(note)}
+  }catch(e){
+   root.innerHTML='<h3>👥 Team Order Operations</h3><div class="at-card"><b>Team data load failed</b><p class="at-muted">'+esc(e?.message||"Unknown error")+'</p><p class="at-muted">কোনো Team data পরিবর্তন করা হয়নি। Retry করো; সমস্যা থাকলে এই error text পাঠাও।</p><button id="atRefresh">↻ Retry</button></div>';
+  }finally{loading=false}
  }
  root.addEventListener("click",async e=>{
   if(e.target.closest("#atRefresh")){load();return}
