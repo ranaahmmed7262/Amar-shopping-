@@ -3,6 +3,12 @@
 "use strict";
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const labels={assigned:"Assigned",accepted:"Accepted",in_progress:"In Progress",waiting_info:"Waiting for Info",forwarded:"Forwarded",completed:"Completed",on_hold:"On Hold"};
+const workflowStages=[
+ ["assigned","Assigned / কাজ বরাদ্দ"],["team_1","Team 1"],["team_2","Team 2"],["team_3","Team 3"],["team_4","Team 4"],["team_5","Team 5"],
+ ["processing","Processing / কাজ চলছে"],["packed","Packed / প্যাকিং সম্পন্ন"],["ready_for_dispatch","Ready for Dispatch"],["shipped","Shipped / কুরিয়ারে পাঠানো"],
+ ["out_for_delivery","Out for Delivery"],["delivered","Delivered / ডেলিভারি সম্পন্ন"],["accepted","Accepted"],["in_progress","In Progress"],
+ ["waiting_info","Waiting for Info"],["forwarded","Forwarded"],["completed","Completed"],["on_hold","On Hold"]
+];
 const call=async(db,name,args={})=>{const r=await db.rpc(name,args);if(r.error)throw r.error;return r.data};
 function css(){if(document.getElementById("amar-team-style"))return;const s=document.createElement("style");s.id="amar-team-style";s.textContent=".amar-team{margin:18px 0;padding:16px;border:1px solid #d5e8dc;border-radius:16px;background:#f5fbf7;color:#173d2d}.amar-team h3{margin:0 0 8px;color:#075b43}.amar-team .at-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin:12px 0}.amar-team .at-card{padding:12px;border:1px solid #dce9e1;border-radius:11px;background:white}.amar-team .at-muted{font-size:12px;color:#60776a}.amar-team input,.amar-team select,.amar-team textarea{width:100%;padding:9px;border:1px solid #cfddd4;border-radius:8px;background:white;color:#173d2d}.amar-team label{display:grid;gap:5px;font-size:12px;font-weight:700}.amar-team button{border:0;border-radius:8px;padding:9px 12px;background:#087f5b;color:white;font-weight:700;cursor:pointer}.amar-team button.secondary{background:#e6f2ea;color:#075b43;border:1px solid #d5e5da}.amar-team button.danger{background:#9c3333}.amar-team button:disabled{opacity:.5}.amar-team .at-list{display:grid;gap:8px;margin:10px 0}.amar-team .at-pill{display:inline-block;border-radius:20px;padding:4px 9px;background:#e2f3e8;color:#075b43;font-size:11px;font-weight:800}.amar-team .at-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.amar-team hr{border:0;border-top:1px solid #dce9e1;margin:14px 0}";document.head.appendChild(s)}
 function manager(d){
@@ -22,26 +28,7 @@ function manager(d){
   "orders.work.forward":"Forward Tasks"
  };
  const roleNames={manager:"Manager",admin:"Admin",employee:"Employee",viewer:"Viewer"};
- const workflow=[
-  ["assigned","Assigned / কাজ বরাদ্দ"],
-  ["team_1","Team 1"],
-  ["team_2","Team 2"],
-  ["team_3","Team 3"],
-  ["team_4","Team 4"],
-  ["team_5","Team 5"],
-  ["processing","Processing / কাজ চলছে"],
-  ["packed","Packed / প্যাকিং সম্পন্ন"],
-  ["ready_for_dispatch","Ready for Dispatch"],
-  ["shipped","Shipped / কুরিয়ারে পাঠানো"],
-  ["out_for_delivery","Out for Delivery"],
-  ["delivered","Delivered / ডেলিভারি সম্পন্ন"],
-  ["accepted","Accepted"],
-  ["in_progress","In Progress"],
-  ["waiting_info","Waiting for Info"],
-  ["forwarded","Forwarded"],
-  ["completed","Completed"],
-  ["on_hold","On Hold"]
- ];
+ const workflow=workflowStages;
  const stageName=k=>(workflow.find(x=>x[0]===k)||[k,k])[1];
  const isCeo=()=>access.is_ceo===true;
  const perms=()=>access.permissions||{};
@@ -172,7 +159,7 @@ function staff(d){
    ]);
    root.innerHTML='<div class="at-row" style="justify-content:space-between"><div><h3>📦 My Assigned Orders</h3><span class="at-muted">'+esc(m.display_name)+' · '+esc(m.admin_number)+'</span></div><button class="secondary" id="atStaffRefresh">↻ Refresh</button></div><div class="at-list">'+tasks.map(t=>{
     const o=t.order_data||{};
-    return '<div class="at-card" data-task="'+t.task_id+'"><b>Order #'+o.id+' · '+esc(o.recipient_name||"Customer")+'</b><p>'+esc(o.recipient_phone||"")+' · '+esc(o.delivery_address||"")+'<br>৳'+Number(o.total_bdt||0)+' · Customer status: '+esc(o.status)+'</p><p class="at-muted">Internal note: '+esc(t.internal_note||"—")+'</p>'+(canUpdate?'<div class="at-grid"><label>Work Status<select data-status>'+workflow.map(x=>'<option value="'+x[0]+'">'+esc(x[1])+'</option>').join("")+'</select></label><label>Update note<textarea data-note rows="2"></textarea></label></div><button data-save>Save Status</button>':"")+(canForward?'<div class="at-grid"><label>Forward to<select data-forward><option value="">Select teammate</option>'+people.map(p=>'<option value="'+esc(p.auth_user_id)+'">'+esc(p.display_name)+' · '+esc(p.admin_number)+'</option>').join("")+'</select></label><label>Forward note<input data-forward-note></label></div><button class="secondary" data-send>Forward</button>':"")+'</div>';
+    return '<div class="at-card" data-task="'+t.task_id+'"><b>Order #'+o.id+' · '+esc(o.recipient_name||"Customer")+'</b><p>'+esc(o.recipient_phone||"")+' · '+esc(o.delivery_address||"")+'<br>৳'+Number(o.total_bdt||0)+' · Customer status: '+esc(o.status)+'</p><p class="at-muted">Internal note: '+esc(t.internal_note||"—")+'</p>'+(canUpdate?'<div class="at-grid"><label>Work Status<select data-status>'+workflowStages.map(x=>'<option value="'+x[0]+'">'+esc(x[1])+'</option>').join("")+'</select></label><label>Update note<textarea data-note rows="2"></textarea></label></div><button data-save>Save Status</button>':"")+(canForward?'<div class="at-grid"><label>Forward to<select data-forward><option value="">Select teammate</option>'+people.map(p=>'<option value="'+esc(p.auth_user_id)+'">'+esc(p.display_name)+' · '+esc(p.admin_number)+'</option>').join("")+'</select></label><label>Forward note<input data-forward-note></label></div><button class="secondary" data-send>Forward</button>':"")+'</div>';
    }).join("")||'<p class="at-muted">No orders assigned to you.</p>')+'</div><p class="at-muted">Customer Order Status / Payment Status এখানে পরিবর্তন হয় না।</p>';
    root.querySelectorAll("[data-task]").forEach(card=>{const t=tasks.find(x=>String(x.task_id)===card.dataset.task);const select=card.querySelector("[data-status]");if(select)select.value=t.work_status==="assigned"?"accepted":t.work_status});
   }catch(e){root.innerHTML='<h3>Team Desk</h3><p class="at-muted">'+esc(e.message)+'</p><button id="atStaffRefresh">Retry</button>'}
