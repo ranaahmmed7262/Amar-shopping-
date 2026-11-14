@@ -1006,7 +1006,7 @@ function showAdminPanel(targetId){
  const target=el.querySelector("#"+CSS.escape(targetId));
  const panel=target?.closest(".admin-panel");
  if(!panel){toast("এই বিভাগটি পাওয়া যায়নি",true);return}
- adminPanels.forEach(item=>{item.hidden=item!==panel;});
+ el.querySelectorAll(".admin-panel").forEach(item=>{item.hidden=item!==panel;});
  adminHome.hidden=true;
  el.querySelectorAll("[data-admin-jump]").forEach(button=>button.classList.toggle("active",button.dataset.adminJump===targetId));
  panel.scrollIntoView({behavior:"smooth",block:"start"});
