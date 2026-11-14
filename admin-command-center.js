@@ -57,3 +57,78 @@ function watch(){
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();
 })();
+
+
+/* Premium five-group admin drawer. Additive only: preserve every original panel ID and click action. */
+(function(){
+ "use strict";
+ const STYLE_ID="amar-admin-drawer-style";
+ const groups=[
+  {title:"Marketplace Control",icon:"🌐",ids:["adminMasterControl","pendingProducts","manageProducts","categoryManager","pendingSellers"]},
+  {title:"Orders & Customers",icon:"📦",ids:["allOrders","adminChats","customerList"]},
+  {title:"Website & Operations",icon:"⚙️",ids:["siteSettingsForm","adminDelivery","roleManager"]},
+  {title:"Finance & Reports",icon:"📈",ids:["commissionReport","exportOrdersCsv"]},
+  {title:"System & Platform",icon:"🛡️",ids:["adminHealth","platformControlCenter"]}
+ ];
+ function style(){
+  if(document.getElementById(STYLE_ID))return;
+  const s=document.createElement("style");s.id=STYLE_ID;
+  s.textContent=`
+  #dashContent .admin-shell{position:relative;z-index:30;padding:18px 18px 18px 76px!important;background:linear-gradient(135deg,#052f29,#075b43 58%,#087f5b)!important;border:1px solid #ffffff20!important;min-height:112px}
+  #dashContent .admin-shell h2{letter-spacing:.2px;font-size:20px}
+  #dashContent .admin-menu-toggle{position:absolute!important;left:16px!important;top:18px!important;width:44px!important;height:44px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;border:1px solid #ffffff55!important;border-radius:12px!important;background:#ffffff18!important;cursor:pointer!important;z-index:10002!important}
+  #dashContent .admin-menu-toggle span{display:block!important;width:20px!important;height:2px!important;border-radius:2px!important;background:#fff!important}
+  #dashContent .admin-control-nav{position:fixed!important;z-index:10001!important;inset:0 auto 0 0!important;width:min(350px,88vw)!important;max-width:350px!important;height:100dvh!important;overflow-y:auto!important;overscroll-behavior:contain!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:10px!important;padding:86px 16px 24px!important;margin:0!important;background:linear-gradient(180deg,#062f29,#064b3b 55%,#073b30)!important;box-shadow:16px 0 45px #001d1670!important;border-right:1px solid #ffffff20!important;transform:translateX(-110%)!important;transition:transform .24s ease!important;visibility:hidden!important}
+  body.amar-admin-menu-open #dashContent .admin-control-nav{transform:translateX(0)!important;visibility:visible!important}
+  #dashContent .amar-admin-drawer-brand{position:fixed;z-index:10003;top:18px;left:18px;width:min(314px,calc(88vw - 36px));color:#fff;font-weight:900;font-size:17px;pointer-events:none;opacity:0;transition:opacity .2s}
+  body.amar-admin-menu-open #dashContent .amar-admin-drawer-brand{opacity:1}
+  #dashContent .amar-admin-nav-overview{width:100%;min-height:44px;text-align:left!important;border:1px solid #ffffff38!important;border-radius:11px!important;background:#ffffff1a!important;color:#fff!important;padding:12px!important;font-weight:850!important}
+  #dashContent .amar-admin-group{border:1px solid #ffffff22;border-radius:13px;background:#ffffff0b;overflow:hidden}
+  #dashContent .amar-admin-group summary{list-style:none;cursor:pointer;padding:13px 12px;color:#e9fff2;font-weight:850;font-size:13px;display:flex;align-items:center;gap:9px}
+  #dashContent .amar-admin-group summary::-webkit-details-marker{display:none}
+  #dashContent .amar-admin-group summary:after{content:"⌄";margin-left:auto;color:#b7e8cd;font-size:18px}
+  #dashContent .amar-admin-group[open] summary:after{content:"⌃"}
+  #dashContent .amar-admin-group-items{display:grid;gap:5px;padding:0 8px 9px}
+  #dashContent .admin-control-nav .amar-admin-group-items button{width:100%!important;min-height:40px!important;text-align:left!important;justify-content:flex-start!important;border:1px solid #ffffff16!important;border-radius:9px!important;background:#ffffff10!important;color:#f2fff6!important;padding:10px 11px!important;font-size:12px!important;font-weight:700!important}
+  #dashContent .admin-control-nav .amar-admin-group-items button:hover,#dashContent .admin-control-nav .amar-admin-group-items button.active{background:#d8f5e4!important;color:#064b36!important}
+  #dashContent .amar-admin-backdrop{position:fixed;z-index:10000;inset:0;border:0;background:#001b14a8;opacity:0;visibility:hidden;transition:opacity .2s;padding:0}
+  body.amar-admin-menu-open #dashContent .amar-admin-backdrop{opacity:1;visibility:visible}
+  #dashContent .admin-shell .admin-nav-note{margin-top:10px}
+  @media(max-width:600px){#dashContent .admin-shell{padding:16px 12px 16px 66px!important}#dashContent .admin-shell h2{font-size:16px}#dashContent .admin-control-nav{width:min(330px,88vw)!important}}
+  @media(prefers-reduced-motion:reduce){#dashContent .admin-control-nav,#dashContent .amar-admin-backdrop{transition:none!important}}
+  `;
+  document.head.appendChild(s);
+ }
+ function mount(){
+  const root=document.getElementById("dashContent"),shell=root?.querySelector(".admin-shell"),nav=shell?.querySelector(".admin-control-nav"),toggle=shell?.querySelector("#adminMenuToggle");
+  if(!root||!shell||!nav||!toggle||nav.dataset.premiumDrawer==="1")return;
+  const buttons=[...nav.querySelectorAll("[data-admin-jump]")];
+  const byId=id=>buttons.find(b=>b.dataset.adminJump===id);
+  if(buttons.length<16)return;
+  style();
+  nav.dataset.premiumDrawer="1";
+  const overview=byId("adminOverview");
+  if(overview){overview.classList.add("amar-admin-nav-overview");overview.textContent="📊  Overview";}
+  groups.forEach(group=>{
+   const details=document.createElement("details");details.className="amar-admin-group";
+   const summary=document.createElement("summary");summary.textContent=group.icon+"  "+group.title;
+   const items=document.createElement("div");items.className="amar-admin-group-items";
+   group.ids.forEach(id=>{const b=byId(id);if(b)items.appendChild(b)});
+   details.append(summary,items);nav.appendChild(details);
+  });
+  const brand=document.createElement("div");brand.className="amar-admin-drawer-brand";brand.textContent="AMAR SHOPPING · CONTROL CENTER";shell.appendChild(brand);
+  const backdrop=document.createElement("button");backdrop.type="button";backdrop.className="amar-admin-backdrop";backdrop.setAttribute("aria-label","Close admin menu");shell.appendChild(backdrop);
+  const close=()=>{document.body.classList.remove("amar-admin-menu-open");toggle.setAttribute("aria-expanded","false");toggle.setAttribute("aria-label","অ্যাডমিন মেনু খুলুন");};
+  const open=()=>{document.body.classList.add("amar-admin-menu-open");toggle.setAttribute("aria-expanded","true");toggle.setAttribute("aria-label","অ্যাডমিন মেনু বন্ধ করুন");};
+  toggle.onclick=event=>{event.preventDefault();document.body.classList.contains("amar-admin-menu-open")?close():open();};
+  backdrop.addEventListener("click",close);
+  buttons.forEach(button=>button.addEventListener("click",close));
+  document.addEventListener("keydown",event=>{if(event.key==="Escape")close()});
+  window.addEventListener("resize",()=>{if(window.innerWidth>900)close()},{passive:true});
+ }
+ function watch(){
+  const root=document.getElementById("dashContent")||document.body;
+  const observer=new MutationObserver(mount);observer.observe(root,{childList:true,subtree:true});mount();
+ }
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();
+})();
