@@ -19,8 +19,9 @@
     const style = document.createElement("style");
     style.id = STYLE_ID;
     style.textContent = `
-      body.amar-admin-workspace-active .side-drawer,
-      body.amar-admin-workspace-active .side-shade { display:none!important; }
+      /* Keep the storefront/customer drawer available above the Admin workspace. */
+      body.amar-admin-workspace-active.menu-open .side-shade { display:block!important; }
+      body.amar-admin-workspace-active.menu-open .side-drawer { display:flex!important; }
       #dashContent:has(>.amar-global-admin-menu) {
         display:grid!important;
         grid-template-columns:minmax(225px,270px) minmax(0,1fr)!important;
@@ -239,7 +240,7 @@
     if (document.documentElement.dataset.amarAdminHamburgerFix === "1") return;
     document.documentElement.dataset.amarAdminHamburgerFix = "1";
     document.addEventListener("click", event => {
-      const trigger = event.target?.closest?.("#menuTrigger, .amar-admin-collapse");
+      const trigger = event.target?.closest?.(".amar-admin-collapse");
       if (!trigger || !document.body.classList.contains("amar-admin-workspace-active")) return;
       const settings = document.getElementById("adminMenuSettings");
       if (!settings || settings.classList.contains("hidden")) return;
