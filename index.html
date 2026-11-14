@@ -999,7 +999,8 @@ adminHome.id="adminPanel-adminHome";
 adminHome.innerHTML='<h3>📊 AMAR SHOPPING ADMIN DASHBOARD</h3><p class="muted">মেনু থেকে একটি বিভাগ নির্বাচন করুন। সব Admin control নিরাপদভাবে এখানে রাখা হয়েছে।</p>';
 adminShell.after(adminHome);
 /* Additive Team Operations: manager authority requires the existing OTP-verified Admin session. */
-if(window.mountAmarShoppingTeamManager)window.mountAmarShoppingTeamManager({db,profile,session,el,toast,adminOtpVerified:!!(session?.user?.id&&(adminOtpVerifiedUserId===session.user.id||window.__amarAdminOtpSessionVerifiedUserId===session.user.id))});
+const mountTeamOperations=()=>{if(window.mountAmarShoppingTeamManager)window.mountAmarShoppingTeamManager({db,profile,session,el,toast,adminOtpVerified:!!(session?.user?.id&&(adminOtpVerifiedUserId===session.user.id||window.__amarAdminOtpSessionVerifiedUserId===session.user.id))});};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mountTeamOperations,{once:true});else mountTeamOperations();
 function showAdminPanel(targetId){
  const target=el.querySelector("#"+CSS.escape(targetId));
  const panel=target?.closest(".admin-panel");
