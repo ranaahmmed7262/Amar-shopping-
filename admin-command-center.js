@@ -233,14 +233,25 @@
   }
 
   function installHamburgerBehavior() {
-    const trigger = document.getElementById("menuTrigger");
-    if (!trigger || trigger.dataset.amarAdminWorkspaceToggle === "1") return;
-    trigger.dataset.amarAdminWorkspaceToggle = "1";
-    trigger.addEventListener("click", event => {
-      if (!document.body.classList.contains("amar-admin-workspace-active")) return;
+    // Delegate at document capture phase so earlier/later drawer handlers cannot
+    // swallow the Admin toggle. Outside a verified Admin session, leave the
+    // storefront hamburger's original drawer behavior untouched.
+    if (document.documentElement.dataset.amarAdminHamburgerFix === "1") return;
+    document.documentElement.dataset.amarAdminHamburgerFix = "1";
+    document.addEventListener("click", event => {
+      const trigger = event.target?.closest?.("#menuTrigger, .amar-admin-collapse");
+      if (!trigger || !document.body.classList.contains("amar-admin-workspace-active")) return;
+      const settings = document.getElementById("adminMenuSettings");
+      if (!settings || settings.classList.contains("hidden")) return;
       event.preventDefault();
+      event.stopPropagation();
       event.stopImmediatePropagation();
-      document.body.classList.toggle("amar-admin-nav-collapsed");
+      const collapsed = document.body.classList.toggle("amar-admin-nav-collapsed");
+      document.body.classList.remove("menu-open");
+      const expanded = String(!collapsed);
+      document.getElementById("menuTrigger")?.setAttribute("aria-expanded", expanded);
+      trigger.setAttribute("aria-expanded", expanded);
+      trigger.setAttribute("aria-label", collapsed ? "Admin menu expand" : "Admin menu collapse");
     }, true);
   }
 
