@@ -53,7 +53,7 @@ function manager(d){
   const visibleMembers=matrix?.members||members,permissionRows=matrix?.permissions||[],permMap={};
   permissionRows.forEach(p=>{if(!permMap[p.member_auth_user_id])permMap[p.member_auth_user_id]={};permMap[p.member_auth_user_id][p.permission_key]=p.allowed});
   let html='<div class="at-row" style="justify-content:space-between"><div><h3>👥 Team Operations</h3><span class="at-muted">Members · Roles · Order workflow · Permissions · Activity</span></div><button class="secondary" id="atRefresh">↻ Refresh</button></div>';
-  html+='<div class="at-row" style="margin:12px 0">'+tabButton("overview","Overview")+(isCeo()?tabButton("members","Team Members")+tabButton("requests","Join Requests")+tabButton("roles","Roles & Access"):"")+(allowed("orders.assign")||allowed("team.overview")?tabButton("orders","Order Workflow"):"")+tabButton("activity","Activity Log")+'</div>';
+  html+='<div class="at-row" style="margin:12px 0">'+tabButton("overview","Overview")+(isCeo()?tabButton("members","Team Members")+tabButton("requests","Join Requests")+tabButton("roles","Role Management")+tabButton("permissions","Tool Access Control"):"")+(allowed("orders.assign")||allowed("team.overview")?tabButton("orders","Order Workflow"):"")+tabButton("activity","Activity Log")+'</div>';
   if(activeTab==="overview"){
    html+='<div class="at-grid">'+[["Unassigned",c.unassigned],["Assigned",c.assigned],["In Progress",c.in_progress],["Completed",c.completed],["Overdue",c.overdue],["Team Members",approved.length]].map(x=>'<div class="at-card"><span class="at-muted">'+x[0]+'</span><h3>'+String(x[1]??0)+'</h3></div>').join("")+'</div>';
    if(isCeo())html+='<div class="at-card"><b>CEO Control · Full Access</b><p class="at-muted">CEO-এর সব Team ও Order tools-এর পূর্ণ Access থাকবে। Team Mode-এ কাজ Assign করুন; Solo Mode-এ Employee assignment ছাড়াও পরিচালনা করতে পারবেন।</p><button class="secondary" id="atMode">'+(root.dataset.solo==="true"?"Switch to Team Mode":"Switch to Solo Mode")+'</button></div>';
@@ -64,15 +64,22 @@ function manager(d){
    html+='<h4>🛡️ Join Requests ('+pending.length+')</h4><div class="at-list">'+(pending.map(m=>'<div class="at-card"><b>'+esc(m.display_name)+' · '+esc(m.admin_number)+'</b><p class="at-muted">Request: '+esc(new Date(m.requested_at).toLocaleString())+'</p><div class="at-row"><button data-member="approved" data-id="'+esc(m.auth_user_id)+'">Approve as Employee</button><button class="danger" data-member="rejected" data-id="'+esc(m.auth_user_id)+'">Reject</button></div></div>').join("")||'<p class="at-muted">কোনো pending request নেই।</p>')+'</div>';
   }
   if(activeTab==="members"&&isCeo()){
-   html+='<h4>👤 Team Members</h4><div class="at-list">'+(visibleMembers.map(m=>'<div class="at-card"><div class="at-row" style="justify-content:space-between"><b>'+esc(m.display_name)+' · '+esc(m.admin_number)+'</b><span class="at-pill">'+esc(m.status.toUpperCase())+'</span></div><p class="at-muted">Role: '+esc(roleNames[m.access_level]||m.access_level)+' · Joined: '+esc(new Date(m.requested_at).toLocaleDateString())+'</p>'+(m.auth_user_id===d.session?.user?.id?'<b>CEO · ALL ACCESS · LOCKED</b>':m.status==="approved"?'<div class="at-row"><label style="min-width:170px">Member Status<select data-member-status="'+esc(m.auth_user_id)+'"><option value="approved" selected>Active</option><option value="suspended">Suspend</option></select></label><button class="secondary" data-member="suspended" data-id="'+esc(m.auth_user_id)+'">Suspend Access</button></div>':"")+'</div>').join("")||'<p>এখনো কোনো Team Member নেই।</p>')+'</div>';
+   html+='<h4>👤 Team Members</h4><div class="at-list">'+(visibleMembers.map(m=>'<div class="at-card"><div class="at-row" style="justify-content:space-between"><b>'+esc(m.display_name)+' · '+esc(m.admin_number)+'</b><span class="at-pill">'+esc(m.status.toUpperCase())+'</span></div><p class="at-muted">Role: '+esc(roleNames[m.access_level]||m.access_level)+' · Joined: '+esc(new Date(m.requested_at).toLocaleDateString())+'</p>'+(m.auth_user_id===d.session?.user?.id?'<b>CEO · ALL ACCESS · LOCKED</b>':m.status==="approved"?'<button class="danger" data-member="suspended" data-id="'+esc(m.auth_user_id)+'">Suspend Access</button>':(m.status==="suspended"||m.status==="rejected")?'<button data-member="approved" data-id="'+esc(m.auth_user_id)+'">Restore as Employee</button>':"")+'</div>').join("")||'<p>এখনো কোনো Team Member নেই।</p>')+'</div>';
   }
   if(activeTab==="roles"&&isCeo()){
-   html+='<h4>🎭 Role Management & Tool Access Control</h4><p class="at-muted">Role Template প্রয়োগ করলে ওই Role-এর Default Permission বসবে। এরপর প্রতিটি Tool আলাদাভাবে On/Off করতে পারবেন।</p><div class="at-list">';
+   html+='<h4>🎭 Role Management</h4><p class="at-muted">Role Template প্রয়োগ করলে সংশ্লিষ্ট Default Permission বসবে। CEO-এর Role স্থায়ী ও Locked থাকবে।</p><div class="at-list">';
    html+=visibleMembers.filter(m=>m.status==="approved").map(m=>{
     if(m.auth_user_id===d.session?.user?.id)return '<div class="at-card"><b>👑 '+esc(m.display_name)+' · CEO</b><span class="at-pill">ALL ACCESS · LOCKED</span></div>';
+    return '<div class="at-card"><b>'+esc(m.display_name)+' · '+esc(m.admin_number)+'</b><label>Role<select data-role-member="'+esc(m.auth_user_id)+'">'+Object.keys(roleNames).map(k=>'<option value="'+k+'" '+(m.access_level===k?"selected":"")+'>'+roleNames[k]+'</option>').join("")+'</select></label></div>';
+   }).join("")+'</div>';
+  }
+  if(activeTab==="permissions"&&isCeo()){
+   html+='<h4>🔐 Tool Access Control</h4><p class="at-muted">প্রতিটি কর্মীর Tool Access আলাদাভাবে ON/OFF করুন। Server-side Permission প্রতিটি protected action-এ যাচাই হবে।</p><div class="at-list">';
+   html+=visibleMembers.filter(m=>m.status==="approved").map(m=>{
+    if(m.auth_user_id===d.session?.user?.id)return '<div class="at-card"><b>👑 '+esc(m.display_name)+' · CEO</b><span class="at-pill">ALL TOOLS · ALWAYS ON · LOCKED</span></div>';
     const selected=permMap[m.auth_user_id]||{};
     const checks=Object.keys(permissionNames).map(k=>'<label style="display:flex;grid-template-columns:auto 1fr;align-items:center;gap:8px;font-weight:500"><input type="checkbox" data-perm-member="'+esc(m.auth_user_id)+'" data-perm-key="'+k+'" '+(selected[k]===true?"checked":"")+' style="width:auto"> '+permissionNames[k]+'</label>').join("");
-    return '<div class="at-card"><b>'+esc(m.display_name)+' · '+esc(m.admin_number)+'</b><label>Role Template<select data-role-member="'+esc(m.auth_user_id)+'">'+Object.keys(roleNames).map(k=>'<option value="'+k+'" '+(m.access_level===k?"selected":"")+'>'+roleNames[k]+'</option>').join("")+'</select></label><div class="at-list">'+checks+'</div></div>';
+    return '<div class="at-card"><b>'+esc(m.display_name)+' · '+esc(m.admin_number)+'</b><div class="at-list">'+checks+'</div></div>';
    }).join("")+'</div>';
   }
   if(activeTab==="orders"&&(allowed("orders.assign")||allowed("team.overview"))){
