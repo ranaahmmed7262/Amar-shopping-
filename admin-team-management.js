@@ -22,10 +22,12 @@ function css(){if(document.getElementById("amar-team-style"))return;const s=docu
 function manager(d){
  const initial=d.teamAccess||{};
  css();
- const host=d.el.querySelector("#adminPanel-adminHome")||d.el.querySelector("#allOrders")?.parentElement||d.el;
+ const host=d.el;
  if(!host)return false;
- let root=host.querySelector("#amarTeamManager");
- if(!root){root=document.createElement("section");root.id="amarTeamManager";root.className="amar-team";host.appendChild(root)}
+ let panel=host.querySelector("#adminPanel-teamOperations");
+ if(!panel){panel=document.createElement("section");panel.id="adminPanel-teamOperations";panel.className="admin-panel";panel.hidden=true;host.appendChild(panel)}
+ let root=panel.querySelector("#amarTeamManager");
+ if(!root){root=document.createElement("section");root.id="amarTeamManager";root.className="amar-team";panel.appendChild(root)}
  let activeTab="overview",loading=false,ov=null,orders=[],access=initial,matrix=null,people=[],taskEvents=[],memberEvents=[];
  const permissionNames={
   "team.overview":"Team Overview & Work Board",
