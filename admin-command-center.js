@@ -31,10 +31,11 @@
       { id: "adminMasterControl", code: "06.01", label: "All-in-One Master Control", keywords: "central control operations shortcut" }
     ]}
   ];
-  const DASHBOARD_ENTRY = { id: "allOrders", code: "00.01", label: "Admin Dashboard & Order Desk", keywords: "overview order orders live list tracking" };
+  const OVERVIEW_ENTRY = { id: "adminOverview", code: "00.01", label: "Business Overview", keywords: "dashboard overview business summary kpi calculation" };
+  const DASHBOARD_ENTRY = { id: "allOrders", code: "00.02", label: "Order Management Desk", keywords: "order orders live list tracking serial filter" };
   const FAVORITES_KEY = "amar-admin-favorites-v3";
   const RECENTS_KEY = "amar-admin-recents-v3";
-  const ALL_ENTRIES = [DASHBOARD_ENTRY, ...GROUPS.flatMap(group => group.items)];
+  const ALL_ENTRIES = [OVERVIEW_ENTRY, DASHBOARD_ENTRY, ...GROUPS.flatMap(group => group.items)];
   const STYLE_ID = "amar-admin-workspace-unified-style";
   let observer = null;
 
@@ -232,8 +233,13 @@
     const dashboardButton = document.createElement("button");
     dashboardButton.type = "button";
     dashboardButton.className = "amar-admin-order-entry";
-    dashboardButton.innerHTML = "<span>📊 Admin Dashboard & Order Desk</span><small>00.01</small>";
+    dashboardButton.innerHTML = "<span>🚚 Order Management Desk</span><small>00.02</small>";
     dashboardButton.addEventListener("click", () => selectPanel(dashboard, DASHBOARD_ENTRY.id));
+    const overviewButton = document.createElement("button");
+    overviewButton.type = "button";
+    overviewButton.className = "amar-admin-order-entry";
+    overviewButton.innerHTML = "<span>📊 Business Overview</span><small>00.01</small>";
+    overviewButton.addEventListener("click", () => selectPanel(dashboard, OVERVIEW_ENTRY.id));
 
     const favTitle = document.createElement("div");
     favTitle.className = "amar-admin-section-label";
@@ -252,7 +258,7 @@
     status.className = "amar-admin-menu-hint amar-admin-menu-status";
     status.setAttribute("role", "status");
     status.textContent = "সব Admin control এই মেনুর ভেতরে";
-    content.append(heading, hint, search, dashboardButton, favTitle, favArea, recentTitle, recentArea);
+    content.append(heading, hint, search, overviewButton, dashboardButton, favTitle, favArea, recentTitle, recentArea);
 
     const entries = [];
     const entryRows = [];
@@ -344,6 +350,7 @@
         if (term && visible) details.open = true;
       });
       dashboardButton.hidden = !!term && !(DASHBOARD_ENTRY.code + " " + DASHBOARD_ENTRY.label + " " + DASHBOARD_ENTRY.keywords).toLocaleLowerCase().includes(term);
+      overviewButton.hidden = !!term && !(OVERVIEW_ENTRY.code + " " + OVERVIEW_ENTRY.label + " " + OVERVIEW_ENTRY.keywords).toLocaleLowerCase().includes(term);
       favTitle.hidden = !!term || !readList(FAVORITES_KEY).length;
       favArea.hidden = !!term || !readList(FAVORITES_KEY).length;
       recentTitle.hidden = !!term || !readList(RECENTS_KEY).length;
