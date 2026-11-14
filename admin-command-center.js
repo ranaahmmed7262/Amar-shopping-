@@ -235,6 +235,21 @@
     dashboardButton.className = "amar-admin-order-entry";
     dashboardButton.innerHTML = "<span>🚚 Order Management Desk</span><small>00.02</small>";
     dashboardButton.addEventListener("click", () => selectPanel(dashboard, DASHBOARD_ENTRY.id));
+    const teamButton = document.createElement("button");
+    teamButton.type = "button";
+    teamButton.className = "amar-admin-order-entry";
+    teamButton.innerHTML = "<span>👥 Team Operations</span><small>00.03</small>";
+    teamButton.addEventListener("click", () => {
+      const home = dashboard.querySelector("#adminPanel-adminHome");
+      dashboard.querySelectorAll(".admin-panel").forEach(item => { item.hidden = true; });
+      if (home) home.hidden = false;
+      document.body.classList.add("amar-admin-workspace-active");
+      document.body.classList.remove("amar-admin-nav-collapsed", "menu-open");
+      requestAnimationFrame(() => (home?.querySelector("#amarTeamManager") || home)?.scrollIntoView({behavior:"smooth",block:"start"}));
+      recordRecent("teamOperations");
+      const status = dashboard.querySelector(".amar-admin-menu-status");
+      if (status) status.textContent = "খোলা: 00.03 · Team Operations · Menu stays open";
+    });
     const overviewButton = document.createElement("button");
     overviewButton.type = "button";
     overviewButton.className = "amar-admin-order-entry";
@@ -258,7 +273,7 @@
     status.className = "amar-admin-menu-hint amar-admin-menu-status";
     status.setAttribute("role", "status");
     status.textContent = "সব Admin control এই মেনুর ভেতরে";
-    content.append(heading, hint, search, overviewButton, dashboardButton, favTitle, favArea, recentTitle, recentArea);
+    content.append(heading, hint, search, overviewButton, dashboardButton, teamButton, favTitle, favArea, recentTitle, recentArea);
 
     const entries = [];
     const entryRows = [];
