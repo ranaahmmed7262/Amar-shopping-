@@ -132,3 +132,52 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
  }
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();
 })();
+
+/* Persistent in-dashboard admin workspace: keep navigation visible while switching panels. */
+(function(){
+ "use strict";
+ const STYLE_ID="amar-admin-workspace-layout";
+ function mount(){
+  const root=document.getElementById("dashContent"),shell=root?.querySelector(".admin-shell"),nav=shell?.querySelector(".admin-control-nav"),toggle=shell?.querySelector("#adminMenuToggle");
+  if(!root||!shell||!nav||!toggle)return;
+  if(!document.getElementById(STYLE_ID)){
+   const style=document.createElement("style");style.id=STYLE_ID;
+   style.textContent=`
+   #dashContent:has(>.admin-shell){display:grid!important;grid-template-columns:minmax(260px,300px) minmax(0,1fr);align-items:start;column-gap:18px;row-gap:0}
+   #dashContent>.admin-shell{grid-column:1;grid-row:1 / span 60;position:sticky!important;top:14px!important;align-self:start;min-height:calc(100vh - 28px);margin:0 0 18px!important;padding:76px 12px 16px!important;border-radius:18px!important}
+   #dashContent .admin-shell h2,#dashContent .admin-shell>p.muted{display:none!important}
+   #dashContent .admin-menu-toggle{position:absolute!important;left:14px!important;top:16px!important;z-index:10004!important}
+   #dashContent .amar-admin-drawer-brand{position:absolute!important;left:68px!important;top:25px!important;width:auto!important;opacity:1!important;color:#fff!important;font-size:14px!important}
+   #dashContent .admin-control-nav{position:static!important;inset:auto!important;width:auto!important;max-width:none!important;height:auto!important;max-height:calc(100vh - 125px)!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:9px!important;margin:0!important;padding:12px 0 4px!important;transform:none!important;visibility:visible!important;box-shadow:none!important;border:0!important;background:transparent!important}
+   #dashContent .admin-control-nav .amar-admin-group-items button.active{background:#d8f5e4!important;color:#064b36!important;box-shadow:inset 3px 0 #35c98b!important}
+   #dashContent>.admin-home-panel,#dashContent>.admin-panel{grid-column:2!important;min-width:0!important;width:100%!important;margin:0 0 18px!important;scroll-margin-top:18px}
+   #dashContent .amar-admin-backdrop{display:none!important}
+   body:not(.amar-admin-menu-open) #dashContent:has(>.admin-shell){grid-template-columns:76px minmax(0,1fr)!important}
+   body:not(.amar-admin-menu-open) #dashContent>.admin-shell{padding:72px 8px 12px!important;min-height:84px!important}
+   body:not(.amar-admin-menu-open) #dashContent .amar-admin-drawer-brand,body:not(.amar-admin-menu-open) #dashContent .admin-control-nav{display:none!important}
+   @media(max-width:800px){
+    #dashContent:has(>.admin-shell){grid-template-columns:minmax(0,1fr)!important;row-gap:12px}
+    #dashContent>.admin-shell{grid-column:1!important;grid-row:auto!important;position:relative!important;top:auto!important;min-height:0!important;padding:72px 12px 12px!important}
+    #dashContent>.admin-home-panel,#dashContent>.admin-panel{grid-column:1!important}
+    #dashContent .admin-control-nav{max-height:48vh!important}
+    body:not(.amar-admin-menu-open) #dashContent>.admin-shell{min-height:72px!important}
+   }`;
+   document.head.appendChild(style);
+  }
+  if(shell.dataset.amarPersistentSidebar==="1")return;
+  shell.dataset.amarPersistentSidebar="1";
+  document.body.classList.add("amar-admin-menu-open");
+  toggle.onclick=function(event){
+   event.preventDefault();
+   event.stopImmediatePropagation();
+   const open=!document.body.classList.contains("amar-admin-menu-open");
+   document.body.classList.toggle("amar-admin-menu-open",open);
+   toggle.setAttribute("aria-expanded",String(open));
+   toggle.setAttribute("aria-label",open?"Collapse admin sidebar":"Expand admin sidebar");
+  };
+  toggle.setAttribute("aria-expanded","true");
+  nav.querySelectorAll(".amar-admin-group-items button").forEach(button=>button.addEventListener("click",()=>{document.body.classList.add("amar-admin-menu-open");toggle.setAttribute("aria-expanded","true");toggle.setAttribute("aria-label","Collapse admin sidebar");}));
+ }
+ function watch(){const root=document.getElementById("dashContent")||document.body;new MutationObserver(mount).observe(root,{childList:true,subtree:true});mount();}
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();
+})();
