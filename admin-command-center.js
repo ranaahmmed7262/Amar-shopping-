@@ -64,6 +64,7 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
  "use strict";
  const STYLE_ID="amar-admin-drawer-style";
  const groups=[
+  {title:"Overview",icon:"📊",ids:["adminOverview"]},
   {title:"Marketplace Control",icon:"🌐",ids:["adminMasterControl","pendingProducts","manageProducts","categoryManager","pendingSellers"]},
   {title:"Orders & Customers",icon:"📦",ids:["allOrders","adminChats","customerList"]},
   {title:"Website & Operations",icon:"⚙️",ids:["siteSettingsForm","adminDelivery","roleManager"]},
@@ -75,6 +76,8 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
   const s=document.createElement("style");s.id=STYLE_ID;
   s.textContent=`
   #dashContent .admin-shell{position:relative;z-index:30;padding:18px 18px 18px 76px!important;background:linear-gradient(135deg,#052f29,#075b43 58%,#087f5b)!important;border:1px solid #ffffff20!important;min-height:112px}
+  /* All admin navigation lives in the storefront hamburger drawer. Keep source controls in DOM for permission-aware routing, but never show the duplicate dashboard menu. */
+  #dashContent .admin-shell,#dashContent .amar-admin-tools,#dashContent .amar-admin-quick,#dashContent .amar-admin-home-note{display:none!important}
   #dashContent .admin-shell h2{letter-spacing:.2px;font-size:20px}
   #dashContent .admin-menu-toggle{position:absolute!important;left:16px!important;top:18px!important;width:44px!important;height:44px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;border:1px solid #ffffff55!important;border-radius:12px!important;background:#ffffff18!important;cursor:pointer!important;z-index:10002!important}
   #dashContent .admin-menu-toggle span{display:block!important;width:20px!important;height:2px!important;border-radius:2px!important;background:#fff!important}
