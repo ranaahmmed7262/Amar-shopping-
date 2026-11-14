@@ -1055,6 +1055,7 @@ async function loadAdminOrders(){
   box.querySelectorAll("[data-history]").forEach(btn=>btn.onclick=async()=>{const id=Number(btn.dataset.history),target=box.querySelector("#orderHistory"+id);target.textContent="History loading…";const {data,error}=await db.from("order_status_history").select("status,note,courier_name,tracking_number,created_at").eq("order_id",id).order("created_at",{ascending:true});target.innerHTML=error?'<span class="bad">'+esc(error.message)+'</span>':(data||[]).map(h=>'<p>• <b>'+esc(ORDER_STATUS_LABELS[h.status]||h.status)+'</b> — '+esc(h.note||"")+' <small>'+new Date(h.created_at).toLocaleString("bn-BD")+'</small>'+(h.courier_name?' • '+esc(h.courier_name):'')+(h.tracking_number?' • '+esc(h.tracking_number):'')+'</p>').join("")||"কোনো history নেই"});
  };
  await render();
+ await loadAdminOverview();
  if(window.refreshAmarShoppingOrderDashboard)await window.refreshAmarShoppingOrderDashboard();
  ["#orderSearch","#orderStatusFilter","#orderDateFrom","#orderDateTo"].forEach(sel=>{const node=el.querySelector(sel);if(node)node.oninput=render});
 }
@@ -1142,16 +1143,55 @@ async function loadAdminOperations(){
 }
 async function loadAdminOverview(){
  const box=el.querySelector("#adminOverview");if(!box)return;
- const [orders,productsCount,customers,pending]=await Promise.all([
-  db.from("orders").select("id,total_bdt,status",{count:"exact"}),
-  db.from("products").select("id",{count:"exact",head:true}),
-  db.from("users").select("id",{count:"exact",head:true}).eq("role","customer"),
-  db.from("products").select("id",{count:"exact",head:true}).eq("status","pending")
- ]);
- if(orders.error||productsCount.error||customers.error||pending.error){box.innerHTML='<p class="bad">ড্যাশবোর্ডের তথ্য লোড হয়নি।</p>';return}
- const rows=orders.data||[],sales=rows.filter(o=>o.status!=="cancelled").reduce((n,o)=>n+Number(o.total_bdt||0),0);
- const cards=[["মোট অর্ডার",orders.count||0],["মোট বিক্রি",money(sales)],["পণ্য",productsCount.count||0],["কাস্টমার",customers.count||0],["Pending পণ্য",pending.count||0],["Delivered",rows.filter(o=>o.status==="delivered").length]];
- box.innerHTML=cards.map(([label,value])=>'<div class="adminitem"><small class="muted">'+label+'</small><div style="font-size:21px;font-weight:800">'+value+'</div></div>').join("");
+ box.innerHTML='<p class="muted">Business Overview হিসাব আপডেট হচ্ছে...</p>';
+ try{
+  const [productsCount,customers,pending]=await Promise.all([
+   db.from("products").select("id",{count:"exact",head:true}),
+   db.from("users").select("id",{count:"exact",head:true}).eq("role","customer"),
+   db.from("products").select("id",{count:"exact",head:true}).eq("status","pending")
+  ]);
+  if(productsCount.error||customers.error||pending.error)throw productsCount.error||customers.error||pending.error;
+  // Fetch every order in stable pages; a default PostgREST row cap must not truncate totals.
+  const rows=[];let offset=0;const pageSize=500;
+  while(true){
+   const result=await db.from("orders").select("id,total_bdt,status,payment_status").order("id",{ascending:true}).range(offset,offset+pageSize-1);
+   if(result.error)throw result.error;
+   const batch=result.data||[];rows.push(...batch);
+   if(batch.length<pageSize)break;
+   offset+=pageSize;
+  }
+  const status=o=>String(o.status||"").toLowerCase();
+  const payment=o=>String(o.payment_status||"unpaid").toLowerCase();
+  const amount=o=>{const n=Number(o.total_bdt||0);return Number.isFinite(n)?n:0};
+  const cancelledRows=rows.filter(o=>["cancelled","rejected"].includes(status(o)));
+  const activeRows=rows.filter(o=>!["cancelled","rejected"].includes(status(o)));
+  const deliveredRows=rows.filter(o=>status(o)==="delivered");
+  const placedRows=rows.filter(o=>status(o)==="placed");
+  const shippingRows=rows.filter(o=>["shipped","out_for_delivery"].includes(status(o)));
+  const paidRows=rows.filter(o=>payment(o)==="paid");
+  const unpaidRows=rows.filter(o=>payment(o)!=="paid");
+  const sum=list=>list.reduce((total,o)=>total+amount(o),0);
+  const cards=[
+   ["মোট অর্ডার",rows.length],
+   ["Active Orders",activeRows.length],
+   ["নতুন / Pending Orders",placedRows.length],
+   ["ডেলিভারির পথে",shippingRows.length],
+   ["Delivered Orders",deliveredRows.length],
+   ["Cancelled / Rejected",cancelledRows.length],
+   ["Active Order Value",money(sum(activeRows))],
+   ["Delivered Sales",money(sum(deliveredRows))],
+   ["Paid Orders",paidRows.length],
+   ["Paid Amount",money(sum(paidRows))],
+   ["Unpaid / Not Paid Orders",unpaidRows.length],
+   ["Unpaid / Not Paid Amount",money(sum(unpaidRows))],
+   ["মোট পণ্য",productsCount.count??0],
+   ["কাস্টমার",customers.count??0],
+   ["Pending পণ্য",pending.count??0]
+  ];
+  box.innerHTML=cards.map(([label,value])=>'<div class="adminitem"><small class="muted">'+label+'</small><div style="font-size:21px;font-weight:800">'+value+'</div></div>').join("");
+ }catch(error){
+  box.innerHTML='<p class="bad">Business Overview-এর হিসাব লোড হয়নি: '+esc(error?.message||"Unknown error")+'</p>';
+ }
 }
 function getCategoryAttributeConfig(){
  try{const raw=settings.category_attributes||"{}";const parsed=typeof raw==="string"?JSON.parse(raw):raw;return parsed&&typeof parsed==="object"&&!Array.isArray(parsed)?parsed:{}}catch(_){return {}}
