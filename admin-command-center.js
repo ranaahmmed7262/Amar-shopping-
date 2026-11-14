@@ -4,9 +4,9 @@
 
   const EXPECTED = 16;
   const GROUPS = [
-    { title: "Overview & Master Control", icon: "📊", ids: ["adminOverview", "adminMasterControl"] },
+    { title: "Admin Dashboard & Orders & Customers", icon: "📊", ids: ["adminChats", "customerList"] },
+    { title: "Master Control", icon: "🌐", ids: ["adminMasterControl"] },
     { title: "Marketplace & Products", icon: "🛍️", ids: ["pendingProducts", "manageProducts", "categoryManager", "pendingSellers"] },
-    { title: "Orders & Customers", icon: "📦", ids: ["allOrders", "adminChats", "customerList"] },
     { title: "Website & Operations", icon: "⚙️", ids: ["siteSettingsForm", "adminDelivery", "roleManager"] },
     { title: "Finance & Reports", icon: "📈", ids: ["commissionReport", "exportOrdersCsv"] },
     { title: "System & Platform", icon: "🛡️", ids: ["adminHealth", "platformControlCenter"] }
@@ -171,7 +171,7 @@
     const orderButton = document.createElement("button");
     orderButton.type = "button";
     orderButton.className = "amar-admin-order-entry";
-    orderButton.textContent = "📦 Order Management · Live";
+    orderButton.textContent = "📊 Admin Dashboard";
     orderButton.addEventListener("click", () => selectPanel(dashboard, "allOrders"));
     const status = document.createElement("small");
     status.className = "amar-admin-menu-hint amar-admin-menu-status";
@@ -211,7 +211,7 @@
         details.hidden = !!term && !visible;
         if (term && visible) details.open = true;
       });
-      orderButton.hidden = !!term && !"order management live orders".includes(term);
+      orderButton.hidden = !!term && !"admin dashboard overview orders customers".includes(term);
     });
     content.appendChild(status);
     section.appendChild(content);
