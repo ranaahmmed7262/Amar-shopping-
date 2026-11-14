@@ -1044,9 +1044,7 @@ adminNav.querySelectorAll(".amar-admin-group-toggle").forEach(toggle=>{
 });
 el.querySelectorAll("[data-admin-jump]").forEach(button=>button.onclick=()=>{
  showAdminPanel(button.dataset.adminJump);
- adminShell.classList.remove("menu-open","menu-collapsed");
- menuToggle.setAttribute("aria-expanded","true");
- menuToggle.setAttribute("aria-label","অ্যাডমিন মেনু বন্ধ করুন");
+ closeAdminMenu();
 });
 /* Show the dashboard landing panel first; individual controls open from the hamburger. */
 adminPanels.forEach(item=>{
